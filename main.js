@@ -6,22 +6,19 @@ g.setGraph({});
 // Default to assigning a new object as a label for each new edge.
 g.setDefaultEdgeLabel(function() { return {}; });
 
-// Add nodes to the graph. The first argument is the node id. The second is
-// metadata about the node. In this case we're going to add labels to each of
-// our nodes.
-g.setNode("kspacey",    { label: "Kevin Spacey",  width: 144, height: 100 });
-g.setNode("swilliams",  { label: "Saul Williams", width: 160, height: 100 });
-g.setNode("bpitt",      { label: "Brad Pitt",     width: 108, height: 100 });
-g.setNode("hford",      { label: "Harrison Ford", width: 168, height: 100 });
-g.setNode("lwilson",    { label: "Luke Wilson",   width: 144, height: 100 });
-g.setNode("kbacon",     { label: "Kevin Bacon",   width: 121, height: 100 });
+g.setNode("ajcsummary", { class: "entity", label: "AJC-summary"});
+g.setNode("advicereports", { class: "entity", label: "advice-reports"});
+g.setNode("report1", { class: "entity", label: "report-1"});
+g.setNode("report2", { class: "entity", label: "report-2"});
+g.setNode("abs", { class: "activity", label: "abs"});
+g.setNode("analytics", { class: "activity", label: "analytics"});
 
-// Add edges to the graph.
-g.setEdge("kspacey",   "swilliams");
-g.setEdge("swilliams", "kbacon");
-g.setEdge("bpitt",     "kbacon");
-g.setEdge("hford",     "lwilson");
-g.setEdge("lwilson",   "kbacon");
+g.setEdge("analytics", "ajcsummary", {label: "use"});
+g.setEdge("report2", "abs", {label: "use"});
+g.setEdge("report1", "analytics", {label: "gen"});
+g.setEdge("abs", "report1", {label: "use"});
+g.setEdge("abs", "report2", {label: "use"});
+g.setEdge("advicereports", "abs", {label: "gen"});
 
 dagre.layout(g);
 
