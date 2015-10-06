@@ -1,0 +1,4 @@
+# vim files
+*.swp
+*.un~
+bower_components

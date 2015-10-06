@@ -1,0 +1,188 @@
+document
+
+prefix xsd <http://www.w3.org/2001/XMLSchema>
+prefix prim <http://openprovenance.org/primitives#>
+prefix prov <http://www.w3.org/ns/prov#>
+prefix xsi <http://www.w3.org/2001/XMLSchema-instance>
+prefix pc1 <http://www.ipaw.info/pc1/>
+
+prefix ir <http://www.ir.ncl.ac.uk/>
+
+//
+// entities
+//
+
+// Twitter Feed
+entity(ir:TwitterFeed-time-1, [from="2012-09-27T09:00:00", to="2012-10-27T09:30:00", Status="Unclassified"])
+entity(ir:TwitterFeed-time-2, [from="2012-12-28T09:00:00", to="2013-01-28T09:30:00", Status="Unclassified"]) 
+entity(ir:TwitterFeed-time-3, [from="2013-02-29T09:00:00", to="2013-03-29T09:30:00", Status="Unclassified"])
+
+// AJC data
+entity(ir:AJC-tweets-1)
+entity(ir:AJC-tweets-2)
+entity(ir:AJC-tweets-3)
+
+// BNC: data
+entity(ir:BNC-tweets-1)
+entity(ir:BNC-tweets-2)
+entity(ir:BNC-tweets-3)
+
+// classified information
+
+entity(ir:AJC-profile)
+entity(ir:BNC-profile)
+
+entity(ir:merging-algorithm, [prov:type="plan"])
+
+
+// summaries
+
+entity(ir:AJC-summary)
+entity(ir:BNC-summary)
+
+// intermediate merged results
+
+entity(ir:report-1)
+entity(ir:report-2)
+entity(ir:report-3)
+
+// final results
+
+entity(ir:advice-report)
+
+//
+// activities
+//
+
+// AJC: extraction
+
+activity(ir:query-AJC-Time-1)
+activity(ir:query-AJC-Time-2)
+activity(ir:query-AJC-Time-3)
+
+// BNC: extraction
+activity(ir:query-BNC-Time-1)
+activity(ir:query-BNC-Time-2)
+activity(ir:query-BNC-Time-3)
+
+wasAssociatedWith(ir:query-AJC-Time-1, twitterMonitor,-)
+wasAssociatedWith(ir:query-AJC-Time-2, twitterMonitor,-)
+wasAssociatedWith(ir:query-AJC-Time-3, twitterMonitor,-)
+wasAssociatedWith(ir:query-BNC-Time-1, twitterMonitor,-)
+wasAssociatedWith(ir:query-BNC-Time-2, twitterMonitor,-)
+wasAssociatedWith(ir:query-BNC-Time-3, twitterMonitor,-)
+
+// merging
+
+activity(ir:consolidate-AJC)
+activity(ir:consolidate-BNC)
+activity(ir:report-editing)
+
+// analytics activity
+
+activity(ir:analytics1)
+activity(ir:analytics2)
+activity(ir:analytics3)
+
+
+//
+// agents
+//
+agent(ir:Alice, [prov:type="jr-analyst", clearance="low"])
+agent(ir:Bob, [prov:type="analyst", clearance="high"])
+agent(ir:Charlie, [prov:type="sr-analyst", clearance="high"])
+//agent(ir:David, [prov:type="head-analyst", clearance="high"])
+
+agent(ir:K, [prov:type="jr-editor", clearance="normal"])
+//agent(ir:L, [prov:type="sr-editor", clearance="high"])
+//agent(ir:M, [prov:type="numero-uno", clearance="top"])
+
+agent(ir:twitterMonitor,  [prov:type="Sw-component"]
+
+
+//actedOnBehalfOf(ir:Alice, ir:David, ir:analytics1)
+//actedOnBehalfOf(ir:Bob, ir:David, ir:analytics2)
+//actedOnBehalfOf(ir:Charlie, ir:David, ir:analytics3)
+
+// attributions and associations, delegation
+wasAssociatedWith(ir:report-editing, ir:K,-)
+//actedOnBehalfOf(ir:K, ir:L, ir:report-editing)
+
+//actedOnBehalfOf(ir:Alice, ir:M)
+//actedOnBehalfOf(ir:Bob, ir:M)
+//actedOnBehalfOf(ir:Charlie, ir:M)
+//actedOnBehalfOf(ir:David, ir:M)
+//actedOnBehalfOf(ir:K, ir:M)
+//actedOnBehalfOf(ir:L, ir:M)
+
+wasAssociatedWith(ir:consolidate-AJC, ir:Charlie, ir:merging-algorithm)
+wasAssociatedWith(ir:consolidate-BNC, ir:Charlie, ir:merging-algorithm)
+
+wasAssociatedWith(ir:analytics1, ir:Alice,-)
+wasAssociatedWith(ir:analytics2, ir:Bob,-)
+wasAssociatedWith(ir:analytics3, ir:Charlie,-)
+
+
+// initial extraction activity
+
+used(ir:query-AJC-Time-1,ir:TwitterFeed-time-1,-)
+used(ir:query-AJC-Time-2,ir:TwitterFeed-time-2,-)
+used(ir:query-AJC-Time-3,ir:TwitterFeed-time-3,-)
+used(ir:query-BNC-Time-1,ir:TwitterFeed-time-1,-)
+used(ir:query-BNC-Time-2,ir:TwitterFeed-time-2,-)
+used(ir:query-BNC-Time-3,ir:TwitterFeed-time-3,-)
+
+// initial extraction results
+
+wasGeneratedBy(ir:AJC-tweets-1,ir:query-AJC-Time-1,2013-06-18T11:10:00)
+wasGeneratedBy(ir:AJC-tweets-2,ir:query-AJC-Time-2,2013-06-18T11:10:00)
+wasGeneratedBy(ir:AJC-tweets-3,ir:query-AJC-Time-3,2013-06-18T11:10:00)
+wasGeneratedBy(ir:BNC-tweets-1,ir:query-BNC-Time-1,2013-06-18T11:10:00)
+wasGeneratedBy(ir:BNC-tweets-2,ir:query-BNC-Time-2,2013-06-18T11:10:00)
+wasGeneratedBy(ir:BNC-tweets-3,ir:query-BNC-Time-3,2013-06-18T11:10:00)
+
+// merging
+
+used(ir:consolidate-AJC,ir:AJC-tweets-1,-)
+used(ir:consolidate-AJC,ir:AJC-tweets-2,-)
+used(ir:consolidate-AJC,ir:AJC-tweets-3,-)
+used(ir:consolidate-AJC,ir:AJC-profile,-)
+
+used(ir:consolidate-BNC,ir:BNC-tweets-1,-)
+used(ir:consolidate-BNC,ir:BNC-tweets-2,-)
+used(ir:consolidate-BNC,ir:BNC-tweets-3,-)
+used(ir:consolidate-BNC,ir:BNC-profile,-)
+
+
+// merge generates
+
+wasGeneratedBy(ir:AJC-summary,ir:consolidate-AJC,2013-06-18T11:10:00)
+wasGeneratedBy(ir:BNC-summary,ir:consolidate-BNC,2013-06-18T11:10:00)
+
+// analytics uses
+ 
+used(ir:analytics1,ir:AJC-summary,-)
+used(ir:analytics1,ir:BNC-summary,-)
+used(ir:analytics2,ir:AJC-summary,-)
+used(ir:analytics2,ir:BNC-summary,-)
+used(ir:analytics3,ir:AJC-summary,-)
+used(ir:analytics3,ir:BNC-summary,-)
+
+// analytics generates
+
+wasGeneratedBy(ir:report-1,ir:analytics1,2013-06-18T11:10:00)
+wasGeneratedBy(ir:report-2,ir:analytics2,2013-06-18T11:10:00)
+wasGeneratedBy(ir:report-3,ir:analytics3,2013-06-18T11:10:00)
+
+// final merging
+
+used(ir:report-editing,ir:report-1,-)
+used(ir:report-editing,ir:report-2,-)
+used(ir:report-editing,ir:report-3,-)
+
+// generating the final result
+
+wasGeneratedBy(ir:advice-report, ir:report-editing, 2013-06-18T11:10:00)
+
+
+endDocument

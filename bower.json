@@ -1,0 +1,27 @@
+{
+  "name": "Provenance Visualiser",
+  "version": "0.0.0",
+  "authors": [
+    "Linus Karsai <karsai5@gmail.com>"
+  ],
+  "description": "Javascript visualiser for the PROV Model format.",
+  "main": "",
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "dagre": "~0.7.4",
+    "dagre-d3": "~0.4.10",
+    "jquery": "~2.1.4"
+  }
+}

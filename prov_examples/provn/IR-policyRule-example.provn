@@ -1,0 +1,79 @@
+document
+
+prefix xsd <http://www.w3.org/2001/XMLSchema>
+prefix prim <http://openprovenance.org/primitives#>
+prefix prov <http://www.w3.org/ns/prov#>
+prefix xsi <http://www.w3.org/2001/XMLSchema-instance>
+prefix pc1 <http://www.ipaw.info/pc1/>
+
+prefix ir <http://www.ir.ncl.ac.uk/>
+
+//
+// entities
+//
+
+
+
+
+// summaries
+
+entity(ir:X-summary, [Status="Secret"])
+entity(ir:Y-summary, [Status="Secret"])
+
+// intermediate merged results
+
+entity(ir:report-1, [Status="confidential"])
+entity(ir:report-2, [Status="confidential"])
+entity(ir:report-3, [Status="confidential"])
+
+
+//
+// activities
+//
+
+// merging
+
+activity(ir:consolidate-X)
+activity(ir:consolidate-Y)
+activity(ir:report-editing)
+
+// analytics activity
+
+activity(ir:analytics1)
+activity(ir:analytics2)
+activity(ir:analytics3)
+
+
+
+
+// merge generates
+
+wasGeneratedBy(ir:X-summary,ir:consolidate-X,2013-06-18T11:10:00)
+wasGeneratedBy(ir:Y-summary,ir:consolidate-Y,2013-06-18T11:10:00)
+
+// analytics uses
+ 
+used(ir:analytics1,ir:X-summary,-)
+//used(ir:analytics1,ir:Y-summary,-)
+used(ir:analytics2,ir:X-summary,-)
+used(ir:analytics2,ir:Y-summary,-)
+used(ir:analytics3,ir:X-summary,-)
+used(ir:analytics3,ir:Y-summary,-)
+
+// analytics generates
+
+wasGeneratedBy(ir:report-1,ir:analytics1,2013-06-18T11:10:00)
+wasGeneratedBy(ir:report-2,ir:analytics2,2013-06-18T11:10:00)
+wasGeneratedBy(ir:report-3,ir:analytics3,2013-06-18T11:10:00)
+
+// final merging
+
+used(ir:report-editing,ir:report-1,-)
+used(ir:report-editing,ir:report-2,-)
+used(ir:report-editing,ir:report-3,-)
+
+// generating the final result
+
+
+
+endDocument

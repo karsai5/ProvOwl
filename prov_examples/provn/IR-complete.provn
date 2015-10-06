@@ -1,0 +1,189 @@
+document
+
+prefix xsd <http://www.w3.org/2001/XMLSchema>
+prefix prim <http://openprovenance.org/primitives#>
+prefix prov <http://www.w3.org/ns/prov#>
+prefix xsi <http://www.w3.org/2001/XMLSchema-instance>
+prefix pc1 <http://www.ipaw.info/pc1/>
+
+prefix ir <http://www.ir.ncl.ac.uk/>
+
+//
+// entities
+//
+
+// Twitter Feed
+entity(ir:TwitterFeed-time-1, [from="2012-09-27T09:00:00", to="2012-10-27T09:30:00", Status="Unclassified"])
+entity(ir:TwitterFeed-time-2, [from="2012-12-28T09:00:00", to="2013-01-28T09:30:00", Status="Unclassified"]) 
+entity(ir:TwitterFeed-time-3, [from="2013-02-29T09:00:00", to="2013-03-29T09:30:00", Status="Unclassified"])
+
+// X data
+entity(ir:X-tweets-1, [title="Xactivity", Status="Unclassified"])
+entity(ir:X-tweets-2, [title="Xactivity", Status="Unclassified"])
+entity(ir:X-tweets-3, [title="Xactivity", Status="Unclassified"])
+
+// Y: data
+entity(ir:Y-tweets-1, [title="Yactivity", Status="Unclassified"])
+entity(ir:Y-tweets-2, [title="Yactivity", Status="Unclassified"])
+entity(ir:Y-tweets-3, [title="Yactivity", Status="Unclassified"])
+
+// classified information
+
+entity(ir:X-profile, [Status="Classified"])
+entity(ir:Y-profile, [Status="Classified"])
+
+entity(ir:merging-algorithm, [prov:type="plan", ir:type="algorithm", ir:status="proprietary", ir:version="1.3.4"])
+
+
+// summaries
+
+entity(ir:X-summary, [Status="Secret"])
+entity(ir:Y-summary, [Status="Secret"])
+
+// intermediate merged results
+
+entity(ir:report-1, [Status="confidential"])
+entity(ir:report-2, [Status="confidential"])
+entity(ir:report-3, [Status="confidential"])
+
+// final results
+
+entity(ir:advice-reports, [Status="Classified"])
+
+//
+// activities
+//
+
+// X: extraction
+
+activity(ir:query-X-Time-1, [Status="Unclassified"])
+activity(ir:query-X-Time-2, [Status="Unclassified"])
+activity(ir:query-X-Time-3, [Status="Unclassified"])
+
+// Y: extraction
+activity(ir:query-Y-Time-1, [Status="Unclassified"])
+activity(ir:query-Y-Time-2, [Status="Unclassified"])
+activity(ir:query-Y-Time-3, [Status="Unclassified"])
+
+wasAssociatedWith(ir:query-X-Time-1, twitterMonitor,-)
+wasAssociatedWith(ir:query-X-Time-2, twitterMonitor,-)
+wasAssociatedWith(ir:query-X-Time-3, twitterMonitor,-)
+wasAssociatedWith(ir:query-Y-Time-1, twitterMonitor,-)
+wasAssociatedWith(ir:query-Y-Time-2, twitterMonitor,-)
+wasAssociatedWith(ir:query-Y-Time-3, twitterMonitor,-)
+
+
+// merging
+
+activity(ir:consolidate-X, [Status="Classified"])
+activity(ir:consolidate-Y, [Status="Classified"])
+activity(ir:report-editing, [Status="Unclassified"])
+
+// analytics activity
+
+activity(ir:analytics1, [Status="Unclassified"])
+activity(ir:analytics2, [Status="Unclassified"])
+activity(ir:analytics3, [Status="TopSecret"])
+
+
+//
+// agents
+//
+agent(ir:Alice, [prov:type="jr-analyst", clearance="low"])
+agent(ir:Bob, [prov:type="analyst", clearance="high"])
+agent(ir:Charlie, [prov:type="sr-analyst", clearance="high"])
+agent(ir:David, [prov:type="head-analyst", clearance="high"])
+
+agent(ir:K, [prov:type="jr-editor", clearance="normal"])
+agent(ir:L, [prov:type="sr-editor", clearance="high"])
+agent(ir:M, [prov:type="numero-uno", clearance="top"])
+
+agent(ir:twitterMonitor,  [prov:type="Sw-component"])
+
+
+actedOnBehalfOf(ir:Alice, ir:David, ir:analytics1)
+actedOnBehalfOf(ir:Bob, ir:David, ir:analytics2)
+actedOnBehalfOf(ir:Charlie, ir:David, ir:analytics3)
+
+// attributions and associations, delegation
+wasAssociatedWith(ir:report-editing, ir:K,-)
+actedOnBehalfOf(ir:K, ir:L, ir:report-editing)
+
+actedOnBehalfOf(ir:Alice, ir:M)
+actedOnBehalfOf(ir:Bob, ir:M)
+actedOnBehalfOf(ir:Charlie, ir:M)
+actedOnBehalfOf(ir:David, ir:M)
+actedOnBehalfOf(ir:K, ir:M)
+actedOnBehalfOf(ir:L, ir:M)
+
+wasAssociatedWith(ir:consolidate-X, ir:Charlie, ir:merging-algorithm)
+wasAssociatedWith(ir:consolidate-Y, ir:Charlie, ir:merging-algorithm)
+
+wasAssociatedWith(ir:analytics1, ir:Alice,-)
+wasAssociatedWith(ir:analytics2, ir:Bob,-)
+wasAssociatedWith(ir:analytics3, ir:Charlie,-)
+
+
+// initial extraction activity
+
+used(ir:query-X-Time-1,ir:TwitterFeed-time-1,-)
+used(ir:query-X-Time-2,ir:TwitterFeed-time-2,-)
+used(ir:query-X-Time-3,ir:TwitterFeed-time-3,-)
+used(ir:query-Y-Time-1,ir:TwitterFeed-time-1,-)
+used(ir:query-Y-Time-2,ir:TwitterFeed-time-2,-)
+used(ir:query-Y-Time-3,ir:TwitterFeed-time-3,-)
+
+// initial extraction results
+
+wasGeneratedBy(ir:X-tweets-1,ir:query-X-Time-1,2013-06-18T11:10:00)
+wasGeneratedBy(ir:X-tweets-2,ir:query-X-Time-2,2013-06-18T11:10:00)
+wasGeneratedBy(ir:X-tweets-3,ir:query-X-Time-3,2013-06-18T11:10:00)
+wasGeneratedBy(ir:Y-tweets-1,ir:query-Y-Time-1,2013-06-18T11:10:00)
+wasGeneratedBy(ir:Y-tweets-2,ir:query-Y-Time-2,2013-06-18T11:10:00)
+wasGeneratedBy(ir:Y-tweets-3,ir:query-Y-Time-3,2013-06-18T11:10:00)
+
+// merging
+
+used(ir:consolidate-X,ir:X-tweets-1,-)
+used(ir:consolidate-X,ir:X-tweets-2,-)
+used(ir:consolidate-X,ir:X-tweets-3,-)
+used(ir:consolidate-X,ir:X-profile,-)
+
+used(ir:consolidate-Y,ir:Y-tweets-1,-)
+used(ir:consolidate-Y,ir:Y-tweets-2,-)
+used(ir:consolidate-Y,ir:Y-tweets-3,-)
+used(ir:consolidate-Y,ir:Y-profile,-)
+
+
+// merge generates
+
+wasGeneratedBy(ir:X-summary,ir:consolidate-X,2013-06-18T11:10:00)
+wasGeneratedBy(ir:Y-summary,ir:consolidate-Y,2013-06-18T11:10:00)
+
+// analytics uses
+ 
+used(ir:analytics1,ir:X-summary,-)
+used(ir:analytics1,ir:Y-summary,-)
+used(ir:analytics2,ir:X-summary,-)
+used(ir:analytics2,ir:Y-summary,-)
+used(ir:analytics3,ir:X-summary,-)
+used(ir:analytics3,ir:Y-summary,-)
+
+// analytics generates
+
+wasGeneratedBy(ir:report-1,ir:analytics1,2013-06-18T11:10:00)
+wasGeneratedBy(ir:report-2,ir:analytics2,2013-06-18T11:10:00)
+wasGeneratedBy(ir:report-3,ir:analytics3,2013-06-18T11:10:00)
+
+// final merging
+
+used(ir:report-editing,ir:report-1,-)
+used(ir:report-editing,ir:report-2,-)
+used(ir:report-editing,ir:report-3,-)
+
+// generating the final result
+
+wasGeneratedBy(ir:advice-reports, ir:report-editing, 2013-06-18T11:10:00)
+
+
+endDocument

@@ -1,0 +1,79 @@
+// example of wrong abstraction:
+// cycle, and two activities connected with each other by a data-activity dependency
+
+document
+
+prefix xsd <http://www.w3.org/2001/XMLSchema>
+prefix prim <http://openprovenance.org/primitives#>
+prefix prov <http://www.w3.org/ns/prov#>
+prefix xsi <http://www.w3.org/2001/XMLSchema-instance>
+prefix pc1 <http://www.ipaw.info/pc1/>
+
+prefix ir <http://www.ir.ncl.ac.uk/>
+
+//
+// entities
+//
+
+
+// summaries
+
+entity(ir:AJC-summary)
+//entity(ir:BNC-summary)
+
+// intermediate merged results
+
+entity(ir:report-1)
+//entity(ir:report-2)
+entity(ir:report-3)
+
+// final results
+
+entity(ir:advice-reports)
+
+//
+// activities
+//
+
+// merging
+activity(ir:abs)
+
+
+
+// analytics activity
+
+activity(ir:analytics1)
+//activity(ir:analytics2)
+//activity(ir:analytics3)
+
+// merging
+
+// analytics uses
+ 
+used(ir:analytics1,ir:AJC-summary,-)
+//used(ir:analytics1,ir:BNC-summary,-)
+//used(ir:analytics2,ir:AJC-summary,-)
+//used(ir:analytics2,ir:BNC-summary,-)
+//used(ir:analytics3,ir:AJC-summary,-)
+//used(ir:analytics3,ir:BNC-summary,-)
+
+used(ir:report-3,ir:abs,-)
+
+// analytics generates
+
+wasGeneratedBy(ir:report-1,ir:analytics1,2013-06-18T11:10:00)
+//wasGeneratedBy(ir:report-2,ir:analytics2,2013-06-18T11:10:00)
+//wasGeneratedBy(ir:report-3,ir:analytics3,2013-06-18T11:10:00)
+
+// final merging
+
+used(ir:abs,ir:report-1,-)
+//used(ir:abs,ir:report-2,-)
+used(ir:abs,ir:report-3,-)
+
+// generating the final result
+
+wasGeneratedBy(ir:advice-reports, ir:abs, 2013-06-18T11:10:00)
+
+
+endDocument
