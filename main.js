@@ -1,4 +1,3 @@
-console.log("hellow");
 var g = new dagre.graphlib.Graph();
 
 // Set an object for the graph label
