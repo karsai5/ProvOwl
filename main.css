@@ -27,27 +27,3 @@ svg {
   stroke-width: 1.5px;
   fill: none;
 }
-h1, h2 {
-  color: #333;
-}
-
-textarea {
-  width: 800px;
-}
-
-label {
-  margin-top: 1em;
-  display: block;
-}
-
-.error {
-  color: red;
-}
-
-.kevin rect{
-  background: red;
-  fill: red;
-}
-.label {
-  color: blue;
-}
