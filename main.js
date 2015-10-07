@@ -1,37 +1,53 @@
-var g = new dagre.graphlib.Graph();
+var PVisualiser = function(inner) {
+  console.log('Provenance visualiser initialised.');
+  this.inner = d3.select(inner);
+  this.g = new dagre.graphlib.Graph();
+  this.g.setGraph({});
+  this.g.setDefaultEdgeLabel(function() { return {}; });
+  this.g.graph().marginx = 20;
+  this.g.graph().marginy = 20;
 
-// Set an object for the graph label
-g.setGraph({});
+  this.createEntity = function(name, label) {
+    this.g.setNode(name, {shape: 'ellipse', class: 'entity', label: label});
+  };
 
-// Default to assigning a new object as a label for each new edge.
-g.setDefaultEdgeLabel(function() { return {}; });
+  this.createActivity = function(name, label) {
+    this.g.setNode(name, {class: 'activity', label: label});
+  };
 
-g.setNode("ajcsummary", { shape: "ellipse", class: "entity", label: "AJC-summary"});
-g.setNode("advicereports", { shape: "ellipse", class: "entity", label: "advice-reports"});
-g.setNode("report1", { shape: "ellipse", class: "entity", label: "report-1"});
-g.setNode("report2", { shape: "ellipse", class: "entity", label: "report-2"});
-g.setNode("abs", { class: "activity", label: "abs"});
-g.setNode("analytics", { class: "activity", label: "analytics"});
+  this.generated = function (name1, name2) {
+    this.g.setEdge(name1, name2, {label: 'gen'});
+  };
 
-g.setEdge("analytics", "ajcsummary", {label: "use"});
-g.setEdge("report2", "abs", {label: "use"});
-g.setEdge("report1", "analytics", {label: "gen"});
-g.setEdge("abs", "report1", {label: "use"});
-g.setEdge("abs", "report2", {label: "use"});
-g.setEdge("advicereports", "abs", {label: "gen"});
+  this.used = function (name1, name2) {
+    this.g.setEdge(name1, name2, {label: 'use'});
+  };
 
-g.graph().marginx = 20;
-g.graph().marginy = 20;
-g.graph().rankdir = 'BL';
+  this.render = function() {
+    var render = dagreD3.render();
+    this.inner.call(render, this.g);
+  };
 
-dagre.layout(g);
+};
 
 $(document).ready(function() {
-  var svg = d3.select("svg"),
-  inner = d3.select("svg g");
+  var p = new PVisualiser('svg g');
+  p.createEntity('ajcsummary', 'AJC-summary');
+  p.createEntity('advicereports', 'Advice Reports');
+  p.createEntity('report1', 'Report 1');
+  p.createEntity('report2', 'Report 2');
+  p.createActivity('abs', 'ABS');
+  p.createActivity('analytics', 'Analytics');
 
-  var render = dagreD3.render();
-  d3.select("svg g").call(render, g);
+  p.generated('report1', 'analytics');
+  p.generated('advicereports', 'abs');
+
+  p.used('analytics', 'ajcsummary');
+  p.used('report2', 'abs');
+  p.used('abs', 'report1');
+  p.used('abs', 'report2');
+
+  p.render();
 });
 
 
