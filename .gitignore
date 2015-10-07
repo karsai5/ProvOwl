@@ -1,4 +1,6 @@
 # vim files
 *.swp
+*.css
 *.un~
 bower_components
+.sass-cache
