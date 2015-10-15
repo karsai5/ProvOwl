@@ -8,11 +8,19 @@ var PVisualiser = function(inner) {
   this.g.graph().marginy = 20;
 
   this.createEntity = function(name, label) {
+    if (typeof name !== 'string' || typeof label !== 'string') {
+      throw new Error("Can't create entity: Unexpected Variables");
+    }
     this.g.setNode(name, {shape: 'ellipse', class: 'entity', label: label});
+    return true;
   };
 
   this.createActivity = function(name, label) {
+    if (typeof name !== 'string' || typeof label !== 'string') {
+      throw new Error("Can't create activity: Unexpected Variables");
+    }
     this.g.setNode(name, {class: 'activity', label: label});
+    return true;
   };
 
   this.generated = function (name1, name2) {
@@ -28,11 +36,15 @@ var PVisualiser = function(inner) {
     this.inner.call(render, this.g);
   };
 
+  this.getGraph = function () {
+    return this.g;
+  };
+
 };
 
 $(document).ready(function() {
   var p = new PVisualiser('svg g');
-  p.createEntity('ajcsummary', 'AJC-summary');
+  p.createEntity(1, 'AJC-summary');
   p.createEntity('advicereports', 'Advice Reports');
   p.createEntity('report1', 'Report 1');
   p.createEntity('report2', 'Report 2');

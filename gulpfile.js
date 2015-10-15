@@ -23,6 +23,11 @@ gulp.task('styles', function() {
     .pipe(notify({message: 'Syles task complete'}));
 });
 
+gulp.task('javascript', function() {
+  return livereload()
+    .pipe(notify({message: 'Javascript file changed'}));
+});
+
 gulp.task('default', function() {
   gulp.start('styles');
 });
@@ -30,4 +35,5 @@ gulp.task('default', function() {
 gulp.task('watch', function() {
   livereload.listen();
   gulp.watch('*.scss', ['styles']);
+  gulp.watch('*.js', ['javascript']);
 });

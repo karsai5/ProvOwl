@@ -2,15 +2,18 @@
   <head>
     <meta charset="utf-8">
     <title>Provenance visualiser</title>
+    <link rel="stylesheet" href="main.min.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="bower_components/qunit/qunit/qunit.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/d3/d3.js"></script>
     <script src="bower_components/lodash/lodash.js"></script>
     <script src="bower_components/graphlib/dist/graphlib.core.js"></script>
     <script src="bower_components/dagre/dist/dagre.core.js"></script>
     <script src="bower_components/dagre-d3/dist/dagre-d3.core.js"></script>
-    <script src="./main.js"></script>
-    <link rel="stylesheet" href="main.min.css" type="text/css" media="screen" title="no title" charset="utf-8">
-
+    <script src="bower_components/qunit/qunit/qunit.js"></script>
+    <script src="bower_components/blanket/dist/qunit/blanket.js"></script>
+    <script src="main.js" data-cover></script>
+    <script src="tests.js"></script>
   </head>
   <body>
 
@@ -18,5 +21,7 @@
       <g/>
     </svg>
 
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
   </body>
 </html>
