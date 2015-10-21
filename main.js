@@ -24,11 +24,57 @@ var PVisualiser = function(inner) {
   };
 
   this.generated = function (name1, name2) {
+    if (typeof name1 !== 'string' || typeof name2 !== 'string') {
+      throw new Error("Can't create generation: Unexpected Variables");
+    }
+
+    // Check nodes exist
+    name1bool = false;
+    name2bool = false;
+    this.g.nodes().some(function(entry) {
+      if (entry === name1) {
+        name1bool = true;
+      } else if (entry === name2) {
+        name2bool = true;
+      }
+      if( name1bool === true && name2bool === true) {
+        return true;
+      }
+    });
+
+    if (name1bool === false || name2bool === false) {
+      throw new Error("Can't create generation: Nonexistent node refereced");
+    }
+
     this.g.setEdge(name1, name2, {label: 'gen'});
+    return true;
   };
 
   this.used = function (name1, name2) {
+    if (typeof name1 !== 'string' || typeof name2 !== 'string') {
+      throw new Error("Can't create use edge: Unexpected Variables");
+    }
+
+    // Check nodes exist
+    name1bool = false;
+    name2bool = false;
+    this.g.nodes().some(function(entry) {
+      if (entry === name1) {
+        name1bool = true;
+      } else if (entry === name2) {
+        name2bool = true;
+      }
+      if( name1bool === true && name2bool === true) {
+        return true;
+      }
+    });
+
+    if (name1bool === false || name2bool === false) {
+      throw new Error("Can't create use edge: Nonexistent node refereced");
+    }
+
     this.g.setEdge(name1, name2, {label: 'use'});
+    return true;
   };
 
   this.render = function() {
@@ -41,25 +87,3 @@ var PVisualiser = function(inner) {
   };
 
 };
-
-$(document).ready(function() {
-  var p = new PVisualiser('svg g');
-  p.createEntity(1, 'AJC-summary');
-  p.createEntity('advicereports', 'Advice Reports');
-  p.createEntity('report1', 'Report 1');
-  p.createEntity('report2', 'Report 2');
-  p.createActivity('abs', 'ABS');
-  p.createActivity('analytics', 'Analytics');
-
-  p.generated('report1', 'analytics');
-  p.generated('advicereports', 'abs');
-
-  p.used('analytics', 'ajcsummary');
-  p.used('report2', 'abs');
-  p.used('abs', 'report1');
-  p.used('abs', 'report2');
-
-  p.render();
-});
-
-
