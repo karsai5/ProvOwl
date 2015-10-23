@@ -1,3 +1,5 @@
+/* Jshint options */
+/* globals stop, start */
 (function() {
   "use strict";
   var p; // variable for visualiser
@@ -261,11 +263,38 @@
     p.used('abs', 'report2');
 
     p.render();
-    assert.stop();
-    $.get ("tests/IR-fragement-for-absctraction-example-4.html",
+    stop();
+    $.get ("tests/IR-fragment-for-absctraction-example-4.html",
         new Date().getTime(), function(data) {
           assert.strictEqual($('svg > g').html().replace(/\s+/g, ''), data.replace(/\s+/g, ''), "Graph identical to stored graph");
-          assert.start();
+          start();
+        });
+    assert.strictEqual($('svg > g > g.output').length, 1, "Output graph generated");
+  });
+
+  QUnit.module("Prov Parser",{
+    beforeEach: function() {
+      $('svg g').html('');
+      p = new PVisualiser('svg g');
+      $.ajaxSetup({
+        // Disable caching of AJAX responses
+        cache: false
+      });
+    }
+  });
+
+  QUnit.test( "IR-fragment-for-abstraction-example-4", function (assert) {
+    assert.expect(3);
+    assert.strictEqual($('svg > g > g.output').length, 0, "No ouput graph");
+
+		p.parsePROV('./tests/IR-fragment-for-abstraction-example-4.provn');
+
+    p.render();
+    stop();
+    $.get ("tests/IR-fragment-for-absctraction-example-4.html",
+        new Date().getTime(), function(data) {
+          assert.strictEqual($('svg > g').html().replace(/\s+/g, ''), data.replace(/\s+/g, ''), "Graph identical to stored graph");
+          start();
         });
     assert.strictEqual($('svg > g > g.output').length, 1, "Output graph generated");
   });

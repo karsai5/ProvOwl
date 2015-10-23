@@ -2,7 +2,7 @@
   /*jshint unused:false*/
   "use strict";
 
-  var PVisualiser = function(inner) {
+  window.PVisualiser = function(inner) {
     console.log('Provenance visualiser initialised.');
     this.inner = d3.select(inner);
     this.g = new dagre.graphlib.Graph();
