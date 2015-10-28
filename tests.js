@@ -280,7 +280,8 @@
       parser = new PParser();
       $.ajaxSetup({
         // Disable caching of AJAX responses
-        cache: false
+        cache: false,
+        async: false
       });
     }
   });
@@ -291,7 +292,7 @@
         function() {
           parser.parse('Nonexistent.prov');
         },
-        /Can't find file/,
+        /File not found/,
         "Parse nonexistent prov file"
         );
   });
@@ -300,14 +301,14 @@
     assert.expect(3);
     assert.strictEqual($('svg > g > g.output').length, 0, "No ouput graph");
 
-		p.parsePROV('./tests/IR-fragment-for-abstraction-example-4.provn');
+    var p2 = parser.parse('./tests/IR-fragment-for-abstraction-example-4.provn');
 
-    p.render('svg g');
+    p2.render('svg g');
     stop();
     $.get ("tests/IR-fragment-for-absctraction-example-4.html", function(data) {
-          assert.strictEqual($('svg > g').html().replace(/\s+/g, ''), data.replace(/\s+/g, ''), "Graph identical to stored graph");
-          start();
-        });
+      assert.strictEqual($('svg > g').html().replace(/\s+/g, ''), data.replace(/\s+/g, ''), "Graph identical to stored graph");
+      start();
+    });
     assert.strictEqual($('svg > g > g.output').length, 1, "Output graph generated");
   });
 }());
