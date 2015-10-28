@@ -22,6 +22,37 @@
     prov.uses = [];
     prov.generations = [];
     prov.raw = null;
+    prov.getPVisualiser = function() {
+      var pvis = new PVisualiser();
+
+      // Create entities
+      $.each(prov.entities, function (i,l) {
+        var name = getLineArguments(l)[0];
+        pvis.createEntity(name, removePrefix(name));
+      });
+
+      // Create activities
+      $.each(prov.activities, function (i,l) {
+        var name = getLineArguments(l)[0];
+        pvis.createActivity(name, removePrefix(name));
+      });
+
+      // Create uses
+      $.each(prov.uses, function (i,l) {
+        var e1 = getLineArguments(l)[0];
+        var e2 = getLineArguments(l)[1];
+        pvis.used(e1, e2);
+      });
+
+      // Create generations
+      // $.each(prov.generations, function (i,l) {
+      //   var e1 = getLineArguments(l)[0];
+      //   var e2 = getLineArguments(l)[1];
+      //   pvis.generated(e1, e2);
+      // });
+
+      return pvis;
+    };
 
     // Commands
     var com = [];
@@ -31,6 +62,16 @@
     com.activity = 'activity';
     com.used = 'used';
     com.generation = 'wasGeneratedBy';
+
+    // Helper Functions 
+    var getLineArguments = function(line) {
+      line = line.substring(line.indexOf('(') + 1, line.lastIndexOf(')')).split(',');
+      return line;
+    };
+
+    var removePrefix = function(line) {
+      return line.split(':')[1];
+    };
 
     var lineSwitcher = function(lineNum, line) {
       line = line.trim();
@@ -53,7 +94,7 @@
       }
     };
 
-    this.parse = function(file) {
+    this.parse = function(file, callback) {
       var request = $.get (file);
 
       request.success(function(result) {
@@ -63,7 +104,7 @@
           lineSwitcher(i, lines[i]);
         }
         console.log(prov);
-        return prov.getGraph();
+        callback(prov.getPVisualiser());
       });
 
       request.fail(function(jqXHR, textStatus, errorThrown) {
