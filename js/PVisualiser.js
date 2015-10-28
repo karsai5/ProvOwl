@@ -2,9 +2,8 @@
   /*jshint unused:false*/
   "use strict";
 
-  window.PVisualiser = function(inner) {
+  window.PVisualiser = function() {
     console.log('Provenance visualiser initialised.');
-    this.inner = d3.select(inner);
     this.g = new dagre.graphlib.Graph();
     this.g.setGraph({});
     this.g.setDefaultEdgeLabel(function() { return {}; });
@@ -81,9 +80,12 @@
       return true;
     };
 
-    this.render = function() {
+    this.render = function(inner) {
+      if (typeof inner !== 'string') {
+        throw new Error("Can't render graph: Unexpected Variables");
+      }
       var render = dagreD3.render();
-      this.inner.call(render, this.g);
+      d3.select(inner).call(render, this.g);
     };
 
     this.getGraph = function () {

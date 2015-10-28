@@ -1,12 +1,13 @@
 /* Jshint options */
-/* globals stop, start */
+/* globals stop, start, PParser */
 (function() {
   "use strict";
   var p; // variable for visualiser
+  var parser;
 
   QUnit.module("Entities",{
     beforeEach: function() {
-      p = new PVisualiser('svg g');
+      p = new PVisualiser();
     }
   });
 
@@ -236,7 +237,7 @@
 
   QUnit.module("Manual Graphs",{
     beforeEach: function() {
-      p = new PVisualiser('svg g');
+      p = new PVisualiser();
       $.ajaxSetup({
         // Disable caching of AJAX responses
         cache: false
@@ -262,7 +263,7 @@
     p.used('abs', 'report1');
     p.used('abs', 'report2');
 
-    p.render();
+    p.render('svg g');
     stop();
     $.get ("tests/IR-fragment-for-absctraction-example-4.html",
         new Date().getTime(), function(data) {
@@ -275,12 +276,24 @@
   QUnit.module("Prov Parser",{
     beforeEach: function() {
       $('svg g').html('');
-      p = new PVisualiser('svg g');
+      p = new PVisualiser();
+      parser = new PParser();
       $.ajaxSetup({
         // Disable caching of AJAX responses
         cache: false
       });
     }
+  });
+
+  QUnit.test("Load nonexistent prov file", function (assert) {
+    assert.expect(1);
+    assert.throws(
+        function() {
+          parser.parse('Nonexistent.prov');
+        },
+        /Can't find file/,
+        "Parse nonexistent prov file"
+        );
   });
 
   QUnit.test( "IR-fragment-for-abstraction-example-4", function (assert) {
@@ -289,10 +302,9 @@
 
 		p.parsePROV('./tests/IR-fragment-for-abstraction-example-4.provn');
 
-    p.render();
+    p.render('svg g');
     stop();
-    $.get ("tests/IR-fragment-for-absctraction-example-4.html",
-        new Date().getTime(), function(data) {
+    $.get ("tests/IR-fragment-for-absctraction-example-4.html", function(data) {
           assert.strictEqual($('svg > g').html().replace(/\s+/g, ''), data.replace(/\s+/g, ''), "Graph identical to stored graph");
           start();
         });
