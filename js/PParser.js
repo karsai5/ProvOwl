@@ -45,11 +45,11 @@
       });
 
       // Create generations
-      // $.each(prov.generations, function (i,l) {
-      //   var e1 = getLineArguments(l)[0];
-      //   var e2 = getLineArguments(l)[1];
-      //   pvis.generated(e1, e2);
-      // });
+      $.each(prov.generations, function (i,l) {
+        var e1 = getLineArguments(l)[0];
+        var e2 = getLineArguments(l)[1];
+        pvis.generated(e1, e2);
+      });
 
       return pvis;
     };
@@ -66,6 +66,9 @@
     // Helper Functions 
     var getLineArguments = function(line) {
       line = line.substring(line.indexOf('(') + 1, line.lastIndexOf(')')).split(',');
+      for (var i = 0; i < line.length; ++i) {
+        line[i] = line[i].trim();
+      }
       return line;
     };
 

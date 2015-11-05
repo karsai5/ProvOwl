@@ -1,28 +1,39 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Provenance visualiser</title>
-    <link rel="stylesheet" href="main.min.css" type="text/css" media="screen" title="no title" charset="utf-8">
-    <link rel="stylesheet" href="bower_components/qunit/qunit/qunit.css" type="text/css" media="screen" title="no title" charset="utf-8">
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/d3/d3.js"></script>
-    <script src="bower_components/lodash/lodash.js"></script>
-    <script src="bower_components/graphlib/dist/graphlib.core.js"></script>
-    <script src="bower_components/dagre/dist/dagre.core.js"></script>
-    <script src="bower_components/dagre-d3/dist/dagre-d3.core.js"></script>
-    <script src="bower_components/qunit/qunit/qunit.js"></script>
-    <script src="bower_components/blanket/dist/qunit/blanket.js"></script>
-    <script src="./js/PVisualiser.js" data-cover></script>
-    <script src="./js/PParser.js" data-cover></script>
-    <script src="tests.js"></script>
+    <title>ProvOwl</title>
+    <meta name="description" content="Provenance visualiser">
+    <meta name="author" content="Linus Karsai">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- FONT
+      –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+      <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+      <!-- CSS
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/skeleton.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <!-- Favicon
+          –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+          <link rel="icon" type="image/png" href="images/favicon.png">
+
   </head>
   <body>
 
-    <svg width=800 height=600>
-      <g/>
-    </svg>
+    <!-- Primary Page Layout
+      –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+      <div class="container">
+        <div class="row">
+          <div class="three columns sidebar"><h1>Prov<br/>Owl</h1></div>
+          <div class="nine columns">Ten</div>
+        </div>
+      </div>
 
-    <div id="qunit"></div>
-    <div id="qunit-fixture"></div>
+      <!-- End Document
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   </body>
 </html>

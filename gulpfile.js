@@ -13,14 +13,9 @@ var gulp = require('gulp'),
     del = require('del');
 
 gulp.task('styles', function() {
-  return sass('./main.scss', { style: 'expanded'})
-    .pipe(autoprefixer('last 2 versions'))
-    .pipe(gulp.dest('./'))
-    .pipe(rename({suffix: '.min'}))
-    .pipe(minifycss())
-    .pipe(gulp.dest('./'))
-    .pipe(livereload())
-    .pipe(notify({message: 'Syles task complete'}));
+  return sass('sass/*.scss', { style: 'expanded' })
+    .pipe(gulp.dest('css'))
+    .pipe(livereload());
 });
 
 gulp.task('javascript', function() {
@@ -34,6 +29,6 @@ gulp.task('default', function() {
 
 gulp.task('watch', function() {
   livereload.listen();
-  gulp.watch('*.scss', ['styles']);
-  gulp.watch('*.js', ['javascript']);
+  gulp.watch('sass/*.scss', ['styles']);
+  // gulp.watch('*.js', ['javascript']);
 });
