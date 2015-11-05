@@ -23,6 +23,11 @@ gulp.task('javascript', function() {
     .pipe(notify({message: 'Javascript file changed'}));
 });
 
+gulp.task('reload', function() {
+  gulp.src("index.html")
+  .pipe(livereload());
+});
+
 gulp.task('default', function() {
   gulp.start('styles');
 });
@@ -30,5 +35,6 @@ gulp.task('default', function() {
 gulp.task('watch', function() {
   livereload.listen();
   gulp.watch('sass/*.scss', ['styles']);
+  gulp.watch('*.html',['reload']);
   // gulp.watch('*.js', ['javascript']);
 });
