@@ -28,7 +28,15 @@
       –––––––––––––––––––––––––––––––––––––––––––––––––– -->
       <div class="container">
         <div class="row">
-          <div class="three columns sidebar"><h1>Prov<br/>Owl</h1></div>
+          <div class="three columns sidebar">
+            <h1>Prov<br/>Owl</h1>
+            <p>This is a D3 application for visualising provenance data.
+            <form>
+              <label for="exampleEmailInput">Prov file</label>
+              <button class="button" onclick="$('#fileSelector').click();">Selec Prov File</button>
+              <input id="hiddenFileSelector" type="file" name="prov_file" style="visibility:hidden">
+            </form>
+          </div>
           <div class="nine columns">Ten</div>
         </div>
       </div>

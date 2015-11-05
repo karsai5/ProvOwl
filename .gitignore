@@ -3,5 +3,5 @@
 *.un~
 bower_components
 .sass-cache
-./css/main.css*
-./css/provowl.css*
+css/main.css*
+css/provowl.css*

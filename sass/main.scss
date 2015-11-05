@@ -1,3 +1,25 @@
-.sidebar {
-  background: orange;
+.sidebar
+{
+  padding: 10px;
+
+  color: #fff;
+  background: #D45D3F;
+
+  input {
+    color: #000;
+  }
+
+  .button {
+    background: #6E5D4D;
+    border: none;
+    color: #fff;
+    width: 100%;
+    border-color: darken(#6E3D4D, 10%);
+  }
+
+  #hiddenFileSelector {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 }
