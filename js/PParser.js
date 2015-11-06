@@ -97,7 +97,7 @@
       }
     };
 
-    this.parse = function(file, callback) {
+    this.parseFile = function(file, callback) {
       var request = $.get (file);
 
       request.success(function(result) {
@@ -117,6 +117,15 @@
           throw new Error("Can't parse file: " + errorThrown);
         }
       });
+    };
+
+    this.parseString = function(result, callback) {
+        var lines = result.split('\n');
+        for (var i = 0; i < lines.length; ++i) {
+          lineSwitcher(i, lines[i]);
+        }
+        console.log(prov);
+        callback(prov.getPVisualiser());
     };
   };
 }());

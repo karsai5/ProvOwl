@@ -301,7 +301,7 @@
 		assert.expect(3);
 		assert.strictEqual($('svg > g > g.output').length, 0, "No ouput graph");
 
-		parser.parse('./tests/IR-fragment-for-abstraction-example-4.provn',
+		parser.parseFile('./tests/IR-fragment-for-abstraction-example-4.provn',
 				function(p2) {
 					p2.render('svg g');
 				});
