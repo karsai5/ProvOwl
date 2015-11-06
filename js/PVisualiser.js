@@ -1,20 +1,18 @@
 (function() {
   /*jshint unused:false*/
+  /* globals cytoscape */
   "use strict";
 
   window.PVisualiser = function() {
     console.log('Provenance visualiser initialised.');
-    this.g = new dagre.graphlib.Graph();
-    this.g.setGraph({});
-    this.g.setDefaultEdgeLabel(function() { return {}; });
-    this.g.graph().marginx = 20;
-    this.g.graph().marginy = 20;
+    this.nodes = [];
+    this.edges = [];
 
     this.createEntity = function(name, label) {
       if (typeof name !== 'string' || typeof label !== 'string') {
         throw new Error("Can't create entity: Unexpected Variables");
       }
-      var result = this.g.setNode(name, {shape: 'ellipse', class: 'entity', label: label});
+      this.nodes.push({ data: { id: name, name: label, weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } });
       return true;
     };
 
@@ -22,7 +20,6 @@
       if (typeof name !== 'string' || typeof label !== 'string') {
         throw new Error("Can't create activity: Unexpected Variables");
       }
-      this.g.setNode(name, {class: 'activity', label: label});
       return true;
     };
 
@@ -31,25 +28,12 @@
         throw new Error("Can't create generation: Unexpected Variables");
       }
 
-      // Check nodes exist
-      var name1bool = false;
-      var name2bool = false;
-      this.g.nodes().some(function(entry) {
-        if (entry === name1) {
-          name1bool = true;
-        } else if (entry === name2) {
-          name2bool = true;
-        }
-        if( name1bool === true && name2bool === true) {
-          return true;
-        }
-      });
-
+      var name1bool = true;
+      var name2bool = true;
       if (name1bool === false || name2bool === false) {
         throw new Error("Can't create generation: Nonexistent node refereced");
       }
 
-      this.g.setEdge(name1, name2, {label: 'gen'});
       return true;
     };
 
@@ -58,25 +42,12 @@
         throw new Error("Can't create use edge: Unexpected Variables");
       }
 
-      // Check nodes exist
-      var name1bool = false;
-      var name2bool = false;
-      this.g.nodes().some(function(entry) {
-        if (entry === name1) {
-          name1bool = true;
-        } else if (entry === name2) {
-          name2bool = true;
-        }
-        if( name1bool === true && name2bool === true) {
-          return true;
-        }
-      });
-
+      var name1bool = true;
+      var name2bool = true;
       if (name1bool === false || name2bool === false) {
         throw new Error("Can't create use edge: Nonexistent node refereced");
       }
 
-      this.g.setEdge(name1, name2, {label: 'use'});
       return true;
     };
 
@@ -84,12 +55,62 @@
       if (typeof inner !== 'string') {
         throw new Error("Can't render graph: Unexpected Variables");
       }
-      var render = dagreD3.render();
-      d3.select(inner).call(render, this.g);
+      $(inner).cytoscape({
+        layout: {
+          name: 'cose',
+          padding: 10
+        },
+        style: cytoscape.stylesheet()
+          .selector('node')
+          .css({
+            'shape': 'data(faveShape)',
+            'width': 'mapData(weight, 40, 80, 20, 60)',
+            'content': 'data(name)',
+            'text-valign': 'center',
+            'text-outline-width': 2,
+            'text-outline-color': 'data(faveColor)',
+            'color': '#fff'
+          })
+        .selector(':selected')
+          .css({
+            'border-width': 3,
+            'border-color': '#333'
+          })
+        .selector('edge')
+          .css({
+            'opacity': 0.666,
+            'width': 'mapData(strength, 70, 100, 2, 6)',
+            'target-arrow-shape': 'triangle',
+            'source-arrow-shape': 'circle',
+            'line-color': 'data(faveColor)',
+            'source-arrow-color': 'data(faveColor)',
+            'target-arrow-color': 'data(faveColor)'
+          })
+        .selector('edge.questionable')
+          .css({
+            'line-style': 'dotted',
+            'target-arrow-shape': 'diamond'
+          })
+        .selector('.faded')
+          .css({
+            'opacity': 0.25,
+            'text-opacity': 0
+          }),
+        elements: {
+          nodes: this.nodes,
+          edges: this.edges
+        },
+
+        ready: function(){
+          window.cy = this;
+
+          // giddy up
+        }
+      });
     };
 
     this.getGraph = function () {
-      return this.g;
+      return true;
     };
 
   };

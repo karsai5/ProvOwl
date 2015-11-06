@@ -263,7 +263,7 @@
 		p.used('abs', 'report1');
 		p.used('abs', 'report2');
 
-		p.render('svg g');
+		p.render('#cy');
 		stop();
 		$.get ("tests/IR-fragment-for-absctraction-example-4.html",
 				new Date().getTime(), function(data) {
