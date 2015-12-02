@@ -106,7 +106,6 @@
         for (var i = 0; i < lines.length; ++i) {
           lineSwitcher(i, lines[i]);
         }
-        console.log(prov);
         callback(prov.getPVisualiser());
       });
 
@@ -124,7 +123,6 @@
         for (var i = 0; i < lines.length; ++i) {
           lineSwitcher(i, lines[i]);
         }
-        console.log(prov);
         callback(prov.getPVisualiser());
     };
   };
