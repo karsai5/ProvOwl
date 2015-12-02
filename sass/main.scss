@@ -1,9 +1,12 @@
-.sidebar
-{
+.sidebar {
   padding: 10px;
-
   color: #fff;
   background: #D45D3F;
+  width: 220px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
 
   input {
     color: #000;
@@ -17,10 +20,12 @@
     border-color: darken(#6E3D4D, 10%);
   }
 
-  #hiddenFileSelector {
-  }
+  #hiddenFileSelector {}
 }
 
-svg {
-  border: none !important;
+#cy {
+  position: fixed;
+  left: 240px;
+  width: 100%;
+  height: 100%;
 }
