@@ -1,10 +1,11 @@
 node {
   shape: ellipse;
-  width: mapData(weight, 40, 80, 20, 60);
+
+  // width: mapData(100, 40, 80, 20, 60);
+  width: 150px;
+  height: 40px;
   content: data(name);
   text-valign: center;
-  text-outline-width: 2;
-  text-outline-color: data(faveColor);
   color: #fff;
 }
 
@@ -14,11 +15,42 @@ node {
 }
 
 edge {
-  opacity: 0.666;
   width: mapData(strength, 70, 100, 2, 6);
   target-arrow-shape: triangle;
-  source-arrow-shape: circle;
-  line-color: data(faveColor);
-  source-arrow-color: data(faveColor);
-  target-arrow-color: data(faveColor);
+  line-color: #000;
+  target-arrow-color: #000;
+  label: data(label);
+  // edge-text-rotation: autorotate;
+  text-valign: top;
+  text-halign: left;
+  text-background-color: grey;
+  color: #fff;
+  font-size: 10px;
+  text-background-shape: rectangle;
+  text-background-opacity: 1;
 }
+
+.entity {
+  shape: ellipse;
+
+  // width: mapData(100, 40, 80, 20, 60);
+  width: 150px;
+  height: 40px;
+  content: data(name);
+  text-valign: center;
+  color: #000;
+  background-color: #FFFC87;
+  border-color: #90908E;
+  border-width: 1px;
+}
+
+.activity {
+  background-color: #9FB1FC;
+  shape: rectangle;
+  width: 100px;
+  color: #000;
+  border-color: #0000FF;
+  border-width: 1px;
+}
+
+

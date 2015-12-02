@@ -12,7 +12,7 @@
 	});
 
 	QUnit.test( "Incorrect arguments", function (assert) {
-		var count = p.getGraph().nodeCount();
+		var count = p.nodeCount();
 		assert.throws(
 				function() {
 					p.createEntity(1, 'Entity1-label');
@@ -41,15 +41,15 @@
 				/Unexpected Variable/,
 				"Only one argument"
 				);
-		assert.strictEqual(p.getGraph().nodeCount(), count, "No entities added");
+		assert.strictEqual(p.nodeCount(), count, "No entities added");
 	});
 
 	QUnit.test("Succesfully create entity", function (assert) {
-		var count = p.getGraph().nodeCount();
+		var count = p.nodeCount();
 		assert.ok(p.createEntity('Entity1-id', 'Entity1-label'), "Returns True");
-		assert.strictEqual(p.getGraph().nodeCount(), count + 1, "Entity added");
+		assert.strictEqual(p.nodeCount(), count + 1, "Entity added");
 		assert.ok(p.createEntity('Entity1-id', 'Entity1-label'), "Add second entity with same name");
-		assert.strictEqual(p.getGraph().nodeCount(), count + 1, "Second entity ignored");
+		assert.strictEqual(p.nodeCount(), count + 1, "Second entity ignored");
 	});
 
 	QUnit.module("Activities",{
@@ -59,7 +59,7 @@
 	});
 
 	QUnit.test( "Incorrect arguments", function (assert) {
-		var count = p.getGraph().nodeCount();
+		var count = p.nodeCount();
 		assert.throws(
 				function() {
 					p.createActivity(1, 'Activity1-label');
@@ -88,15 +88,15 @@
 				/Unexpected Variable/,
 				"Only one argument"
 				);
-		assert.strictEqual(p.getGraph().nodeCount(), count, "No activities added");
+		assert.strictEqual(p.nodeCount(), count, "No activities added");
 	});
 
 	QUnit.test("Succesfully create activity", function (assert) {
-		var count = p.getGraph().nodeCount();
+		var count = p.nodeCount();
 		assert.ok(p.createActivity('Activity1-id', 'Activity1-label'), "Returns True");
-		assert.strictEqual(p.getGraph().nodeCount(), count + 1, "Activity added");
+		assert.strictEqual(p.nodeCount(), count + 1, "Activity added");
 		assert.ok(p.createActivity('Activity1-id', 'Activity1-label'), "Add second activity with same name");
-		assert.strictEqual(p.getGraph().nodeCount(), count + 1, "Second activity ignored");
+		assert.strictEqual(p.nodeCount(), count + 1, "Second activity ignored");
 	});
 
 	QUnit.module("Generation",{

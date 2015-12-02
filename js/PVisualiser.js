@@ -1,87 +1,88 @@
 (function() {
-  /*jshint unused:false*/
-  /* globals cytoscape */
-  "use strict";
+	/*jshint unused:false*/
+	"use strict";
 
-  window.PVisualiser = function() {
-    console.log('Provenance visualiser initialised.');
-    this.nodes = [];
-    this.edges = [];
+	window.PVisualiser = function() {
+		console.log('Provenance visualiser initialised.');
+		this.nodes = [];
+		this.edges = [];
 
-    this.createEntity = function(name, label) {
-      if (typeof name !== 'string' || typeof label !== 'string') {
-        throw new Error("Can't create entity: Unexpected Variables");
-      }
-      this.nodes.push({ data: { id: name, name: label, weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } });
-      return true;
-    };
+		this.createEntity = function(name, label) {
+			if (typeof name !== 'string' || typeof label !== 'string') {
+				throw new Error("Can't create entity: Unexpected Variables");
+			}
+			this.nodes.push({ data: { id: name, name: label, weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle'}, classes: 'entity' });
+			return true;
+		};
 
-    this.createActivity = function(name, label) {
-      if (typeof name !== 'string' || typeof label !== 'string') {
-        throw new Error("Can't create activity: Unexpected Variables");
-      }
-      this.nodes.push({ data: { id: name, name: label, weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } });
-      return true;
-    };
+		this.createActivity = function(name, label) {
+			if (typeof name !== 'string' || typeof label !== 'string') {
+				throw new Error("Can't create activity: Unexpected Variables");
+			}
+			this.nodes.push({ data: { id: name, name: label, weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' }, classes: 'activity'});
+			return true;
+		};
 
-    this.generated = function (name1, name2) {
-      if (typeof name1 !== 'string' || typeof name2 !== 'string') {
-        throw new Error("Can't create generation: Unexpected Variables");
-      }
+		this.generated = function (name1, name2) {
+			if (typeof name1 !== 'string' || typeof name2 !== 'string') {
+				throw new Error("Can't create generation: Unexpected Variables");
+			}
 
-      var name1bool = true;
-      var name2bool = true;
-      if (name1bool === false || name2bool === false) {
-        throw new Error("Can't create generation: Nonexistent node refereced");
-      }
+			var name1bool = true;
+			var name2bool = true;
+			if (name1bool === false || name2bool === false) {
+				throw new Error("Can't create generation: Nonexistent node refereced");
+			}
+			this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, label: 'generated'}, classes: "generated"});
 
-      return true;
-    };
+			return true;
+		};
 
-    this.used = function (name1, name2) {
-      if (typeof name1 !== 'string' || typeof name2 !== 'string') {
-        throw new Error("Can't create use edge: Unexpected Variables");
-      }
+		this.used = function (name1, name2) {
+			if (typeof name1 !== 'string' || typeof name2 !== 'string') {
+				throw new Error("Can't create use edge: Unexpected Variables");
+			}
 
-      var name1bool = true;
-      var name2bool = true;
-      if (name1bool === false || name2bool === false) {
-        throw new Error("Can't create use edge: Nonexistent node refereced");
-      }
+			var name1bool = true;
+			var name2bool = true;
+			if (name1bool === false || name2bool === false) {
+				throw new Error("Can't create use edge: Nonexistent node refereced");
+			}
+			this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, label: 'used'}, classes: "used"});
 
-      return true;
-    };
+			return true;
+		};
 
-    this.render = function(inner) {
-      if (typeof inner !== 'string') {
-        throw new Error("Can't render graph: Unexpected Variables");
-      }
-      this.inner = inner;
-      var that = this;
-      $.get('/css/cytoscape.css', function (data) {
-        $(that.inner).cytoscape({
-          layout: {
-            name: 'cose',
-            padding: 10
-          },
-          style: data,
-          elements: {
-            nodes: that.nodes,
-            edges: that.edges
-          },
+		this.render = function(inner) {
+			if (typeof inner !== 'string') {
+				throw new Error("Can't render graph: Unexpected Variables");
+			}
+			this.inner = inner;
+			var that = this;
+			$.get('/css/cytoscape.css', function (data) {
+				$(that.inner).cytoscape({
+					layout: {
+						name: 'dagre',
+            padding: 150
+					},
+					style: data,
+					elements: {
+						nodes: that.nodes,
+						edges: that.edges
+					},
 
-          ready: function(){
-            window.cy = that;
+					ready: function(){
+						window.cy = that;
 
-            // giddy up
-          }
-        });
-      });
-    };
+						// giddy up
+					}
+				});
+			});
+		};
 
-    this.getGraph = function () {
-      return true;
-    };
+    this.nodeCount = function() {
+      return this.nodes.length;
+    }
 
-  };
+	};
 }());
