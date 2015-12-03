@@ -20,9 +20,11 @@
     prov.entities = [];
     prov.activities = [];
     prov.uses = [];
+    prov.associations = [];
     prov.generations = [];
     prov.raw = null;
     prov.warnings = [];
+    prov.agents = [];
     prov.getPVisualiser = function() {
       var pvis = new PVisualiser();
 
@@ -30,6 +32,12 @@
       $.each(prov.entities, function (i,l) {
         var name = getLineArguments(l)[0];
         pvis.createEntity(name, removePrefix(name));
+      });
+
+      $.each(prov.agents, function (i,l) {
+        var name = getLineArguments(l)[0];
+        console.log(l);
+        pvis.createAgent(name, removePrefix(name));
       });
 
       // Create activities
@@ -49,7 +57,13 @@
       $.each(prov.generations, function (i,l) {
         var e1 = getLineArguments(l)[0];
         var e2 = getLineArguments(l)[1];
-        pvis.generated(e1, e2);
+        pvis.wasGeneratedBy(e1, e2);
+      });
+
+      $.each(prov.associations, function (i,l) {
+        var e1 = getLineArguments(l)[0];
+        var e2 = getLineArguments(l)[1];
+        pvis.wasAssociatedWith(e1, e2);
       });
 
       return pvis;
@@ -63,6 +77,8 @@
     com.activity = 'activity';
     com.used = 'used';
     com.generation = 'wasGeneratedBy';
+    com.assocation = 'wasAssociatedWith';
+    com.agent = 'agent';
 
     // Helper Functions 
     var getLineArguments = function(line) {
@@ -105,6 +121,10 @@
         prov.uses.push(line);
       } else if (line.startsWith(com.generation)) {
         prov.generations.push(line);
+      } else if (line.startsWith(com.assocation)) {
+        prov.associations.push(line);
+      } else if (line.startsWith(com.agent)) {
+        prov.agents.push(line);
       } else {
         var warningText = lineNum + ": Unknown command (" + line + ")";
         console.log(warningText);

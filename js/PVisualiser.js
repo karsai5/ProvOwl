@@ -29,28 +29,67 @@
       return true;
     };
 
+    this.createAgent = function(name, label) {
+      if (typeof name !== 'string' || typeof label !== 'string') {
+        throw new Error("Can't create entity: Unexpected Variables");
+      }
+      if (this.nodeExists(name)) {
+        throw new Error("Can't create entity: ID already exists");
+      }
+      this.nodes.push({ data: { id: name, name: label, weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle'}, classes: 'agent' });
+      return true;
+    };
+
     this.createActivity = function(name, label) {
       if (typeof name !== 'string' || typeof label !== 'string') {
         throw new Error("Can't create activity: Unexpected Variables");
       }
       if (this.nodeExists(name)) {
+        console.log(name);
         throw new Error("Can't create activity: ID already exists");
       }
       this.nodes.push({ data: { id: name, name: label, weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' }, classes: 'activity'});
       return true;
     };
 
-    this.generated = function (name1, name2) {
+    this.wasGeneratedBy = function (name1, name2) {
       if (typeof name1 !== 'string' || typeof name2 !== 'string') {
         throw new Error("Can't create generation: Unexpected Variables");
       }
 
       var name1bool = this.nodeExists(name1);
       var name2bool = this.nodeExists(name2);
+      if (name1bool === false) {
+        console.warn("Can't find node: " + name1);
+      }
+      if (name2bool === false) {
+        console.warn("Can't find node: " + name2);
+      }
       if (name1bool === false || name2bool === false) {
         throw new Error("Can't create generation: Nonexistent node refereced");
       }
       this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, label: 'generated'}, classes: "generated"});
+
+      return true;
+    };
+
+    this.wasAssociatedWith = function (name1, name2) {
+      if (typeof name1 !== 'string' || typeof name2 !== 'string') {
+        throw new Error("Can't create generation: Unexpected Variables");
+      }
+
+      var name1bool = this.nodeExists(name1);
+      var name2bool = this.nodeExists(name2);
+      if (name1bool === false) {
+        console.warn("Can't find node: " + name1);
+      }
+      if (name2bool === false) {
+        console.warn("Can't find node: " + name2);
+      }
+      if (name1bool === false || name2bool === false) {
+        throw new Error("Can't create association: Nonexistent node referenced");
+      }
+      this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, label: 'wasAssociatedWith'}, classes: "associated"});
 
       return true;
     };
