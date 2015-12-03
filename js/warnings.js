@@ -11,16 +11,26 @@
 
       this.setDiv = function(warningDiv) {
         div = $(warningDiv);
-        div.html('<p><strong>Warnings</strong></p>');
+        div.html('<p><strong>Warnings</strong> <a href="#" onclick="w1.hide()">[close]</a></p>');
       };
 
-      this.show = function () {
-        shown = true;
-        console.log(div.height());
-        div.css('position', 'relative');
-        div.css('top', div.outerHeight());
-        div.show();
-        div.animate({ top: 0}, 500 );
+      this.show = function() {
+        if (!shown) {
+          shown = true;
+          div.css('position', 'relative');
+          div.css('top', div.outerHeight());
+          div.show();
+          div.animate({ top: 0}, 500 );
+        }
+      };
+
+      this.hide = function() {
+        if (shown) {
+          shown = false;
+          div.animate({top: div.outerHeight()}, 500 , function showDiv() {
+                div.hide();
+              });
+        }
       };
 
       this.add = function(type, details) {

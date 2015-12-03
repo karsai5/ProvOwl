@@ -1,0 +1,49 @@
+node {
+  shape: ellipse;
+  width: 150px;
+  height: 40px;
+  content: data(name);
+  text-valign: center;
+  color: #fff;
+}
+
+:selected {
+  border-width: 3;
+  border-color: #333;
+}
+
+edge {
+  width: mapData(strength, 70, 100, 2, 6);
+  target-arrow-shape: triangle;
+  line-color: #000;
+  target-arrow-color: #000;
+  label: data(label);
+  text-valign: top;
+  text-halign: left;
+  text-background-color: grey;
+  color: #fff;
+  font-size: 10px;
+  text-background-shape: rectangle;
+  text-background-opacity: 1;
+}
+
+.entity {
+  shape: ellipse;
+  width: 150px;
+  height: 40px;
+  content: data(name);
+  text-valign: center;
+  color: #000;
+  background-color: #FFFC87;
+  border-color: #90908E;
+  border-width: 1px;
+}
+
+.activity {
+  background-color: #9FB1FC;
+  shape: rectangle;
+  width: 100px;
+  color: #000;
+  border-color: #0000FF;
+  border-width: 1px;
+}
