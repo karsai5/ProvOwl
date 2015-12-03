@@ -27,9 +27,11 @@
       parser.parseString(contents,
           function(p2) {
             window.p2 = p2;
-            p2.render('#cy');
-            $("#file_info").append("<strong>Name:</strong> " + fileName);
-            $("#file_info").append("<br><strong>Wordcount:</strong> " + lineCount);
+            p2.render('#cy', function() {
+              $("#file_info").append("<strong>Name:</strong> " + fileName);
+              $("#file_info").append("<br><strong>Wordcount:</strong> " + lineCount);
+              $("#file_info").append("<br><a target=\"_blank\" href=\"" + window.cy.png() + "\">Download graph</a>");
+            });
           });
     };
     reader.readAsText(f);

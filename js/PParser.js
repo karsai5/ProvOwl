@@ -24,8 +24,10 @@
     prov.generations = [];
     prov.derives = [];
     prov.raw = null;
+    prov.alternates = [];
     prov.warnings = [];
     prov.agents = [];
+    prov.specialisations = [];
     prov.attributes = [];
     prov.getPVisualiser = function() {
       var pvis = new PVisualiser();
@@ -84,6 +86,20 @@
         pvis.wasDerivedFrom(e1, e2);
       });
 
+      // Create specialisations
+      $.each(prov.specialisations, function (i,l) {
+        var e1 = getLineArguments(l)[0];
+        var e2 = getLineArguments(l)[1];
+        pvis.specialisationOf(e1, e2);
+      });
+
+      // Create alternates
+      $.each(prov.specialisations, function (i,l) {
+        var e1 = getLineArguments(l)[0];
+        var e2 = getLineArguments(l)[1];
+        pvis.alternateOf(e1, e2);
+      });
+
       return pvis;
     };
 
@@ -99,6 +115,8 @@
     com.agent = 'agent';
     com.attributed = 'wasAttributedTo';
     com.derived = 'wasDerivedFrom';
+    com.specialised = 'specializationOf';
+    com.alternate = 'alternateOf';
 
     // Helper Functions 
     var getLineArguments = function(line) {
@@ -118,11 +136,14 @@
     };
 
     var printWarnings = function(div) {
-      var warningDiv = $(div);
-      warningDiv.html("<strong>Warnings</strong>");
-      $.each(prov.warnings, function() {
-        warningDiv.append(this);
-      });
+      if(prov.warnings.length > 0) {
+        var warningDiv = $(div);
+        warningDiv.html("<strong>Warnings</strong>");
+        $.each(prov.warnings, function() {
+          warningDiv.append(this);
+        });
+        warningDiv.fadeIn();
+      }
     };
 
     var lineSwitcher = function(lineNum, line) {
@@ -146,9 +167,13 @@
       } else if (line.startsWith(com.agent)) {
         prov.agents.push(line);
       } else if (line.startsWith(com.attributed)) {
-       prov.attributes.push(line);
+        prov.attributes.push(line);
       } else if (line.startsWith(com.derived)) {
         prov.derives.push(line);
+      } else if (line.startsWith(com.specialised)) {
+        prov.specialisations.push(line);
+      } else if (line.startsWith(com.alternate)) {
+        prov.alternates.push(line);
       } else {
         var warningText = lineNum + ": Unknown command (" + line + ")";
         console.log(warningText);
