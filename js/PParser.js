@@ -25,7 +25,6 @@
     prov.derives = [];
     prov.raw = null;
     prov.alternates = [];
-    prov.warnings = [];
     prov.agents = [];
     prov.specialisations = [];
     prov.attributes = [];
@@ -41,7 +40,6 @@
       // Create agents
       $.each(prov.agents, function (i,l) {
         var name = getLineArguments(l)[0];
-        console.log(l);
         pvis.createAgent(name, removePrefix(name));
       });
 
@@ -131,21 +129,6 @@
       return line.split(':')[1];
     };
 
-    var addWarning = function(content) {
-      prov.warnings.push("<p>" + content + "</p>");
-    };
-
-    var printWarnings = function(div) {
-      if(prov.warnings.length > 0) {
-        var warningDiv = $(div);
-        warningDiv.html("<strong>Warnings</strong>");
-        $.each(prov.warnings, function() {
-          warningDiv.append(this);
-        });
-        warningDiv.fadeIn();
-      }
-    };
-
     var lineSwitcher = function(lineNum, line) {
       line = line.trim();
       if (line.length === 0) {
@@ -175,9 +158,7 @@
       } else if (line.startsWith(com.alternate)) {
         prov.alternates.push(line);
       } else {
-        var warningText = lineNum + ": Unknown command (" + line + ")";
-        console.log(warningText);
-        addWarning(warningText);
+        w1.add("Unknown command", "[" + lineNum + "] " + line);
       }
     };
 
@@ -190,7 +171,6 @@
         for (var i = 0; i < lines.length; ++i) {
           lineSwitcher(i, lines[i]);
         }
-        printWarnings('#warnings');
         callback(prov.getPVisualiser());
       });
 
@@ -208,7 +188,6 @@
       for (var i = 0; i < lines.length; ++i) {
         lineSwitcher(i, lines[i]);
       }
-      printWarnings('#warnings');
       callback(prov.getPVisualiser());
     };
   };

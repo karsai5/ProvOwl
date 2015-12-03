@@ -24,13 +24,16 @@
       var fileName = $(fileSelector[0].value.split('\\')).last()[0];
       var contents = theFile.target.result;
       var lineCount = contents.length;
+      w1.setDiv("#warnings");
       parser.parseString(contents,
           function(p2) {
             window.p2 = p2;
             p2.render('#cy', function() {
               $("#file_info").append("<strong>Name:</strong> " + fileName);
-              $("#file_info").append("<br><strong>Wordcount:</strong> " + lineCount);
-              $("#file_info").append("<br><a target=\"_blank\" href=\"" + window.cy.png() + "\">Download graph</a>");
+              $("#file_info").append("<br><strong>Download:</strong>" + 
+                  " <a target=\"_blank\" href=\"" + 
+                  window.cy.png({full: true}) + 
+                  "\">graph png</a>");
             });
           });
     };
@@ -44,11 +47,12 @@
       // create a sudo file selector and use that for selecting files
       window.fileSelector = $('<input type="file" />');
       window.fileSelector.on('change', loadFile);
-
       window.selectFile = function() {
         window.fileSelector.click();
         return false;
       };
+
+      window.w1 = Warnings.getInstance();  
     }
 
   });

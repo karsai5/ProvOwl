@@ -1,12 +1,17 @@
-.sidebar {
+$sidebarWidth: 220px;
+#sidebar {
 	padding: 10px;
 	color: #fff;
 	background: #D45D3F;
-	width: 220px;
+	width: $sidebarWidth - 20px;
 	position: fixed;
 	top: 0;
 	left: 0;
 	height: 100%;
+  
+  a {
+    color: #fff;
+  }
 
 	input {
 		color: #000;
@@ -25,8 +30,8 @@
 
 #cy {
 	position: fixed;
-	left: 240px;
-	width: 100%;
+	left: $sidebarWidth;
+	width: calc(100% - 220px);
 	height: 100%;
 }
 
@@ -36,7 +41,7 @@
 	right: 0;
 	width: auto;
 	height: auto;
-	width: calc(100% - 240px);
+	width: calc(100% - 220px);
 }
 
 #warnings {

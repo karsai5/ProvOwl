@@ -7,6 +7,20 @@
     this.nodes = [];
     this.edges = [];
 
+    var logUnexpectedVariables = function(what) {
+      console.warn("Can't create " + what + ": unexpected variables");
+    };
+
+    var logDuplicate = function (what, name) {
+      w1.add("Can't create duplicate " + what, 
+          "\"" + name + "\" already exists");
+    };
+
+    var logMissingNode = function (what, name) {
+      w1.add("Can't create " + what, 
+          "\"" + name + "\" doesn't exist");
+    };
+
     this.nodeExists = function(name) {
       var found = false;
       $.each(this.nodes, function() {
@@ -20,177 +34,126 @@
 
     this.createEntity = function(name, label) {
       if (typeof name !== 'string' || typeof label !== 'string') {
-        throw new Error("Can't create entity: Unexpected Variables");
+        logUnexpectedVariables('Entity');
+      } else if (this.nodeExists(name)) {
+        logDuplicate('entity', name);
+      } else {
+        this.nodes.push({ data: { id: name, name: label}, 
+          classes: 'entity' });
       }
-      if (this.nodeExists(name)) {
-        throw new Error("Can't create entity: ID already exists");
-      }
-      this.nodes.push({ data: { id: name, name: label, weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle'}, classes: 'entity' });
-      return true;
     };
 
     this.createAgent = function(name, label) {
       if (typeof name !== 'string' || typeof label !== 'string') {
-        throw new Error("Can't create entity: Unexpected Variables");
+        logUnexpectedVariables('Agent');
+      } else if (this.nodeExists(name)) {
+        logDuplicate('agent', name);
+      } else {
+        this.nodes.push({ data: { id: name, name: label}, 
+          classes: 'agent' });
       }
-      if (this.nodeExists(name)) {
-        throw new Error("Can't create entity: ID already exists");
-      }
-      this.nodes.push({ data: { id: name, name: label, weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle'}, classes: 'agent' });
-      return true;
     };
 
     this.createActivity = function(name, label) {
       if (typeof name !== 'string' || typeof label !== 'string') {
-        throw new Error("Can't create activity: Unexpected Variables");
+        logUnexpectedVariables('Activity');
+      } else if (this.nodeExists(name)) {
+        logDuplicate('activity', name);
+      } else {
+        this.nodes.push({ data: { id: name, name: label}, 
+          classes: 'activity'});
       }
-      if (this.nodeExists(name)) {
-        console.log(name);
-        throw new Error("Can't create activity: ID already exists");
-      }
-      this.nodes.push({ data: { id: name, name: label, weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' }, classes: 'activity'});
-      return true;
     };
 
     this.wasDerivedFrom = function (name1, name2) {
       if (typeof name1 !== 'string' || typeof name2 !== 'string') {
-        throw new Error("Can't create deriviation: Unexpected Variables");
+        logUnexpectedVariables('Derived edge');
+      } else if (!this.nodeExists(name1)) {
+        logMissingNode('Derived edge', name1);
+      } else if (!this.nodeExists(name2)) {
+        logMissingNode('Derived edge', name2);
+      } else {
+        this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, 
+          label: 'wasDerivedFrom'}, classes: "attributed"});
       }
-
-      var name1bool = this.nodeExists(name1);
-      var name2bool = this.nodeExists(name2);
-      if (name1bool === false) {
-        console.warn("Can't find node: " + name1);
-      }
-      if (name2bool === false) {
-        console.warn("Can't find node: " + name2);
-      }
-      if (name1bool === false || name2bool === false) {
-        throw new Error("Can't create deriviation: Nonexistent node refereced");
-      }
-      this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, label: 'wasDerivedFrom'}, classes: "attributed"});
-
-      return true;
     };
 
     this.specialisationOf = function (name1, name2) {
       if (typeof name1 !== 'string' || typeof name2 !== 'string') {
-        throw new Error("Can't create specialisation: Unexpected Variables");
+        logUnexpectedVariables('Specialisation edge');
+      } else if (!this.nodeExists(name1)) {
+        logMissingNode('Specialisation edge', name1);
+      } else if (!this.nodeExists(name2)) {
+        logMissingNode('Specialistaion edge', name2);
+      } else {
+        this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, 
+          label: 'specialisationOf'}, classes: "attributed"});
       }
-
-      var name1bool = this.nodeExists(name1);
-      var name2bool = this.nodeExists(name2);
-      if (name1bool === false) {
-        console.warn("Can't find node: " + name1);
-      }
-      if (name2bool === false) {
-        console.warn("Can't find node: " + name2);
-      }
-      if (name1bool === false || name2bool === false) {
-        throw new Error("Can't create specialisation: Nonexistent node refereced");
-      }
-      this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, label: 'specialisationOf'}, classes: "attributed"});
-
-      return true;
     };
 
     this.alternateOf = function (name1, name2) {
       if (typeof name1 !== 'string' || typeof name2 !== 'string') {
-        throw new Error("Can't create alternate: Unexpected Variables");
+        logUnexpectedVariables('Alternate edge');
+      } else if (!this.nodeExists(name1)) {
+        logMissingNode('Alternate edge', name1);
+      } else if (!this.nodeExists(name2)) {
+        logMissingNode('Alternate edge', name2);
+      } else {
+        this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, 
+          label: 'alternateOf'}, classes: "attributed"});
       }
-
-      var name1bool = this.nodeExists(name1);
-      var name2bool = this.nodeExists(name2);
-      if (name1bool === false) {
-        console.warn("Can't find node: " + name1);
-      }
-      if (name2bool === false) {
-        console.warn("Can't find node: " + name2);
-      }
-      if (name1bool === false || name2bool === false) {
-        throw new Error("Can't create alternate: Nonexistent node refereced");
-      }
-      this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, label: 'alternateOf'}, classes: "attributed"});
-
-      return true;
     };
 
     this.wasAttributedTo = function (name1, name2) {
       if (typeof name1 !== 'string' || typeof name2 !== 'string') {
-        throw new Error("Can't create attribute: Unexpected Variables");
+        logUnexpectedVariables('Attributed edge');
+      } else if (!this.nodeExists(name1)) {
+        logMissingNode('Attributed edge', name1);
+      } else if (!this.nodeExists(name2)) {
+        logMissingNode('Attributed edge', name2);
+      } else {
+        this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, 
+          label: 'wasAttributedTo'}, classes: "attributed"});
       }
-
-      var name1bool = this.nodeExists(name1);
-      var name2bool = this.nodeExists(name2);
-      if (name1bool === false) {
-        console.warn("Can't find node: " + name1);
-      }
-      if (name2bool === false) {
-        console.warn("Can't find node: " + name2);
-      }
-      if (name1bool === false || name2bool === false) {
-        throw new Error("Can't create attribute: Nonexistent node refereced");
-      }
-      this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, label: 'wasAttributedTo'}, classes: "attributed"});
-
-      return true;
     };
 
     this.wasGeneratedBy = function (name1, name2) {
       if (typeof name1 !== 'string' || typeof name2 !== 'string') {
-        throw new Error("Can't create generation: Unexpected Variables");
+        logUnexpectedVariables('Generated edge');
+      } else if (!this.nodeExists(name1)) {
+        logMissingNode('Generated edge', name1);
+      } else if (!this.nodeExists(name2)) {
+        logMissingNode('Generated edge', name2);
+      } else {
+        this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, 
+          label: 'generated'}, classes: "generated"});
       }
-
-      var name1bool = this.nodeExists(name1);
-      var name2bool = this.nodeExists(name2);
-      if (name1bool === false) {
-        console.warn("Can't find node: " + name1);
-      }
-      if (name2bool === false) {
-        console.warn("Can't find node: " + name2);
-      }
-      if (name1bool === false || name2bool === false) {
-        throw new Error("Can't create generation: Nonexistent node refereced");
-      }
-      this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, label: 'generated'}, classes: "generated"});
-
-      return true;
     };
 
     this.wasAssociatedWith = function (name1, name2) {
       if (typeof name1 !== 'string' || typeof name2 !== 'string') {
-        throw new Error("Can't create generation: Unexpected Variables");
+        logUnexpectedVariables('Associated edge');
+      } else if (!this.nodeExists(name1)) {
+        logMissingNode('Assoicated edge', name1);
+      } else if (!this.nodeExists(name2)) {
+        logMissingNode('Associated edge', name2);
+      } else {
+        this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, 
+          label: 'wasAssociatedWith'}, classes: "associated"});
       }
-
-      var name1bool = this.nodeExists(name1);
-      var name2bool = this.nodeExists(name2);
-      if (name1bool === false) {
-        console.warn("Can't find node: " + name1);
-      }
-      if (name2bool === false) {
-        console.warn("Can't find node: " + name2);
-      }
-      if (name1bool === false || name2bool === false) {
-        throw new Error("Can't create association: Nonexistent node referenced");
-      }
-      this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, label: 'wasAssociatedWith'}, classes: "associated"});
-
-      return true;
     };
 
     this.used = function (name1, name2) {
       if (typeof name1 !== 'string' || typeof name2 !== 'string') {
-        throw new Error("Can't create use edge: Unexpected Variables");
+        logUnexpectedVariables('Used edge');
+      } else if (!this.nodeExists(name1)) {
+        logMissingNode('Used edge', name1);
+      } else if (!this.nodeExists(name2)) {
+        logMissingNode('Used edge', name2);
+      } else {
+        this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, 
+          label: 'used'}, classes: "used"});
       }
-
-      var name1bool = this.nodeExists(name1);
-      var name2bool = this.nodeExists(name2);
-      if (name1bool === false || name2bool === false) {
-        throw new Error("Can't create use edge: Nonexistent node refereced");
-      }
-      this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, label: 'used'}, classes: "used"});
-
-      return true;
     };
 
     this.render = function(inner, callback) {
@@ -212,7 +175,6 @@
           },
 
           ready: function(){
-            window.PVisualiser = that;
             window.cy = this;
             callback();
           }

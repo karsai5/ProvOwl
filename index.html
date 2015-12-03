@@ -34,6 +34,7 @@
 		<script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>
 		<script src="/bower_components/cytoscape-dagre/cytoscape-dagre.js"> </script>
 		<script src="./bower_components/jquery-ui/jquery-ui.js"></script>
+		<script src="/js/warnings.js" data-cover></script>
 		<script src="/js/PVisualiser.js" data-cover></script>
 		<script src="/js/PParser.js" data-cover></script>
 		<script src="/js/main.js" data-cover></script>
@@ -43,7 +44,7 @@
 
 		<!-- Primary Page Layout
 		–––––––––––––––––––––––––––––––––––––––––––––––––– -->
-		<div class="sidebar">
+		<div id="sidebar">
 			<h1>Prov<br/>Owl</h1>
 			<p>This is a D3 application for visualising provenance data.</p>
 			<button class="button" onclick="selectFile();">Selec Prov File</button>
