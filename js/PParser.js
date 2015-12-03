@@ -22,6 +22,7 @@
     prov.uses = [];
     prov.associations = [];
     prov.generations = [];
+    prov.derives = [];
     prov.raw = null;
     prov.warnings = [];
     prov.agents = [];
@@ -35,6 +36,7 @@
         pvis.createEntity(name, removePrefix(name));
       });
 
+      // Create agents
       $.each(prov.agents, function (i,l) {
         var name = getLineArguments(l)[0];
         console.log(l);
@@ -61,16 +63,25 @@
         pvis.wasGeneratedBy(e1, e2);
       });
 
+      // Create associateions
       $.each(prov.associations, function (i,l) {
         var e1 = getLineArguments(l)[0];
         var e2 = getLineArguments(l)[1];
         pvis.wasAssociatedWith(e1, e2);
       });
 
+      // Create attributes
       $.each(prov.attributes, function (i,l) {
         var e1 = getLineArguments(l)[0];
         var e2 = getLineArguments(l)[1];
         pvis.wasAttributedTo(e1, e2);
+      });
+
+      // Create derivations
+      $.each(prov.derives, function (i,l) {
+        var e1 = getLineArguments(l)[0];
+        var e2 = getLineArguments(l)[1];
+        pvis.wasDerivedFrom(e1, e2);
       });
 
       return pvis;
@@ -87,6 +98,7 @@
     com.assocation = 'wasAssociatedWith';
     com.agent = 'agent';
     com.attributed = 'wasAttributedTo';
+    com.derived = 'wasDerivedFrom';
 
     // Helper Functions 
     var getLineArguments = function(line) {
@@ -135,6 +147,8 @@
         prov.agents.push(line);
       } else if (line.startsWith(com.attributed)) {
        prov.attributes.push(line);
+      } else if (line.startsWith(com.derived)) {
+        prov.derives.push(line);
       } else {
         var warningText = lineNum + ": Unknown command (" + line + ")";
         console.log(warningText);

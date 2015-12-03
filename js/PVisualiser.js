@@ -52,6 +52,27 @@
       return true;
     };
 
+    this.wasDerivedFrom = function (name1, name2) {
+      if (typeof name1 !== 'string' || typeof name2 !== 'string') {
+        throw new Error("Can't create deriviation: Unexpected Variables");
+      }
+
+      var name1bool = this.nodeExists(name1);
+      var name2bool = this.nodeExists(name2);
+      if (name1bool === false) {
+        console.warn("Can't find node: " + name1);
+      }
+      if (name2bool === false) {
+        console.warn("Can't find node: " + name2);
+      }
+      if (name1bool === false || name2bool === false) {
+        throw new Error("Can't create deriviation: Nonexistent node refereced");
+      }
+      this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, label: 'wasDerivedFrom'}, classes: "attributed"});
+
+      return true;
+    };
+
     this.wasAttributedTo = function (name1, name2) {
       if (typeof name1 !== 'string' || typeof name2 !== 'string') {
         throw new Error("Can't create attribute: Unexpected Variables");
