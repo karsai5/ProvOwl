@@ -25,6 +25,7 @@
     prov.raw = null;
     prov.warnings = [];
     prov.agents = [];
+    prov.attributes = [];
     prov.getPVisualiser = function() {
       var pvis = new PVisualiser();
 
@@ -66,6 +67,12 @@
         pvis.wasAssociatedWith(e1, e2);
       });
 
+      $.each(prov.attributes, function (i,l) {
+        var e1 = getLineArguments(l)[0];
+        var e2 = getLineArguments(l)[1];
+        pvis.wasAttributedTo(e1, e2);
+      });
+
       return pvis;
     };
 
@@ -79,6 +86,7 @@
     com.generation = 'wasGeneratedBy';
     com.assocation = 'wasAssociatedWith';
     com.agent = 'agent';
+    com.attributed = 'wasAttributedTo';
 
     // Helper Functions 
     var getLineArguments = function(line) {
@@ -125,6 +133,8 @@
         prov.associations.push(line);
       } else if (line.startsWith(com.agent)) {
         prov.agents.push(line);
+      } else if (line.startsWith(com.attributed)) {
+       prov.attributes.push(line);
       } else {
         var warningText = lineNum + ": Unknown command (" + line + ")";
         console.log(warningText);
