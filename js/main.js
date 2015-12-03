@@ -37,7 +37,9 @@
 
   $( document ).ready(function() {
 
+    // Check file reader support is enabled
     if(checkForFileReaderSupport()) {
+      // create a sudo file selector and use that for selecting files
       window.fileSelector = $('<input type="file" />');
       window.fileSelector.on('change', loadFile);
 

@@ -22,6 +22,7 @@
     prov.uses = [];
     prov.generations = [];
     prov.raw = null;
+    prov.warnings = [];
     prov.getPVisualiser = function() {
       var pvis = new PVisualiser();
 
@@ -76,6 +77,18 @@
       return line.split(':')[1];
     };
 
+    var addWarning = function(content) {
+      prov.warnings.push("<p>" + content + "</p>");
+    };
+
+    var printWarnings = function(div) {
+      var warningDiv = $(div);
+      warningDiv.html("<strong>Warnings</strong>");
+      $.each(prov.warnings, function() {
+        warningDiv.append(this);
+      });
+    };
+
     var lineSwitcher = function(lineNum, line) {
       line = line.trim();
       if (line.length === 0) {
@@ -93,7 +106,9 @@
       } else if (line.startsWith(com.generation)) {
         prov.generations.push(line);
       } else {
-        console.log(lineNum + ": Unknown command (" + line + ")");
+        var warningText = lineNum + ": Unknown command (" + line + ")";
+        console.log(warningText);
+        addWarning(warningText);
       }
     };
 
@@ -106,6 +121,7 @@
         for (var i = 0; i < lines.length; ++i) {
           lineSwitcher(i, lines[i]);
         }
+        printWarnings('#warnings');
         callback(prov.getPVisualiser());
       });
 
@@ -119,11 +135,12 @@
     };
 
     this.parseString = function(result, callback) {
-        var lines = result.split('\n');
-        for (var i = 0; i < lines.length; ++i) {
-          lineSwitcher(i, lines[i]);
-        }
-        callback(prov.getPVisualiser());
+      var lines = result.split('\n');
+      for (var i = 0; i < lines.length; ++i) {
+        lineSwitcher(i, lines[i]);
+      }
+      printWarnings('#warnings');
+      callback(prov.getPVisualiser());
     };
   };
 }());
