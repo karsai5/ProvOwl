@@ -1,244 +1,47 @@
 /* Jshint options */
-/* globals stop, start, PParser */
+/* globals PParser */
 (function() {
   "use strict";
   var p; // variable for visualiser
   var parser;
 
-  QUnit.module("Entities",{
+  QUnit.module("Graph",{
     beforeEach: function() {
       p = new PVisualiser();
-    }
-  });
-
-  QUnit.test( "Incorrect arguments", function (assert) {
-    var count = p.nodeCount();
-    assert.throws(
-        function() {
-          p.createEntity(1, 'Entity1-label');
-        },
-        /Unexpected Variable/,
-        "First variable is a number"
-        );
-    assert.throws(
-        function() {
-          p.createEntity('Entity1', 1);
-        },
-        /Unexpected Variable/,
-        "Second variable a number"
-        );
-    assert.throws(
-        function() {
-          p.createEntity();
-        },
-        /Unexpected Variable/,
-        "No arguments"
-        );
-    assert.throws(
-        function() {
-          p.createEntity('Entity1');
-        },
-        /Unexpected Variable/,
-        "Only one argument"
-        );
-    assert.strictEqual(p.nodeCount(), count, "No entities added");
-  });
-
-  QUnit.test("Succesfully create entity", function (assert) {
-    var count = p.nodeCount();
-    assert.ok(p.createEntity('Entity1-id', 'Entity1-label'), "Returns True");
-    assert.strictEqual(p.nodeCount(), count + 1, "Entity added");
-    assert.throws(
-        function() {
-          p.createEntity('Entity1-id', 'Entity1-label')
-        },
-        /ID already exists/,
-        "Add second entity with same ID"
-        );
-  });
-
-  QUnit.module("Activities",{
-    beforeEach: function() {
-      p = new PVisualiser('svg g');
-    }
-  });
-
-  QUnit.test( "Incorrect arguments", function (assert) {
-    var count = p.nodeCount();
-    assert.throws(
-        function() {
-          p.createActivity(1, 'Activity1-label');
-        },
-        /Unexpected Variable/,
-        "First variable is a number"
-        );
-    assert.throws(
-        function() {
-          p.createActivity('Activity1', 1);
-        },
-        /Unexpected Variable/,
-        "Second variable a number"
-        );
-    assert.throws(
-        function() {
-          p.createActivity();
-        },
-        /Unexpected Variable/,
-        "No arguments"
-        );
-    assert.throws(
-        function() {
-          p.createActivity('Activity1');
-        },
-        /Unexpected Variable/,
-        "Only one argument"
-        );
-    assert.strictEqual(p.nodeCount(), count, "No activities added");
-  });
-
-  QUnit.test("Succesfully create activity", function (assert) {
-    var count = p.nodeCount();
-    assert.ok(p.createActivity('Activity1-id', 'Activity1-label'), "Returns True");
-    assert.strictEqual(p.nodeCount(), count + 1, "Activity added");
-    assert.throws(
-        function() {
-          p.createActivity('Activity1-id', 'Activity1-label');
-        },
-        /ID already exists/,
-        "Add second activity with same ID"
-        );
-  });
-
-  QUnit.module("Generation",{
-    beforeEach: function() {
-      p = new PVisualiser('svg g');
       p.createEntity('entity1', 'Entity 1');
       p.createEntity('entity2', 'Entity 2');
     }
   });
 
-  QUnit.test( "Incorrect arguments", function (assert) {
-    var count = p.edgeCount();
-    assert.throws(
-        function() {
-          p.generated(1, 'entity1');
-        },
-        /Unexpected Variable/,
-        "First variable is a number"
-        );
-    assert.throws(
-        function() {
-          p.generated('entity1', 1);
-        },
-        /Unexpected Variable/,
-        "Second variable a number"
-        );
-    assert.throws(
-        function() {
-          p.generated();
-        },
-        /Unexpected Variable/,
-        "No arguments"
-        );
-    assert.throws(
-        function() {
-          p.generated('entity1');
-        },
-        /Unexpected Variable/,
-        "Only one argument"
-        );
-    assert.strictEqual(p.edgeCount(), count, "No generations added");
+  QUnit.test( "Nodes", function (assert) {
+    var count = p.nodeCount();
+    assert.notOk(p.addNode(1, 'Entity1-label', 'entity'), "First variable a number");
+    assert.notOk(p.addNode('Entity1-label', 1, 'entity'), "Second variable a number");
+    assert.notOk(p.addNode(), "No arguments", 'entity');
+    assert.notOk(p.addNode(), "Only one argument", 'entity');
+    assert.strictEqual(p.nodeCount(), count, "Check no nodes added");
+    count = p.nodeCount();
+    assert.ok(p.createEntity('Entity1-id', 'Entity1-label'), "Create entity");
+    assert.strictEqual(p.nodeCount(), count + 1, "Check entity added");
+    assert.notOk(p.createEntity('Entity1-id', 'Entity1-label'), "Wont make entity with same ID");
   });
 
-  QUnit.test( "Generating non-exsiting entities", function (assert) {
+  QUnit.test( "Edges", function (assert) {
     var count = p.edgeCount();
-    assert.throws(
-        function() {
-          p.generated('entity1','unreal-entity');
-        },
-        /Nonexistent/,
-        "Nonexistent entity"
-        );
-    assert.throws(
-        function() {
-          p.generated('unreal-entity','entity1');
-        },
-        /Nonexistent/,
-        "Nonexistent entity"
-        );
+    assert.notOk(p.wasGeneratedBy(1, 'entity1'), 'First variable is a number');
+    assert.notOk(p.wasGeneratedBy('entity1', 2), 'Second variable is a number');
+    assert.notOk(p.wasGeneratedBy(), 'No arguments');
+    assert.notOk(p.wasGeneratedBy('entity1'), 'One argument');
+    assert.strictEqual(p.edgeCount(), count, "Checking no generations added");
+
+    count = p.edgeCount();
+    assert.notOk(p.addEdge('entity1', 'unreal-entity'), 'Connent nonexistent node');
+    assert.notOk(p.addEdge('unreal-entity', 'entity1'), 'Connent nonexistent node');
     assert.strictEqual(p.edgeCount(), count, "No generation edges added");
-  });
 
-  QUnit.test( "Sucesfully create generation edge", function (assert) {
-    var count = p.edgeCount();
-    assert.ok(p.generated('entity1', 'entity2'), "Returns True");
-    assert.strictEqual(p.edgeCount(), count + 1, "Generation edge added");
-  });
-
-  QUnit.module("Used",{
-    beforeEach: function() {
-      p = new PVisualiser('svg g');
-      p.createEntity('entity1', 'Entity 1');
-      p.createEntity('entity2', 'Entity 2');
-    }
-  });
-
-  QUnit.test( "Incorrect arguments", function (assert) {
-    var count = p.edgeCount();
-    assert.throws(
-        function() {
-          p.used(1, 'entity1');
-        },
-        /Unexpected Variable/,
-        "First variable is a number"
-        );
-    assert.throws(
-        function() {
-          p.used('entity1', 1);
-        },
-        /Unexpected Variable/,
-        "Second variable a number"
-        );
-    assert.throws(
-        function() {
-          p.used();
-        },
-        /Unexpected Variable/,
-        "No arguments"
-        );
-    assert.throws(
-        function() {
-          p.used('entity1');
-        },
-        /Unexpected Variable/,
-        "Only one argument"
-        );
-    assert.strictEqual(p.edgeCount(), count, "No used edges added");
-  });
-
-  QUnit.test( "Generating non-exsiting entities", function (assert) {
-    var count = p.edgeCount();
-    assert.throws(
-        function() {
-          p.used('entity1','unreal-entity');
-        },
-        /Nonexistent/,
-        "Nonexistent entity"
-        );
-    assert.throws(
-        function() {
-          p.used('unreal-entity','entity1');
-        },
-        /Nonexistent/,
-        "Nonexistent entity"
-        );
-    assert.strictEqual(p.edgeCount(), count, "No use edges added");
-  });
-
-  QUnit.test( "Sucesfully create use edge", function (assert) {
-    var count = p.edgeCount();
-    assert.ok(p.used('entity1', 'entity2'), "Returns True");
-    assert.strictEqual(p.edgeCount(), count + 1, "Use edge added");
+    count = p.edgeCount();
+    assert.ok(p.wasGeneratedBy('entity1', 'entity2'), "Add generated edge");
+    assert.strictEqual(p.edgeCount(), count + 1, "Generation edge added!");
   });
 
   QUnit.module("Manual Graphs",{
@@ -261,8 +64,8 @@
     p.createActivity('abs', 'ABS');
     p.createActivity('analytics', 'Analytics');
 
-    p.generated('report1', 'analytics');
-    p.generated('advicereports', 'abs');
+    p.wasGeneratedBy('report1', 'analytics');
+    p.wasGeneratedBy('advicereports', 'abs');
 
     p.used('analytics', 'ajcsummary');
     p.used('report2', 'abs');

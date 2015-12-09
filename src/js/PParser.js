@@ -117,6 +117,14 @@
     com.alternate = 'alternateOf';
 
     // Helper Functions 
+    var print = function(msg) {
+      if (typeof w1 === 'undefined') {
+        console.warn(msg);
+      } else {
+        w1.add(msg);
+      }
+    };
+
     var getLineArguments = function(line) {
       line = line.substring(line.indexOf('(') + 1, line.lastIndexOf(')')).split(',');
       for (var i = 0; i < line.length; ++i) {
@@ -158,7 +166,7 @@
       } else if (line.startsWith(com.alternate)) {
         prov.alternates.push(line);
       } else {
-        w1.add("Unknown command", "[" + lineNum + "] " + line);
+        print ("Unknown command", "[" + lineNum + "] " + line);
       }
     };
 
