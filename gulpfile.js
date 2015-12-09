@@ -15,6 +15,19 @@ var gulp = require('gulp'),
     useref = require('gulp-useref');
     replace = require('gulp-replace');
     gulpif = require('gulp-if');
+    var rm = require('gulp-rm');
+
+gulp.task('clean:production', function() {
+  return gulp.src('public_html/**/*', {read: false})
+    .pipe(rm());
+});
+
+gulp.task('clean:css', function() {
+  return gulp.src('src/css/**/*', {read: false})
+    .pipe(rm());
+});
+
+gulp.task('clean', ['clean:production', 'clean:css']);
 
 gulp.task('styles', function() {
   return sass('src/sass/*.scss', { style: 'expanded' })
@@ -28,7 +41,7 @@ gulp.task('javascript', function() {
 });
 
 gulp.task('reload', function() {
-  gulp.src("index.html")
+  gulp.src("/src/index.html")
   .pipe(livereload());
 });
 
@@ -38,16 +51,16 @@ gulp.task('default', function() {
 
 // Minifies all js and css into one file.
 gulp.task('minify_assets', function() {
-  gulp.src('index.html')
+  gulp.src('src/*.html')
     .pipe(useref())
     .pipe(gulpif('*.js', replace('/src/static/', '/static/')))
     .pipe(gulpif('*.js', uglify()))
     .pipe(gulp.dest('public_html'));
-  gulp.src('404.html')
-    .pipe(useref())
-    .pipe(gulpif('*.js', replace('/src/static/', '/static/')))
-    .pipe(gulpif('*.js', uglify()))
-    .pipe(gulp.dest('public_html'));
+});
+
+gulp.task('copy_prov_examples', function() {
+  gulp.src(['prov-examples'])
+    .pipe(gulp.dest('public_html/'));
 });
 
 gulp.task('copy_static', function() {
@@ -57,7 +70,7 @@ gulp.task('copy_static', function() {
     .pipe(gulp.dest('public_html/'));
 });
 
-gulp.task('production', ['styles', 'copy_static', 'minify_assets']);
+gulp.task('production', ['styles', 'copy_static', 'copy_prov_examples', 'minify_assets']);
 
 gulp.task('watch', function() {
   livereload.listen();
