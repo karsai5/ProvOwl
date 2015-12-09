@@ -1,0 +1,51 @@
+#sidebar {
+  padding: 10px;
+  color: #fff;
+  background: #D45D3F;
+  width: 200px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+#sidebar a {
+  color: #fff;
+}
+#sidebar input {
+  color: #000;
+}
+#sidebar .button {
+  background: #6E5D4D;
+  border: none;
+  color: #fff;
+  width: 100%;
+  border-color: #4d2b36;
+}
+
+#cy {
+  position: fixed;
+  left: 220px;
+  width: calc(100% - 220px);
+  height: 100%;
+}
+
+.warnings-container {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: auto;
+  height: auto;
+  width: calc(100% - 220px);
+}
+
+#warnings {
+  width: calc(100% - 30px);
+  overflow-y: scroll;
+  height: 130px;
+  background: #E2FFF3;
+  padding: 15px;
+  display: none;
+}
+#warnings > p {
+  margin-bottom: 3px;
+}

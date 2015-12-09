@@ -21,10 +21,13 @@
   ],
   "dependencies": {
     "dagre": "~0.7.4",
-    "dagre-d3": "~0.4.10",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "cytoscape": "~2.5.1",
+    "jquery-ui": "~1.11.4",
+    "cytoscape-dagre": "~1.1.2"
   },
   "devDependencies": {
-    "qunit": "~1.19.0"
+    "qunit": "~1.19.0",
+    "blanket": "~1.1.7"
   }
 }

@@ -11,6 +11,9 @@ var gulp = require('gulp'),
     cache = require('gulp-cache'),
     livereload = require('gulp-livereload'),
     del = require('del');
+    useref = require('gulp-useref');
+    replace = require('gulp-replace');
+    gulpif = require('gulp-if');
 
 gulp.task('styles', function() {
   return sass('sass/*.scss', { style: 'expanded' })
@@ -31,6 +34,21 @@ gulp.task('reload', function() {
 gulp.task('default', function() {
   gulp.start('styles');
 });
+
+// Minifies all js and css into one file.
+gulp.task('minify_assets', function() {
+  return gulp.src('index.html')
+    .pipe(useref())
+    .pipe(gulpif('*.js', replace('/src/static/', '/static/')))
+    .pipe(gulp.dest('public_html'));
+});
+
+gulp.task('copy_static', function() {
+  gulp.src(['src/static/**/*'])
+    .pipe(gulp.dest('public_html/static'));
+});
+
+gulp.task('production', ['copy_static', 'minify_assets']);
 
 gulp.task('watch', function() {
   livereload.listen();
