@@ -48,9 +48,11 @@ gulp.task('minify_assets', function() {
 gulp.task('copy_static', function() {
   gulp.src(['src/static/**/*'])
     .pipe(gulp.dest('public_html/static'));
+  gulp.src(['.htaccess'])
+    .pipe(gulp.dest('public_html/'));
 });
 
-gulp.task('production', ['copy_static', 'minify_assets']);
+gulp.task('production', ['styles', 'copy_static', 'minify_assets']);
 
 gulp.task('watch', function() {
   livereload.listen();
