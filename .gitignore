@@ -7,3 +7,4 @@ bower_components
 src/css/
 videos/
 public_html/
+node_modules/
