@@ -24,7 +24,8 @@
     "jquery": "~2.1.4",
     "cytoscape": "~2.5.1",
     "jquery-ui": "~1.11.4",
-    "cytoscape-dagre": "~1.1.2"
+    "cytoscape-dagre": "~1.1.2",
+    "skeleton": "~2.0.4"
   },
   "devDependencies": {
     "qunit": "~1.19.0",

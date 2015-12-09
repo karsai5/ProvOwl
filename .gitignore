@@ -4,7 +4,6 @@
 *.un~
 bower_components
 .sass-cache
-css/main.css*
-css/provowl.css*
+src/css/
 videos/
 public_html/

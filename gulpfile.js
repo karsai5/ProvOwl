@@ -16,8 +16,8 @@ var gulp = require('gulp'),
     gulpif = require('gulp-if');
 
 gulp.task('styles', function() {
-  return sass('sass/*.scss', { style: 'expanded' })
-    .pipe(gulp.dest('css'))
+  return sass('src/sass/*.scss', { style: 'expanded' })
+    .pipe(gulp.dest('src/css'))
     .pipe(livereload());
 });
 
