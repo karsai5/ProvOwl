@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>ProvOwl: Lost your way?</title>
+
+    <!-- build:css css/404.css -->
+    <link rel="stylesheet" href="/bower_components/skeleton/css/normalize.css"> <!-- Normalise css -->
+    <link rel="stylesheet" href="/bower_components/skeleton/css/skeleton.css"> <!-- Responsive css boilerplate -->
+    <link rel="stylesheet" href="/src/css/404.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <!-- endbuild -->
+  </head>
+  <body>
+    <img id="owl-eyes" src="/src/static/images/owl.png" alt="Big owl eyes."/>
+    <p>It seems that you have lost your way, <br>there's nothing to see here.<br>You will be redirected to the homepage.</p>
+    <small>Error 404: Page not found.</small>
+
+    <script type="text/javascript" charset="utf-8">
+window.setTimeout(function redirect() {
+  window.location = "/";
+}, 5000);
+    </script>
+  </body>
+</html>

@@ -38,7 +38,12 @@ gulp.task('default', function() {
 
 // Minifies all js and css into one file.
 gulp.task('minify_assets', function() {
-  return gulp.src('index.html')
+  gulp.src('index.html')
+    .pipe(useref())
+    .pipe(gulpif('*.js', replace('/src/static/', '/static/')))
+    .pipe(gulpif('*.js', uglify()))
+    .pipe(gulp.dest('public_html'));
+  gulp.src('404.html')
     .pipe(useref())
     .pipe(gulpif('*.js', replace('/src/static/', '/static/')))
     .pipe(gulpif('*.js', uglify()))
@@ -56,7 +61,7 @@ gulp.task('production', ['styles', 'copy_static', 'minify_assets']);
 
 gulp.task('watch', function() {
   livereload.listen();
-  gulp.watch('sass/*.scss', ['styles']);
-  gulp.watch('*.html',['reload']);
+  gulp.watch('src/sass/*.scss', ['styles']);
+  gulp.watch('**/*.html',['reload']);
   // gulp.watch('*.js', ['javascript']);
 });
