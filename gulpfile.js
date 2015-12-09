@@ -59,8 +59,8 @@ gulp.task('minify_assets', function() {
 });
 
 gulp.task('copy_prov_examples', function() {
-  gulp.src(['prov-examples'])
-    .pipe(gulp.dest('public_html/'));
+  gulp.src(['prov-examples/**/*'])
+    .pipe(gulp.dest('public_html/prov-examples'));
 });
 
 gulp.task('copy_static', function() {
