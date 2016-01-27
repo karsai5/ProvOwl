@@ -1,6 +1,7 @@
 (function() {
   /*jshint unused:false*/
   /*jshint freeze:false*/
+  /*global w1*/
   "use strict";
 
   if (typeof String.prototype.startsWith !== 'function') {
@@ -139,11 +140,7 @@
 
     var lineSwitcher = function(lineNum, line) {
       line = line.trim();
-      if (line.length === 0) {
-        // console.log(lineNum + ": empty line");
-      } else if (line.startsWith(com.comment)) {
-        // console.log(lineNum + ": comment");
-      } else if (line.startsWith(com.prefix)) {
+      if (line.startsWith(com.prefix)) {
         prov.prefixes.push(line);
       } else if (line.startsWith(com.entity)) {
         prov.entities.push(line);

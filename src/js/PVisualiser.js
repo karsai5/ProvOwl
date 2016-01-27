@@ -119,7 +119,7 @@
       }
       this.inner = inner;
       var that = this;
-      $.get('/src/static/css/cytoscape.css', function (data) {
+      $.get('/static/css/cytoscape.css', function (data) {
         $(that.inner).cytoscape({
           layout: {
             name: 'dagre',
