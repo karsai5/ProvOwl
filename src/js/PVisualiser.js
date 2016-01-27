@@ -41,6 +41,18 @@
       return found;
     };
 
+    this.getNode = function(name) {
+      console.log(this);
+      var found = null;
+      $.each(this.nodes, function() {
+        if (name === this.data.id) {
+          found = this;
+          return;
+        }
+      });
+      return found;
+    };
+
     this.addNode = function(name, label, type) {
       if (typeof name !== 'string' || typeof label !== 'string') {
         logUnexpectedVariables(type);
@@ -83,6 +95,10 @@
 
     this.createActivity = function(name, label) {
       return this.addNode(name, label, 'activity');
+    };
+
+    this.createGroup = function(name) {
+      return this.addNode(name, name, 'group');
     };
 
     this.wasDerivedFrom = function (name1, name2) {

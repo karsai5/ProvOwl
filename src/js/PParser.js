@@ -28,6 +28,8 @@
     prov.alternates = [];
     prov.agents = [];
     prov.specialisations = [];
+    prov.groups = [];
+    prov.members = [];
     prov.attributes = [];
     prov.getPVisualiser = function() {
       var pvis = new PVisualiser();
@@ -99,6 +101,21 @@
         pvis.alternateOf(e1, e2);
       });
 
+      // Create groups
+      $.each(prov.groups, function (i,l) {
+        var name = getLineArguments(l)[0];
+        pvis.createGroup(name);
+      });
+
+      // Link members to groups
+      $.each(prov.members, function (i,l) {
+        var e1 = getLineArguments(l)[0];
+        var e2 = getLineArguments(l)[1];
+        console.log(e1 + " member of " + e2);
+        console.log(pvis.getNode(e1));
+        // pvis.alternateOf(e1, e2);
+      });
+
       return pvis;
     };
 
@@ -116,6 +133,8 @@
     com.derived = 'wasDerivedFrom';
     com.specialised = 'specializationOf';
     com.alternate = 'alternateOf';
+    com.group = 'group';
+    com.member = 'memberOf';
 
     // Helper Functions 
     var print = function(msg) {
@@ -162,6 +181,10 @@
         prov.specialisations.push(line);
       } else if (line.startsWith(com.alternate)) {
         prov.alternates.push(line);
+      } else if (line.startsWith(com.group)) {
+        prov.groups.push(line);
+      } else if (line.startsWith(com.member)) {
+        prov.members.push(line);
       } else {
         if (line.length !== 0 && !line.startsWith(com.comment)) {
           print ("Unknown command" + "[" + lineNum + "] " + line);
