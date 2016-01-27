@@ -163,7 +163,9 @@
       } else if (line.startsWith(com.alternate)) {
         prov.alternates.push(line);
       } else {
-        print ("Unknown command", "[" + lineNum + "] " + line);
+        if (line.length !== 0 && !line.startsWith(com.comment)) {
+          print ("Unknown command" + "[" + lineNum + "] " + line);
+        }
       }
     };
 
