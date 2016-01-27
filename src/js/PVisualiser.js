@@ -33,13 +33,13 @@
     this.nodeExists = function(name) {
       var found = false;
       $.each(this.nodes, function() {
-        if (name === this['data']['id']) {
+        if (name === this.data.id) {
           found = true;
           return;
         }
       });
       return found;
-    }
+    };
 
     this.addNode = function(name, label, type) {
       if (typeof name !== 'string' || typeof label !== 'string') {
@@ -143,11 +143,11 @@
 
     this.nodeCount = function() {
       return this.nodes.length;
-    }
+    };
 
     this.edgeCount = function() {
       return this.edges.length;
-    }
+    };
 
   };
 }());
