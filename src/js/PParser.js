@@ -112,8 +112,7 @@
         var e1 = getLineArguments(l)[0];
         var e2 = getLineArguments(l)[1];
         console.log(e1 + " member of " + e2);
-        console.log(pvis.getNode(e1));
-        // pvis.alternateOf(e1, e2);
+        pvis.memberOf(e1,e2);
       });
 
       return pvis;

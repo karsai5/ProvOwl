@@ -42,7 +42,6 @@
     };
 
     this.getNode = function(name) {
-      console.log(this);
       var found = null;
       $.each(this.nodes, function() {
         if (name === this.data.id) {
@@ -60,7 +59,7 @@
         logDuplicate(type, name);
       } else {
         this.nodes.push({ data: { id: name, name: label}, 
-          classes: 'entity' });
+          classes: type});
         return true;
       }
       return false;
@@ -99,6 +98,31 @@
 
     this.createGroup = function(name) {
       return this.addNode(name, name, 'group');
+    };
+
+    this.memberOf = function (name, group) {
+      var that = this;
+      var index = -1;
+
+      // Add edges
+      $.each(this.edges, function(i,e) {
+        if (e.data.source === name){
+          that.addEdge(group, e.data.target, e.classes, e.data.label);
+        } else if (e.data.target === name) {
+          that.addEdge(e.data.source, group, e.classes, e.data.label);
+        }
+      });
+
+      // Delete original node
+      $.each(this.nodes, function(i,e) {
+        if (e.data.id === name) {
+          index = i;
+        }
+      });
+
+      if (index > -1) {
+        this.nodes.splice(index, 1);
+      }
     };
 
     this.wasDerivedFrom = function (name1, name2) {

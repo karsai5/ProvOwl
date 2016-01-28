@@ -44,6 +44,18 @@ edge {
   border-width: 1px;
 }
 
+.group {
+  shape: ellipse;
+  width: 150px;
+  height: 40px;
+  content: data(name);
+  text-valign: center;
+  color: #000;
+  background-color: #b3ffff;
+  border-color: #90908E;
+  border-width: 1px;
+}
+
 .activity {
   background-color: #9FB1FC;
   shape: rectangle;
