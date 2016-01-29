@@ -1,12 +1,13 @@
 (function() {
   /* jshint unused:false */
-  /* globals w1 */
+  /* globals w1, cy */
   "use strict";
 
   window.PVisualiser = function() {
     console.log('Provenance visualiser initialised.');
     this.nodes = [];
     this.edges = [];
+    var that = this;
 
     // Print to user log using window.w1, if that undefined
     // use the console instead
@@ -28,6 +29,35 @@
 
     var logMissingNode = function (what, name) {
       print("Can't create " + what + "\"" + name + "\" doesn't exist");
+    };
+    
+    var clickFunction = function(evt) {
+      var node = evt.cyTarget;
+      var informationString = "";
+      this.selectedNode = node;
+
+      // Highlight node and clear old selected node
+      cy.$('node').removeClass('selected');
+      this.selectedNode.addClass('selected');
+      
+      // Create information string
+      informationString += "Node Information\n";
+      informationString += node.id() + "\n";
+      informationString += "\n";
+      informationString += "Connected Nodes:\n";
+      $.each(node.neighborhood(), function(i, e) {
+        if (e.isNode()) {
+        informationString += ' ' + e.id() + '\n';
+        }
+      });
+
+      that.printNodeInfo(informationString);
+    };
+
+    this.printNodeInfo = function(text) {
+      // console.log(text);
+      text = text.replace(/\n/g, '<br>');
+      $("#node_info").html(text);
     };
 
     this.nodeExists = function(name) {
@@ -173,6 +203,8 @@
 
           ready: function(){
             window.cy = this;
+            window.pvis = that;
+            this.on('tap', 'node', clickFunction);
             if (typeof callback === 'function') { 
               callback();
             }

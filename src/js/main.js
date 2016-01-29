@@ -1,6 +1,6 @@
 (function() {
   /*jshint unused:false*/
-  /* globals PParser */
+  /* globals PParser, fileSelector, w1, Warnings */
   "use strict";
 
   function checkForFileReaderSupport() {
@@ -11,7 +11,7 @@
       $('body').html("The Files APIs are not fully supported in this browser. Try using a newer browser");
       return false;
     }
-  };
+  }
 
   function loadFile(event) {
     $("#cy").html("");
@@ -38,7 +38,7 @@
           });
     };
     reader.readAsText(f);
-  };
+  }
 
   $( document ).ready(function() {
 
@@ -53,6 +53,7 @@
       };
 
       window.w1 = Warnings.getInstance();  
+      window.cy
     }
 
   });

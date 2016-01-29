@@ -1,57 +1,90 @@
 $sidebarWidth: 220px;
+$orange: #D45D3F;
+
 #sidebar {
-	padding: 10px;
-	color: #fff;
-	background: #D45D3F;
-	width: $sidebarWidth - 20px;
-	position: fixed;
-	top: 0;
-	left: 0;
-	height: 100%;
-  
+  padding: 10px;
+  color: #fff;
+  background: $orange;
+  width: $sidebarWidth - 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+
   a {
     color: #fff;
   }
 
-	input {
-		color: #000;
-	}
+  input {
+    color: #000;
+  }
 
-	.button {
-		background: #6E5D4D;
-		border: none;
-		color: #fff;
-		width: 100%;
-		border-color: darken(#6E3D4D, 10%);
-	}
+  hr {
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
 
-	#hiddenFileSelector {}
+  .footer {
+    background: darken($orange, 20%);
+    width: $sidebarWidth - 6px;
+    position: fixed;
+    bottom: 0;
+    padding: 3px;
+    left: 0;
+  }
+
+  #hiddenFileSelector {}
 }
 
 #cy {
-	position: fixed;
-	left: $sidebarWidth;
-	width: calc(100% - 220px);
-	height: 100%;
+  position: fixed;
+  left: $sidebarWidth;
+  width: calc(100% - 220px);
+  height: 100%;
 }
 
 .warnings-container {
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	width: auto;
-	height: auto;
-	width: calc(100% - 220px);
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: auto;
+  height: auto;
+  width: calc(100% - 220px);
 }
 
 #warnings {
-	width: calc(100% - 30px);
-	overflow-y: scroll;
-	height: 130px;
-	background: #E2FFF3;
+  width: calc(100% - 30px);
+  overflow-y: scroll;
+  height: 130px;
+  background: #E2FFF3;
   padding: 15px;
+
   > p {
     margin-bottom: 3px;
   }
+
   display: none;
+}
+
+.button {
+  background: #6E5D4D;
+  border: none;
+  color: #fff;
+  width: 100%;
+  border-color: darken(#6E3D4D, 10%);
+}
+
+#about {
+  background: $orange;
+  color: #fff;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 30px;
+  padding: 15px;
+  width: 80%;
+  border-radius: 5px;
+
+  a {
+    color: #fff;
+  }
 }
