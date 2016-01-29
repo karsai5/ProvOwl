@@ -27,6 +27,7 @@
       console.log('Provenance visualiser initialised.');
       this.nodes = [];
       this.edges = [];
+      this.cy = null;
       this.nodeGroup = [];
     }
 
@@ -52,41 +53,103 @@
       print("Can't create " + what + "\"" + name + "\" doesn't exist");
     }
 
+    makeid() {
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+      for( var i=0; i < 5; i++ ){
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+      }
+
+      return text;
+    }
+
     clickFunction(evt) {
-      console.log(this);
       var node = evt.cyTarget;
       var informationObject = new informationString();
       this.selectedNode = node;
 
-      // Highlight node and clear old selected node
-      cy.$('node').removeClass('selected');
-      this.selectedNode.addClass('selected');
+      if (node.hasClass('group')) {
+        console.log('group');
+        console.log(node.data());
+        $.each(node.data().groupedElements, function(i, e) {
+          console.log(e.data().id);
+          e.restore();
+        });
+        node.remove();
+      } else {
+        // Highlight node and clear old selected node
+        cy.$('node').removeClass('selected');
+        this.selectedNode.addClass('selected');
 
-      // Create information string
-      informationObject.add("ID", node.id());
-      informationObject.add("Connected Nodes", " ");
-      $.each(node.neighborhood(), function(i, e) {
-        if (e.isNode()) {
-          informationObject.add(" - " + e.id());
-        }
-      });
+        // Create information string
+        informationObject.add("ID", node.id());
+        informationObject.add("Connected Nodes", " ");
+        $.each(node.neighborhood(), function(i, e) {
+          if (e.isNode()) {
+            informationObject.add(" - " + e.id());
+          }
+        });
+        console.log(node.data());
 
-      this.nodeGroup.push(node);
-
-      this.printNodeInfo(informationObject.print());
+        this.nodeGroup.push(node);
+        this.printNodeInfo(informationObject.print());
+      }
     }
 
     hidegroup() {
       var that = this;
-      $.each(this.nodeGroup, function (i, e) {
+      var groupElements = this.nodeGroup.slice();
+      this.nodeGroup = [];
+
+      $.each(groupElements, function (i, e) {
         $.each(e.neighbourhood(), function(x, n) {
           if (n.isEdge()) {
-            that.nodeGroup.push(n);
+            groupElements.push(n);
             n.remove();
           }
         });
         e.remove();
       });
+      // Make groupnode
+      var id = this.makeid();
+
+      var x = groupElements[0].position('x');
+      var y = groupElements[0].position('y');
+
+      cy.add({
+        group: "nodes",
+        data: { id: id, name: id, type: id, groupedElements: groupElements},
+        classes: 'group',
+        position: { x: x, y: y }
+      });
+
+      $.each(groupElements, function(i,e) {
+        if (e.isEdge()) {
+          console.log('edge');
+          cy.add({
+            group: "edges",
+            data: { 
+              id: e.data().source + '-' + id, 
+              source: e.data().source,
+              target: id,
+              label: e.data().label
+            }
+          });
+          cy.add({
+            group: "edges",
+            data: { 
+              id: id + '-' + e.data().target,
+              source: e.data().target,
+              target: id,
+              label: e.data().label
+            }
+          });
+        }
+      });
+      // this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, 
+      //   label: label}, classes: type});
+
     }
 
     showgroup() {
@@ -249,7 +312,6 @@
           ready: function(){
             window.cy = this;
             window.pvis = that;
-            console.log(this);
             this.on('tap', 'node', that.clickFunction.bind(that));
             if (typeof callback === 'function') { 
               callback();
