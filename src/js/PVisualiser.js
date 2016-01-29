@@ -3,54 +3,57 @@
   /* globals w1, cy */
   "use strict";
 
-  window.PVisualiser = function() {
-    console.log('Provenance visualiser initialised.');
-    this.nodes = [];
-    this.edges = [];
-    var that = this;
+  class informationString {
+    constructor() {
+      this.information = "";
+    }
+    add(c1, c2) {
+      if (c2 === undefined) {
+        this.information += c1 + "<br>";
+      } else {
+        this.information += "<b>" + c1 + "</b> " + c2 + "<br>";
+      }
+    }
+    newline() {
+      this.information += "<br>";
+    }
+    print() {
+      return this.information;
+    }
+  }
+
+  window.PVisualiser = class {
+    constructor() {
+      console.log('Provenance visualiser initialised.');
+      this.nodes = [];
+      this.edges = [];
+      this.nodeGroup = [];
+    }
 
     // Print to user log using window.w1, if that undefined
     // use the console instead
-    var print = function(msg) {
+    print(msg) {
       if (typeof w1 === 'undefined') {
         console.warn(msg);
       } else {
         w1.add(msg);
       }
-    };
+    }
 
-    var logUnexpectedVariables = function(what) {
+    logUnexpectedVariables(what) {
       print("Can't create " + what + ": unexpected variables");
-    };
+    }
 
-    var logDuplicate = function (what, name) {
+    logDuplicate(what, name) {
       print("Can't create duplicate " + what + "\"" + name + "\" already exists");
-    };
+    }
 
-    var logMissingNode = function (what, name) {
+    logMissingNode(what, name) {
       print("Can't create " + what + "\"" + name + "\" doesn't exist");
-    };
+    }
 
-    var informationString = class {
-      constructor() {
-        this.information = "";
-      }
-      add(c1, c2) {
-        if (c2 === undefined) {
-          this.information += c1 + "<br>";
-        } else {
-          this.information += "<b>" + c1 + "</b> " + c2 + "<br>";
-        }
-      }
-      newline() {
-        this.information += "<br>";
-      }
-      print() {
-        return this.information;
-      }
-    };
-
-    var clickFunction = function(evt) {
+    clickFunction(evt) {
+      console.log(this);
       var node = evt.cyTarget;
       var informationObject = new informationString();
       this.selectedNode = node;
@@ -64,20 +67,41 @@
       informationObject.add("Connected Nodes", " ");
       $.each(node.neighborhood(), function(i, e) {
         if (e.isNode()) {
-        informationObject.add(" - " + e.id());
+          informationObject.add(" - " + e.id());
         }
       });
 
-      that.printNodeInfo(informationObject.print());
-    };
+      this.nodeGroup.push(node);
 
-    this.printNodeInfo = function(text) {
+      this.printNodeInfo(informationObject.print());
+    }
+
+    hidegroup() {
+      var that = this;
+      $.each(this.nodeGroup, function (i, e) {
+        $.each(e.neighbourhood(), function(x, n) {
+          if (n.isEdge()) {
+            that.nodeGroup.push(n);
+            n.remove();
+          }
+        });
+        e.remove();
+      });
+    }
+
+    showgroup() {
+      $.each(this.nodeGroup, function (i, e) {
+        e.restore();
+      });
+    }
+
+    printNodeInfo(text) {
       // console.log(text);
       text = text.replace(/\n/g, '<br>');
       $("#node_info").html(text);
-    };
+    }
 
-    this.nodeExists = function(name) {
+    nodeExists(name) {
       var found = false;
       $.each(this.nodes, function() {
         if (name === this.data.id) {
@@ -86,9 +110,9 @@
         }
       });
       return found;
-    };
+    }
 
-    this.getNode = function(name) {
+    getNode(name) {
       var found = null;
       $.each(this.nodes, function() {
         if (name === this.data.id) {
@@ -97,57 +121,57 @@
         }
       });
       return found;
-    };
+    }
 
-    this.addNode = function(name, label, type) {
+    addNode(name, label, type) {
       if (typeof name !== 'string' || typeof label !== 'string') {
-        logUnexpectedVariables(type);
+        this.logUnexpectedVariables(type);
       } else if (this.nodeExists(name)) {
-        logDuplicate(type, name);
+        this.logDuplicate(type, name);
       } else {
         this.nodes.push({ data: { id: name, name: label, type: type}, 
           classes: type});
         return true;
       }
       return false;
-    };
+    }
 
     // @name1: first node
     // @name2: second node
     // @type: desc of type eg. derived
     // @label: label to be applied eg. wasDerivedFrom
-    this.addEdge = function(name1, name2, type, label) {
+    addEdge(name1, name2, type, label) {
       if (typeof name1 !== 'string' || typeof name2 !== 'string') {
-        logUnexpectedVariables(type + ' edge');
+        this.logUnexpectedVariables(type + ' edge');
       } else if (!this.nodeExists(name1)) {
-        logMissingNode(type + ' edge', name1);
+        this.logMissingNode(type + ' edge', name1);
       } else if (!this.nodeExists(name2)) {
-        logMissingNode(type + ' edge', name2);
+        this.logMissingNode(type + ' edge', name2);
       } else {
         this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, 
           label: label}, classes: type});
         return true;
       }
       return false;
-    };
+    }
 
-    this.createEntity = function(name, label) {
+    createEntity(name, label) {
       return this.addNode(name, label, 'entity');
-    };
+    }
 
-    this.createAgent = function(name, label) {
+    createAgent(name, label) {
       return this.addNode(name, label, 'agent');
-    };
+    }
 
-    this.createActivity = function(name, label) {
+    createActivity(name, label) {
       return this.addNode(name, label, 'activity');
-    };
+    }
 
-    this.createGroup = function(name) {
+    createGroup(name) {
       return this.addNode(name, name, 'group');
-    };
+    }
 
-    this.memberOf = function (name, group) {
+    memberOf(name, group) {
       var that = this;
       var index = -1;
 
@@ -170,37 +194,41 @@
       if (index > -1) {
         this.nodes.splice(index, 1);
       }
-    };
+    }
 
-    this.wasDerivedFrom = function (name1, name2) {
+    wasDerivedFrom(name1, name2) {
       return this.addEdge(name1, name2, 'derived', 'wasDerivedFrom');
-    };
+    }
 
-    this.specialisationOf = function (name1, name2) {
+    specialisationOf(name1, name2) {
       return this.addEdge(name1, name2, 'specialised', 'specialisationOf');
-    };
+    }
 
-    this.alternateOf = function (name1, name2) {
+    alternateOf(name1, name2) {
       return this.addEdge(name1, name2, 'alternate', 'alternateOf');
-    };
+    }
 
-    this.wasAttributedTo = function (name1, name2) {
+    wasAttributedTo(name1, name2) {
       return this.addEdge(name1, name2, 'attributed', 'wasAttributedTo');
-    };
+    }
 
-    this.wasGeneratedBy = function (name1, name2) {
+    wasGeneratedBy(name1, name2) {
       return this.addEdge(name1, name2, 'generated', 'wasGeneratedBy');
-    };
+    }
 
-    this.wasAssociatedWith = function (name1, name2) {
+    wasAssociatedWith(name1, name2) {
       return this.addEdge(name1, name2, 'associated', 'wasAssociatedWith');
-    };
+    }
 
-    this.used = function (name1, name2) {
+    used(name1, name2) {
       return this.addEdge(name1, name2, 'used', 'used');
-    };
+    }
 
-    this.render = function(inner, callback) {
+    handleEvent(event) {
+      console.log("event run");
+    }
+
+    render(inner, callback) {
       if (typeof inner !== 'string') {
         throw new Error("Can't render graph: Unexpected Variables");
       }
@@ -221,22 +249,23 @@
           ready: function(){
             window.cy = this;
             window.pvis = that;
-            this.on('tap', 'node', clickFunction);
+            console.log(this);
+            this.on('tap', 'node', that.clickFunction.bind(that));
             if (typeof callback === 'function') { 
               callback();
             }
           }
         });
       });
-    };
+    }
 
-    this.nodeCount = function() {
+    nodeCount() {
       return this.nodes.length;
-    };
+    }
 
-    this.edgeCount = function() {
+    edgeCount() {
       return this.edges.length;
-    };
+    }
 
   };
 }());
