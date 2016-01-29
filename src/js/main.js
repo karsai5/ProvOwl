@@ -53,7 +53,6 @@
       };
 
       window.w1 = Warnings.getInstance();  
-      window.cy
     }
 
   });

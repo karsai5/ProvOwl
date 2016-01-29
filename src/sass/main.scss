@@ -1,11 +1,11 @@
-$sidebarWidth: 220px;
+$sidebar-width: 220px;
 $orange: #D45D3F;
 
 #sidebar {
   padding: 10px;
   color: #fff;
   background: $orange;
-  width: $sidebarWidth - 20px;
+  width: $sidebar-width - 20px;
   position: fixed;
   top: 0;
   left: 0;
@@ -19,6 +19,13 @@ $orange: #D45D3F;
     color: #000;
   }
 
+  h2 {
+    font-size: 1.4em;
+    margin-bottom: 0.2em;
+    padding-left: 10px;
+    padding-top: 10px;
+  }
+
   hr {
     margin-top: 1em;
     margin-bottom: 1em;
@@ -26,7 +33,7 @@ $orange: #D45D3F;
 
   .footer {
     background: darken($orange, 20%);
-    width: $sidebarWidth - 6px;
+    width: $sidebar-width - 6px;
     position: fixed;
     bottom: 0;
     padding: 3px;
@@ -38,7 +45,7 @@ $orange: #D45D3F;
 
 #cy {
   position: fixed;
-  left: $sidebarWidth;
+  left: $sidebar-width;
   width: calc(100% - 220px);
   height: 100%;
 }
@@ -74,6 +81,24 @@ $orange: #D45D3F;
   border-color: darken(#6E3D4D, 10%);
 }
 
+.sidebar-wrapper {
+  width: $sidebar-width;
+  position: relative;
+  right: 10px;
+  margin-top: 10px;
+}
+
+#node_info {
+  padding: 10px;
+}
+
+.sidebar-wrapper-node-info {
+  background: lighten($orange, 30%);
+  background: white;
+  color: #000;
+}
+
+// Background page css
 #about {
   background: $orange;
   color: #fff;

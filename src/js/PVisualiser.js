@@ -1,5 +1,5 @@
 (function() {
-  /* jshint unused:false */
+  /* jshint unused:false, esnext: true */
   /* globals w1, cy */
   "use strict";
 
@@ -30,28 +30,45 @@
     var logMissingNode = function (what, name) {
       print("Can't create " + what + "\"" + name + "\" doesn't exist");
     };
-    
+
+    var informationString = class {
+      constructor() {
+        this.information = "";
+      }
+      add(c1, c2) {
+        if (c2 === undefined) {
+          this.information += c1 + "<br>";
+        } else {
+          this.information += "<b>" + c1 + "</b> " + c2 + "<br>";
+        }
+      }
+      newline() {
+        this.information += "<br>";
+      }
+      print() {
+        return this.information;
+      }
+    };
+
     var clickFunction = function(evt) {
       var node = evt.cyTarget;
-      var informationString = "";
+      var informationObject = new informationString();
       this.selectedNode = node;
 
       // Highlight node and clear old selected node
       cy.$('node').removeClass('selected');
       this.selectedNode.addClass('selected');
-      
+
       // Create information string
-      informationString += "Node Information\n";
-      informationString += node.id() + "\n";
-      informationString += "\n";
-      informationString += "Connected Nodes:\n";
+      informationObject.add("ID", node.id());
+      informationObject.add("Connected Nodes", " ");
       $.each(node.neighborhood(), function(i, e) {
         if (e.isNode()) {
-        informationString += ' ' + e.id() + '\n';
+        informationObject.add(" - " + e.id());
         }
       });
 
-      that.printNodeInfo(informationString);
+      that.printNodeInfo(informationObject.print());
     };
 
     this.printNodeInfo = function(text) {
@@ -88,7 +105,7 @@
       } else if (this.nodeExists(name)) {
         logDuplicate(type, name);
       } else {
-        this.nodes.push({ data: { id: name, name: label}, 
+        this.nodes.push({ data: { id: name, name: label, type: type}, 
           classes: type});
         return true;
       }
