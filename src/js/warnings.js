@@ -7,37 +7,45 @@
 
     var warnings = function() {
       var div;
-      var shown = false;
+      var shown = true;
 
       this.setDiv = function(warningDiv) {
         div = $(warningDiv);
-        div.html('<p><strong>Warnings</strong> <a href="#" onclick="w1.hide()">[close]</a></p>');
+        div.html('<p><strong>Warnings</strong> <a href="#" onclick="w1.toggle()">show</a></p>');
+        div.css('position', 'relative');
+        this.hide();
+        div.show();
       };
 
-      this.show = function() {
+      this.toggle = function() {
+        if (shown) {
+          this.hide();
+        } else {
+          this.show();
+        }
+      };
+
+      this.show = function(offset) {
+        if (offset === undefined) {
+          offset = 0;
+        }
         if (!shown) {
           shown = true;
-          div.css('position', 'relative');
-          div.css('top', div.outerHeight());
-          div.show();
           div.animate({ top: 0}, 500 );
+          div.find('a').text('hide');
         }
       };
 
       this.hide = function() {
         if (shown) {
           shown = false;
-          div.animate({top: div.outerHeight()}, 500 , function showDiv() {
-                div.hide();
-              });
+          div.animate({top: div.outerHeight() - 45}, 500);
+          div.find('a').text('show');
         }
       };
 
       this.add = function(type, details) {
         div.append('<p><strong>' + type + ':</strong> ' + details + '</p>');
-        if (!shown) {
-          this.show();
-        }
       };
     };
 
