@@ -17,6 +17,9 @@
     newline() {
       this.information += "<br>";
     }
+    addUngroupButton(node) {
+      this.information += "<button class=\"button\" onclick=\"pvis.unGroupNode('" + node.data().id + "');\">Ungroup</button>";
+    }
     print() {
       return this.information;
     }
@@ -28,7 +31,6 @@
       this.nodes = [];
       this.edges = [];
       this.cy = null;
-      this.nodeGroup = [];
     }
 
     // Print to user log using window.w1, if that undefined
@@ -64,44 +66,54 @@
       return text;
     }
 
-    clickFunction(evt) {
+    clearSelectedNodes() {
+      cy.$('node').removeClass('selected');
+    }
+
+    unGroupNode(id) {
+      var node = cy.getElementById(id);
+      if (true) {
+        $.each(node[0].data().groupedElements, function(i, e) {
+          e.restore();
+        });
+        node.remove();
+      }
+    }
+
+    clickNodeEvent(evt) {
       var node = evt.cyTarget;
       var informationObject = new informationString();
       this.selectedNode = node;
 
-      if (node.hasClass('group')) {
-        console.log('group');
-        console.log(node.data());
-        $.each(node.data().groupedElements, function(i, e) {
-          console.log(e.data().id);
-          e.restore();
-        });
-        node.remove();
-      } else {
-        // Highlight node and clear old selected node
-        cy.$('node').removeClass('selected');
-        this.selectedNode.addClass('selected');
-
-        // Create information string
-        informationObject.add("ID", node.id());
-        informationObject.add("Connected Nodes", " ");
-        $.each(node.neighborhood(), function(i, e) {
-          if (e.isNode()) {
-            informationObject.add(" - " + e.id());
-          }
-        });
-        console.log(node.data());
-
-        this.nodeGroup.push(node);
-        this.printNodeInfo(informationObject.print());
+      // Highlight node and clear old selected node
+      // Unless ctrl is held
+      if (!evt.originalEvent.ctrlKey) {
+        this.clearSelectedNodes();
       }
+      this.selectedNode.addClass('selected');
+
+      // Create information string
+      informationObject.add("ID", node.id());
+      informationObject.add("Connected Nodes", " ");
+      $.each(node.neighborhood(), function(i, e) {
+        if (e.isNode()) {
+          informationObject.add(" - " + e.id());
+        }
+      });
+
+      if (node.hasClass('group')) {
+        informationObject.addUngroupButton(node);
+      }
+
+      this.printNodeInfo(informationObject.print());
     }
 
-    hidegroup() {
+    groupSelectedNodes() {
       var that = this;
-      var groupElements = this.nodeGroup.slice();
-      this.nodeGroup = [];
+      var groupElements = Array.prototype.slice.call( cy.nodes('.selected'), 0);
+      console.log(groupElements);
 
+      // Remove edges from graph
       $.each(groupElements, function (i, e) {
         $.each(e.neighbourhood(), function(x, n) {
           if (n.isEdge()) {
@@ -111,12 +123,12 @@
         });
         e.remove();
       });
+
       // Make groupnode
       var id = this.makeid();
-
+      // get position of first selected item
       var x = groupElements[0].position('x');
       var y = groupElements[0].position('y');
-
       cy.add({
         group: "nodes",
         data: { id: id, name: id, type: id, groupedElements: groupElements},
@@ -124,6 +136,7 @@
         position: { x: x, y: y }
       });
 
+      // add edges that should be connected to group node
       $.each(groupElements, function(i,e) {
         if (e.isEdge()) {
           console.log('edge');
@@ -146,15 +159,6 @@
             }
           });
         }
-      });
-      // this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, 
-      //   label: label}, classes: type});
-
-    }
-
-    showgroup() {
-      $.each(this.nodeGroup, function (i, e) {
-        e.restore();
       });
     }
 
@@ -312,7 +316,21 @@
           ready: function(){
             window.cy = this;
             window.pvis = that;
-            this.on('tap', 'node', that.clickFunction.bind(that));
+
+            // add tap bindings
+            this.on('tap', function(event) {
+              var evtTarget = event.cyTarget; 
+
+              if (evtTarget === cy) { // clicked on background
+                that.clearSelectedNodes();
+              } else if (evtTarget.group() === 'edges') { // clicked on edge
+                console.log('clicked on edge');
+              } else if (evtTarget.group() === 'nodes') { // clicked on node
+                that.clickNodeEvent(event);
+              }
+
+            });
+
             if (typeof callback === 'function') { 
               callback();
             }
