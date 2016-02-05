@@ -29,7 +29,7 @@
     <script src="/bower_components/lodash/lodash.js"></script>
     <script src="/bower_components/graphlib/dist/graphlib.core.js"></script>
     <script src="/bower_components/dagre/dist/dagre.core.js"></script>
-    <!-- <script src="/bower_components/cytoscape/dist/cytoscape.js"></script> -->
+    <script src="/bower_components/cytoscape/dist/cytoscape.js"></script>
     <script src="/bower_components/cytoscape-dagre/cytoscape-dagre.js"> </script>
 
     <!-- Javascript -->
@@ -47,15 +47,25 @@
     <div id="sidebar">
       <h1>Prov<br/>Owl</h1>
       <button class="button" onclick="selectFile();">Select Prov File</button>
-      <div id="file_info">Select a provenance file to open using the above file dialogue.</div>
+      <ul id="menu-v">
+        <li><a onclick="pvis.groupSelectedNodes();">Group selected nodes</a></li>
+        <li><a href="#">Reset Layout</a>
+          <ul class="sub">
+            <li><a onclick="pvis.resetLayout('dagre');">Dagre</a></li>
+            <li><a onclick="pvis.resetLayout('random');">Random</a></li>
+            <li><a onclick="pvis.resetLayout('grid');">Grid</a></li>
+            <li><a onclick="pvis.resetLayout('circle');">Circle</a></li>
+            <li><a onclick="pvis.resetLayout('breadthfirst');">Breadth First</a></li>
+          </ul>
+        </li>
+        <li><a onclick="pvis.resetView();">Reset view</a></li>
+      </ul>
       <div class="sidebar-wrapper sidebar-wrapper-node-info">
         <h2>Node Information</h2>
         <div id="node_info">
           No node currently selected.
         </div>
       </div>
-      <br>
-      <button class="button" onclick="pvis.groupSelectedNodes();">Group Nodes</button>
       <div class="footer">
         <a href="/about.html">About</a>
       </div>

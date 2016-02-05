@@ -58,6 +58,7 @@ $orange: #D45D3F;
   width: auto;
   height: auto;
   width: calc(100% - 220px);
+  pointer-events: none;
 }
 
 #warnings {
@@ -67,6 +68,7 @@ $orange: #D45D3F;
   background: #E2FFF3;
   padding: 15px;
   position: relative;
+  pointer-events: auto;
 
   > p {
     margin-bottom: 3px;

@@ -28,6 +28,7 @@
   background: #6E5D4D;
   color: #fff;
   width: 100%;
+  cursor: pointer;
 }
 
 #menu-v li a {
@@ -44,12 +45,6 @@
 
 #menu-v ul li a {
   line-height: 30px;
-}
-
-#menu-v li a.arrow:hover {
-  background-image: url(arrowon.gif);
-  background-repeat: no-repeat;
-  background-position: 97% 50%;
 }
 
 /*Sub level menu items

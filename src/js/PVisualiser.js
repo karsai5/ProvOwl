@@ -296,7 +296,18 @@
     }
 
     resetLayout(name) {
-      cy.$().layout({name: name, animate: true});
+      cy.$().layout({
+        name: name, 
+        animate: true,
+        fit: false,
+      });
+    }
+
+    resetView() {
+      cy.animate({
+        fit: {},
+        duration: 500,
+      });
     }
 
     render(inner, callback) {
