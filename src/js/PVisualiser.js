@@ -30,6 +30,7 @@
       console.log('Provenance visualiser initialised.');
       this.nodes = [];
       this.edges = [];
+      this.hangingEdges = [];
       this.cy = null;
     }
 
@@ -58,82 +59,144 @@
       cy.$('node').removeClass('selected');
     }
 
+    restoreHangingEdges() {
+      var removeIds = [];
+      var that = this;
+      $.each(this.hangingEdges, function(i,ele) {
+        if (cy.getElementById(ele.data().source).length === 1 &&
+            cy.getElementById(ele.data().target).length === 1) {
+          ele.restore();
+          removeIds.push(i);
+        }
+      });
+      $.each(removeIds, function(i, id) {
+        that.hangingEdges.splice(id, 1);
+      });
+      console.log(this.hangingEdges);
+    }
+
     unGroupNode(id) {
       var node = cy.getElementById(id);
+      var that = this;
       var x = node.position('x');
       var y = node.position('y');
-      $.each(node[0].data().groupedElements, function(i, e) {
-        e.position({x:x, y:y}); // children to current parent position
-        e.restore(); // restore
-        // animate to original position
-        e.animate({position: {x: e.data('originalX'), y: e.data('originalY')}, 
+      var originalNodes = node.data().originalNodes;
+      var originalEdges = node.data().originalEdges;
+
+      // Restore original Nodes
+      $.each(originalNodes, function(i, ele) {
+        ele.restore();
+        ele.animate({position: {x: ele.data('originalX'), y: ele.data('originalY')}, 
           duration: 500});
         // remove original fields to save space
-        e.removeData('originalX');
-        e.removeData('originalY');
+        ele.removeData('originalX originalY group');
       });
+
+      this.restoreHangingEdges();
+
+      // Restore original Edges
+      $.each(originalEdges, function(i, ele) {
+        if (cy.getElementById(ele.data().source).length === 1 &&
+            cy.getElementById(ele.data().target).length === 1) {
+          ele.restore();
+        } else {
+          that.hangingEdges.push(ele);
+        }
+      });
+
+      // $.each(node[0].data().groupedElements, function(i, e) {
+      //   e.position({x:x, y:y}); // children to current parent position
+      //   e.restore(); // restore
+      //   // animate to original position
+      //   e.animate({position: {x: e.data('originalX'), y: e.data('originalY')}, 
+      //     duration: 500});
+      //   // remove original fields to save space
+      //   e.removeData('originalX');
+      //   e.removeData('originalY');
+      // });
       node.remove();
     }
 
     groupSelectedNodes() {
       var that = this;
-      var groupElements = Array.prototype.slice.call( cy.nodes('.selected'), 0);
+      var groupElements = cy.nodes('.selected');
 
       // Get position of new node
-      var x = groupElements[0].position('x');
-      var y = groupElements[0].position('y');
+      var x = groupElements.position('x');
+      var y = groupElements.position('y');
 
-      // Remove edges from graph
-      // cy.nodes('.selected').animate({position: {x:x, y:y}, duration: 500});
+      // Animate nodes into group position
       cy.nodes('.selected').each(function(i,ele) {
         ele.data('originalX', ele.position('x'));
         ele.data('originalY', ele.position('y'));
         ele.animate({position: {x:x, y:y}, duration: 500});
       });
 
+      // Wait for animation to complete
       setTimeout(function() {
-        $.each(groupElements, function (i, e) {
-          $.each(e.neighbourhood(), function(x, n) {
-            if (n.isEdge()) {
-              groupElements.push(n);
-              n.remove();
-            }
-          });
-          e.remove();
+        // create hash table of ids
+        var idHash = {};
+        groupElements.each(function(i, ele){
+          idHash[ele.id()] = true;
         });
 
         // Make groupnode
         var id = that.makeid();
-        cy.add({
+        var groupNode = cy.add({
           group: "nodes",
-          data: { id: id, name: id, type: 'group', groupedElements: groupElements},
+          data: { id: id, name: id, type: 'group'},
           classes: 'group',
           position: { x: x, y: y }
         });
 
-        // add edges that should be connected to group node
-        $.each(groupElements, function(i,e) {
-          if (e.isEdge()) {
-            cy.add({
-              group: "edges",
-              data: { 
-                id: e.data().source + '-' + id, 
-                source: e.data().source,
-                target: id,
-                label: e.data().label
+        // Save original nodes and edges
+        // and create duplicate edges connedted to groupnode
+        var originalNodes = [];
+        var originalEdges = [];
+        var neighbourhood = groupElements.union(groupElements.neighbourhood());
+        for (var i=0; i < neighbourhood.length; i++) { // loop through neighbourhood
+          var ele = neighbourhood[i];
+          if (ele.isNode() && idHash[ele.id()] === true) { // if node in group
+            ele.data('group', groupNode.id());
+            originalNodes.push(ele);
+            ele.remove();
+          } else if (ele.isEdge()) { // if edge
+            originalEdges.push(ele);
+            var source = "";
+            var target = "";
+            // set source and target correctly
+            if (idHash[ele.data('source')] === true && // if source is in group
+                idHash[ele.data('target')] === undefined) {
+              source = groupNode.id();
+              target = ele.data('target');
+            } else if (idHash[ele.data('target')] === true && // if target is in group
+                idHash[ele.data('source')] === undefined) {
+              source = ele.data('source');
+              target = groupNode.id();
+            }
+
+            if (source !== "" && target !== "") { // check it's not an internal edge
+              // check edge doesn't already exist
+              var newid = source + '-' + target;
+              if (cy.getElementById(newid).length === 0) { 
+                cy.add({ // add edge to graph
+                  group: "edges",
+                  data: { 
+                    id: newid, 
+                    source: source,
+                    target: target,
+                    label: ele.data().label
+                  }
+                });
               }
-            });
-            cy.add({
-              group: "edges",
-              data: { 
-                id: id + '-' + e.data().target,
-                source: e.data().target,
-                target: id,
-                label: e.data().label
-              }
-            });
+            }
           }
-        });
+        }
+
+        // Add originals to group nodes
+        groupNode.data('originalNodes', originalNodes);
+        groupNode.data('originalEdges', originalEdges);
+
       }, 500);
     }
 
@@ -153,7 +216,6 @@
       var data = node.data();
       for (var property in data) {
         if (data.hasOwnProperty(property)){
-          console.log(property);
           informationObject.add(property, data[property]);
         }
       }
@@ -165,7 +227,6 @@
     }
 
     printNodeInfo(text) {
-      // console.log(text);
       text = text.replace(/\n/g, '<br>');
       $("#node_info").html(text);
     }
