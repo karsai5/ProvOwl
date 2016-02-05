@@ -68,6 +68,9 @@
         // animate to original position
         e.animate({position: {x: e.data('originalX'), y: e.data('originalY')}, 
           duration: 500});
+        // remove original fields to save space
+        e.removeData('originalX');
+        e.removeData('originalY');
       });
       node.remove();
     }
@@ -103,7 +106,7 @@
         var id = that.makeid();
         cy.add({
           group: "nodes",
-          data: { id: id, name: id, type: id, groupedElements: groupElements},
+          data: { id: id, name: id, type: 'group', groupedElements: groupElements},
           classes: 'group',
           position: { x: x, y: y }
         });
@@ -147,14 +150,13 @@
       this.selectedNode.addClass('selected');
 
       // Create information string
-      informationObject.add("ID", node.id());
-      informationObject.add("Connected Nodes", " ");
-      $.each(node.neighborhood(), function(i, e) {
-        if (e.isNode()) {
-          informationObject.add(" - " + e.id());
+      var data = node.data();
+      for (var property in data) {
+        if (data.hasOwnProperty(property)){
+          console.log(property);
+          informationObject.add(property, data[property]);
         }
-      });
-
+      }
       if (node.hasClass('group')) {
         informationObject.addUngroupButton(node);
       }
