@@ -43,18 +43,6 @@
       }
     }
 
-    logUnexpectedVariables(what) {
-      print("Can't create " + what + ": unexpected variables");
-    }
-
-    logDuplicate(what, name) {
-      print("Can't create duplicate " + what + "\"" + name + "\" already exists");
-    }
-
-    logMissingNode(what, name) {
-      print("Can't create " + what + "\"" + name + "\" doesn't exist");
-    }
-
     makeid() {
       var text = "";
       var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -72,12 +60,78 @@
 
     unGroupNode(id) {
       var node = cy.getElementById(id);
-      if (true) {
-        $.each(node[0].data().groupedElements, function(i, e) {
-          e.restore();
+      var x = node.position('x');
+      var y = node.position('y');
+      $.each(node[0].data().groupedElements, function(i, e) {
+        e.position({x:x, y:y}); // children to current parent position
+        e.restore(); // restore
+        // animate to original position
+        e.animate({position: {x: e.data('originalX'), y: e.data('originalY')}, 
+          duration: 500});
+      });
+      node.remove();
+    }
+
+    groupSelectedNodes() {
+      var that = this;
+      var groupElements = Array.prototype.slice.call( cy.nodes('.selected'), 0);
+
+      // Get position of new node
+      var x = groupElements[0].position('x');
+      var y = groupElements[0].position('y');
+
+      // Remove edges from graph
+      // cy.nodes('.selected').animate({position: {x:x, y:y}, duration: 500});
+      cy.nodes('.selected').each(function(i,ele) {
+        ele.data('originalX', ele.position('x'));
+        ele.data('originalY', ele.position('y'));
+        ele.animate({position: {x:x, y:y}, duration: 500});
+      });
+
+      setTimeout(function() {
+        $.each(groupElements, function (i, e) {
+          $.each(e.neighbourhood(), function(x, n) {
+            if (n.isEdge()) {
+              groupElements.push(n);
+              n.remove();
+            }
+          });
+          e.remove();
         });
-        node.remove();
-      }
+
+        // Make groupnode
+        var id = that.makeid();
+        cy.add({
+          group: "nodes",
+          data: { id: id, name: id, type: id, groupedElements: groupElements},
+          classes: 'group',
+          position: { x: x, y: y }
+        });
+
+        // add edges that should be connected to group node
+        $.each(groupElements, function(i,e) {
+          if (e.isEdge()) {
+            cy.add({
+              group: "edges",
+              data: { 
+                id: e.data().source + '-' + id, 
+                source: e.data().source,
+                target: id,
+                label: e.data().label
+              }
+            });
+            cy.add({
+              group: "edges",
+              data: { 
+                id: id + '-' + e.data().target,
+                source: e.data().target,
+                target: id,
+                label: e.data().label
+              }
+            });
+          }
+        });
+      }, 500);
     }
 
     clickNodeEvent(evt) {
@@ -106,60 +160,6 @@
       }
 
       this.printNodeInfo(informationObject.print());
-    }
-
-    groupSelectedNodes() {
-      var that = this;
-      var groupElements = Array.prototype.slice.call( cy.nodes('.selected'), 0);
-      console.log(groupElements);
-
-      // Remove edges from graph
-      $.each(groupElements, function (i, e) {
-        $.each(e.neighbourhood(), function(x, n) {
-          if (n.isEdge()) {
-            groupElements.push(n);
-            n.remove();
-          }
-        });
-        e.remove();
-      });
-
-      // Make groupnode
-      var id = this.makeid();
-      // get position of first selected item
-      var x = groupElements[0].position('x');
-      var y = groupElements[0].position('y');
-      cy.add({
-        group: "nodes",
-        data: { id: id, name: id, type: id, groupedElements: groupElements},
-        classes: 'group',
-        position: { x: x, y: y }
-      });
-
-      // add edges that should be connected to group node
-      $.each(groupElements, function(i,e) {
-        if (e.isEdge()) {
-          console.log('edge');
-          cy.add({
-            group: "edges",
-            data: { 
-              id: e.data().source + '-' + id, 
-              source: e.data().source,
-              target: id,
-              label: e.data().label
-            }
-          });
-          cy.add({
-            group: "edges",
-            data: { 
-              id: id + '-' + e.data().target,
-              source: e.data().target,
-              target: id,
-              label: e.data().label
-            }
-          });
-        }
-      });
     }
 
     printNodeInfo(text) {
@@ -360,6 +360,18 @@
 
     edgeCount() {
       return this.edges.length;
+    }
+
+    logUnexpectedVariables(what) {
+      print("Can't create " + what + ": unexpected variables");
+    }
+
+    logDuplicate(what, name) {
+      print("Can't create duplicate " + what + "\"" + name + "\" already exists");
+    }
+
+    logMissingNode(what, name) {
+      print("Can't create " + what + "\"" + name + "\" doesn't exist");
     }
 
   };
