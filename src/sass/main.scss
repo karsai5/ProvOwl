@@ -10,6 +10,7 @@ $orange: #D45D3F;
   top: 0;
   left: 0;
   height: 100%;
+  z-index: 10;
 
   a {
     color: #fff;
@@ -79,7 +80,6 @@ $orange: #D45D3F;
   border: none;
   color: #fff;
   width: 100%;
-  border-color: darken(#6E3D4D, 10%);
 }
 
 .sidebar-wrapper {

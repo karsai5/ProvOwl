@@ -295,6 +295,10 @@
       console.log("event run");
     }
 
+    resetLayout(name) {
+      cy.$().layout({name: name, animate: true});
+    }
+
     render(inner, callback) {
       if (typeof inner !== 'string') {
         throw new Error("Can't render graph: Unexpected Variables");
