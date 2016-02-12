@@ -215,10 +215,14 @@
       var originalNodes = node.data().originalNodes;
       var originalEdges = node.data().originalEdges;
 
-      // Restore original Nodes
+      // Restore original Nodes in positions relative to original
       $.each(originalNodes, function(i, ele) {
+        var xDifference = ele.position('x') - ele.data('originalX');
+        var yDifference = ele.position('y') - ele.data('originalY');
+        ele.position('x', x);
+        ele.position('y', y);
         ele.restore();
-        ele.animate({position: {x: ele.data('originalX'), y: ele.data('originalY')}, 
+        ele.animate({position: {x: x-xDifference, y: y-yDifference}, 
           duration: 500});
         // remove original fields to save space
         ele.removeData('originalX originalY group');
