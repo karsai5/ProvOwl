@@ -3,6 +3,138 @@
   /* globals w1, cy */
   "use strict";
 
+  function Node(data, isGroup) {
+    this.data = data;
+    this.parent = null;
+    this.children = [];
+    this.isRoot = false;
+    this.removeChild = function(id) {
+      var index = -1;
+      for (var i=0; i<this.children.length; i++) {
+        if (this.children[i].data === id){
+          index = i;
+        }
+      }
+      if (index > -1) {
+        this.children.splice(index, 1);
+      }
+    }
+  }
+
+  class groupManager {
+    constructor() {
+      this.root = new Node('root');
+      this.root.isRoot = true;
+    }
+
+    /**
+     * Adds a group to be monitored by the groupManager
+     * @param {string} id - The id of the group you want to add
+     */
+    addGroup(id, nodes, parent) {
+      var node = new Node(id);
+      node.parent = this.root;
+      this.root.children.push(node);
+      $.each(nodes, function(i, n) {
+        var child = new Node(n.id());
+        child.parent = node;
+        node.children.push(child);
+      });
+    }
+
+    /**
+     * Remove a group from the manage (ie. during ungrouping)
+     * It removes the group, disconnects all the leaf children and attaches
+     * other groups to parent
+     * @param {string} id - Id of the node you want removed
+     */
+    removeGroup(id) {
+      var groupNode = this.find(id);
+      if (groupNode === undefined) {
+        console.warn("Failed to remove group from groupManager: '" + id + 
+            "' doesn't seem to exits");
+      } else {
+        // remove all children, add groups to parent
+        for (var i=0; i < groupNode.children.length; i++) {
+          var node = groupNode.children[i];
+          if (node.children.length > 0){ // is group
+            node.parent = groupNode.parent;
+          } else { // is node
+            node.parent = null;
+          }
+        }
+        groupNode.parent.removeChild(id);
+        groupNode.parent = null;
+        groupNode.children = [];
+      }
+    }
+
+    /**
+     * Recursively finds a node and returns it
+     * @param {string} id - the id of the node you want returned
+     * @return {Node} node - the searched for node or if it's not in the group
+     * manager returns undefined.
+     */
+    find(id, node) {
+      // if no node set, get root
+      if (node === undefined) { node = this.root; } 
+
+      // for each child
+      for (var i=0; i<node.children.length; i++) {
+        if (node.children[i].data === id) {
+          return node.children[i];
+        } else {
+          var result = this.find(id, node.children[i]);
+          if (result !== undefined) { return result; }
+        }
+      }
+    }
+
+    /**
+     * Serch up through parents to find topmost group
+     * @param {string} id - Id of node you want the parent of
+     */
+    getParent(id) {
+      // if node already in dom just return it
+      if (cy.getElementById(id).length === 1) {
+        return id;
+      }
+
+      var currentNode = this.findLeaf(id);
+      if (currentNode !== undefined) {
+        while (currentNode.parent.isRoot === false) {
+          currentNode = currentNode.parent; 
+        }
+        return currentNode.data;
+      }
+    }
+
+    /**
+     * Find a certain leaf. Doesn't check centre nodes so it's a bit faster
+     * that the find function.
+     * @param {string} id - Id of node you want the parent of
+     */
+    findLeaf(id, node) {
+      var that = this;
+      if (node === undefined) {
+        node = this.root;
+      }
+      if (node.children.length > 0) {
+        for (var i = 0; i < node.children.length; i++) {
+          var value = this.findLeaf(id, node.children[i]);
+          if (value !== undefined) {
+            return value;
+          }
+        }
+      } else {
+        if (node.data === id) {
+          return node;
+        }
+      }
+    }
+  }
+
+
   class informationString {
     constructor() {
       this.information = "";
@@ -32,6 +164,7 @@
       this.edges = [];
       this.hangingEdges = [];
       this.cy = null;
+      this.groupManager = new groupManager();
     }
 
     // Print to user log using window.w1, if that undefined
@@ -72,7 +205,6 @@
       $.each(removeIds, function(i, id) {
         that.hangingEdges.splice(id, 1);
       });
-      console.log(this.hangingEdges);
     }
 
     unGroupNode(id) {
@@ -96,24 +228,28 @@
 
       // Restore original Edges
       $.each(originalEdges, function(i, ele) {
-        if (cy.getElementById(ele.data().source).length === 1 &&
+        if( cy.getElementById(ele.data().source).length === 1 &&
             cy.getElementById(ele.data().target).length === 1) {
           ele.restore();
         } else {
+          var source = that.groupManager.getParent(ele.data().source);
+          var target = that.groupManager.getParent(ele.data().target);
+          if (source !== undefined && target !== undefined ) {
+            cy.add({
+              group: "edges", data: { 
+                id: source + '-' + target, 
+                target: target,
+                source: source,
+                label: ele.data().label
+              }
+            });
+          }
+
           that.hangingEdges.push(ele);
         }
-      });
 
-      // $.each(node[0].data().groupedElements, function(i, e) {
-      //   e.position({x:x, y:y}); // children to current parent position
-      //   e.restore(); // restore
-      //   // animate to original position
-      //   e.animate({position: {x: e.data('originalX'), y: e.data('originalY')}, 
-      //     duration: 500});
-      //   // remove original fields to save space
-      //   e.removeData('originalX');
-      //   e.removeData('originalY');
-      // });
+      });
+      this.groupManager.removeGroup(node.id());
       node.remove();
     }
 
@@ -196,6 +332,9 @@
         // Add originals to group nodes
         groupNode.data('originalNodes', originalNodes);
         groupNode.data('originalEdges', originalEdges);
+
+        // Add to GroupManager
+        that.groupManager.addGroup(id, originalNodes);
 
       }, 500);
     }
