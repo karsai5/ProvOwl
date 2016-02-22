@@ -27,7 +27,7 @@ down control.
 You can save an image of the graph in it's current state by using the
 screenshot options.
 
-![Screenshot of provenance webpage with graph open](https://raw.githubusercontent.com/karsai5/ProvOwl/master/images/ProvOwl.png)
+![Screenshot of provenance webpage with graph open](https://raw.githubusercontent.com/karsai5/ProvOwl/master/images/ProvOwl.png =300)
 
 ## Running ProvOwl locally
 
