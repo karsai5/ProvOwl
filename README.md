@@ -29,7 +29,9 @@ screenshot options.
 
 <img alt="Screenshot of provenance webpage with graph open" src="https://raw.githubusercontent.com/karsai5/ProvOwl/master/images/ProvOwl.png" width="800">
 
-## Running ProvOwl locally
+## Running ProvOwl
+
+### Running ProvOwl locally
 
 In order to compile sass files run the following gulp command:
 ```
@@ -39,7 +41,7 @@ gulp styles
 You should then be able to view the website in development by using the src
 directory as the website root.
 
-## Deploying ProvOwl
+### Deploying ProvOwl
 
 Running the following:
 ```
