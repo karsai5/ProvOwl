@@ -172,6 +172,11 @@ informationString.prototype.print = function() {
   return this.information;
 };
 
+/**
+ * The PVisualiser is the main object that creates and renders a provenance
+ * graph.
+ * @constructor
+ */
 function PVisualiser() {
   console.log('Provenance visualiser initialised.');
   this.nodes = [];
@@ -181,8 +186,10 @@ function PVisualiser() {
   this.GroupManager = new GroupManager();
 }
 
-// Print to user log using window.w1, if that undefined
-// use the console instead
+/**
+ * Print to user log using window.w1, if that's undefined use the console instead
+ * @param {string} msg The message you want to have shown
+ */
 PVisualiser.prototype.print = function(msg) {
   if (typeof w1 === 'undefined') {
     console.warn(msg);
@@ -191,6 +198,10 @@ PVisualiser.prototype.print = function(msg) {
   }
 };
 
+/**
+ * Using letters and numbers create a random id 5 characters long.
+ * @return {string} id Random id eg: 7Q2nm, lCQDg or I2v4E
+ */
 PVisualiser.prototype.makeid = function() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -202,10 +213,19 @@ PVisualiser.prototype.makeid = function() {
   return text;
 };
 
+/**
+ * Remove selected class from all nodes. This will remove the visual selected
+ * indicator (red outline) as well.
+ */
 PVisualiser.prototype.clearSelectedNodes = function() {
   cy.$('node').removeClass('selected');
 };
 
+/*
+ * Hanging edges are edges that are connected to nodes that are currently not
+ * in the graph (for example in a group). This function loops through the
+ * hanging edges and checks if any can be restored, restoring them if it can.
+ */
 PVisualiser.prototype.restoreHangingEdges = function() {
   var removeIds = [];
   var that = this;
@@ -221,6 +241,11 @@ PVisualiser.prototype.restoreHangingEdges = function() {
   });
 };
 
+/**
+ * Remove a composite node and move nodes back to their original position
+ * relative to where the composite node has been moved. 
+ * @param {string} id The id string of the group you want to uncluster
+ */
 PVisualiser.prototype.unGroupNode = function(id) {
   var node = cy.getElementById(id);
   var that = this;
@@ -271,6 +296,11 @@ PVisualiser.prototype.unGroupNode = function(id) {
   node.remove();
 };
 
+/**
+ * Remove the selected nodes from the graph and replace them instead with
+ * a compiste node with all the same edges. No arguments are required as it
+ * groups any nodes with the 'selected' class.
+ */
 PVisualiser.prototype.groupSelectedNodes = function() {
   var that = this;
   var groupElements = cy.nodes('.selected');
@@ -357,6 +387,11 @@ PVisualiser.prototype.groupSelectedNodes = function() {
   }, 500);
 };
 
+/**
+ * Bound to they Cytoscape.js object, this will fire whenever something in the
+ * graph is clicked. It will check what type of object was clicked (node,
+ * group, edge) and act appropriately.
+ */
 PVisualiser.prototype.clickNodeEvent = function(evt) {
   var node = evt.cyTarget;
   var informationObject = new informationString();
@@ -388,6 +423,12 @@ PVisualiser.prototype.printNodeInfo = function(text) {
   $("#node_info").html(text);
 };
 
+/**
+ * Checks to see if a node exists in the dom, note this doesn't include nodes
+ * currently inside groups.
+ * @param {string} name ID of the node you want to check exists
+ * @return {bool} found True if the node is in the dom
+ */
 PVisualiser.prototype.nodeExists = function(name) {
   // If cy exists use it's check function
   if (cy.getElementById !== undefined) {
@@ -405,17 +446,13 @@ PVisualiser.prototype.nodeExists = function(name) {
   return found;
 };
 
-PVisualiser.prototype.getNode = function(name) {
-  var found = null;
-  $.each(this.nodes, function() {
-    if (name === this.data.id) {
-      found = this;
-      return;
-    }
-  });
-  return found;
-};
-
+/**
+ * Add a node to the graph.
+ * @param {String} name Unique ID for the node eg. itr:X-Tweets-3
+ * @param {String} label Reading friendly version of node eg. X Tweets 3
+ * @param {String} type the type of node, eg. action, person
+ * @return {bool} True if the node was added, False if it was not.
+ */
 PVisualiser.prototype.addNode = function(name, label, type) {
   if (typeof name !== 'string' || typeof label !== 'string') {
     this.logUnexpectedVariables(type);
@@ -429,10 +466,13 @@ PVisualiser.prototype.addNode = function(name, label, type) {
   return false;
 };
 
-// @name1: first node
-// @name2: second node
-// @type: desc of type eg. derived
-// @label: label to be applied eg. wasDerivedFrom
+/**
+ * Add an edge to the graph.
+ * @param {String} sourceID The node that the edge originates from
+ * @param {String} targetID The node that the edge terminates at
+ * @param {String} type Desc of type eg. derived
+ * @param {String} label label to be applied eg. wasDerivedFrom
+ */
 PVisualiser.prototype.addEdge = function(name1, name2, type, label) {
   if (typeof name1 !== 'string' || typeof name2 !== 'string') {
     this.logUnexpectedVariables(type + ' edge');
@@ -536,6 +576,13 @@ PVisualiser.prototype.resetView = function() {
   });
 };
 
+/**
+ * Main render function, shows graph in the DOM.
+ * @param {string} Inner Jquery selecter of DOM element you want to render the
+ * graph in e.g. "#cy"
+ * @param {function} callback A function you would like to run after the graph
+ * has been rendered.
+ */
 PVisualiser.prototype.render = function(inner, callback) {
   if (typeof inner !== 'string') {
     throw new Error("Can't render graph: Unexpected Variables");
