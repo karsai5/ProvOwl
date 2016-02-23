@@ -389,6 +389,12 @@ PVisualiser.prototype.printNodeInfo = function(text) {
 };
 
 PVisualiser.prototype.nodeExists = function(name) {
+  // If cy exists use it's check function
+  if (cy.getElementById !== undefined) {
+    console.log(cy);
+    return cy.getElementById(name).length === 1;
+  }
+  // otherwise use the node list to check
   var found = false;
   $.each(this.nodes, function() {
     if (name === this.data.id) {
@@ -583,13 +589,13 @@ PVisualiser.prototype.edgeCount = function() {
 };
 
 PVisualiser.prototype.logUnexpectedVariables = function(what) {
-  print("Can't create " + what + ": unexpected variables");
+  this.print("Can't create " + what + ": unexpected variables");
 };
 
 PVisualiser.prototype.logDuplicate = function(what, name) {
-  print("Can't create duplicate " + what + "\"" + name + "\" already exists");
+  this.print("Can't create duplicate " + what + "\"" + name + "\" already exists");
 };
 
 PVisualiser.prototype.logMissingNode = function(what, name) {
-  print("Can't create " + what + "\"" + name + "\" doesn't exist");
+  this.print("Can't create " + what + "\"" + name + "\" doesn't exist");
 };
