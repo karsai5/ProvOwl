@@ -12,7 +12,12 @@ if (typeof String.prototype.startsWith !== 'function') {
   };
 }
 
-function com() {
+/**
+ * This commands class is a list of commands that can be used in a prov file as 
+ * as well as the associated string.
+ * @constructor
+ */
+function Commands() {
   this.comment = '//';
   this.prefix = 'prefix';
   this.entity = 'entity';
@@ -29,7 +34,13 @@ function com() {
   this.member = 'memberOf';
 }
 
-function prov() {
+/**
+ * The Prov class is basically the provenance file/string in JavaScript object
+ * form. It adds all the strings associated with uses, agents, nodes into 
+ * relavent lists.
+ * @constructor
+ */
+function Provenance() {
   this.prefixes = [];
   this.entities = [];
   this.activities = [];
@@ -44,6 +55,12 @@ function prov() {
   this.groups = [];
   this.members = [];
   this.attributes = [];
+  /**
+   * Once all the relevant lines have been read from the prov file into a prov
+   * object, this function will create a {@link PVisualiser} object with all the
+   * correct edges and nodes
+   * @return {object} The {@link PVisualiser} object
+   */
   this.getPVisualiser = function() {
     var pvis = new PVisualiser();
 
@@ -132,11 +149,15 @@ function prov() {
   };
 }
 
+/**
+ * The provenance parser's main purpose is to read and correctly parse
+ * a provenance string or file.
+ * @constructor
+ */
 function PParser() {
-  this.prov = new prov();
-  this.com = new com;
+  this.prov = new Provenance();
+  this.com = new Commands;
 };
-
 
 // Helper Functions 
 PParser.prototype.print = function(msg) {
@@ -196,6 +217,13 @@ PParser.prototype.lineSwitcher = function(lineNum, line) {
   }
 };
 
+/**
+ * Load a file and get the {@link PVisualiser} object. Will throw an error if 
+ * it can't find the file.
+ * @param {string} file The url to the file.
+ * @param {function} callback A function to callback after the visualiser has
+ * been created. It will be parsed the PVisualiser object.
+ */
 PParser.prototype.parseFile = function(file, callback) {
   var request = $.get (file);
 
@@ -217,6 +245,12 @@ PParser.prototype.parseFile = function(file, callback) {
   });
 };
 
+/**
+ * Parse a string of the prov standard, breaking on new lines "\n". 
+ * @param {string} result The prov file in string format.
+ * @param {function} callback A function to callback after the visualiser has
+ * been created. It will be parsed the PVisualiser object.
+ */
 PParser.prototype.parseString = function(result, callback) {
   var lines = result.split('\n');
   for (var i = 0; i < lines.length; ++i) {
