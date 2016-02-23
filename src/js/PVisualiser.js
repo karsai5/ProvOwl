@@ -1,5 +1,9 @@
-/* jshint unused:false, esnext: true, strict: false */
-/* globals w1, cy */
+/** 
+ * @fileOverview This file contains the main @line{PVisualiser} class used for
+ * rendering a provenance graph.
+ * jshint unused:false, esnext: true, strict: false 
+ * globals w1, cy 
+ */
 "use strict";
 
 /**

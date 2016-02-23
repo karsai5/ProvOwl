@@ -1,9 +1,9 @@
 /**
  * @fileOverview This is the main javascript file for the provowl application.
- * @author Linus Karsai
- */ 
-/*jshint unused:false*/
-/* globals PParser, fileSelector, w1, Warnings */
+ * jshint unused:false
+ * globals PParser, fileSelector, w1, Warnings 
+ */
+
 "use strict";
 
 /**
@@ -39,13 +39,11 @@ function loadFile(event) {
     var contents = theFile.target.result;
     var lineCount = contents.length;
     w1.setDiv("#warnings");
-    parser.parseString(contents,
-        function(p2) {
-          window.p2 = p2;
-          p2.render('#cy', function() {
-            $("#file_info").append("<strong>Name:</strong> " + fileName);
-          });
-        });
+    var p2 = parser.parseString(contents);
+    window.p2 = p2;
+    p2.render('#cy', function() {
+      $("#file_info").append("<strong>Name:</strong> " + fileName);
+    });
   };
   reader.readAsText(f);
 }

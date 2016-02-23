@@ -1,6 +1,10 @@
-/*jshint unused:false*/
-/*jshint freeze:false*/
-/*global w1*/
+/**
+ * @fileOverview Contains all the classes and functions related to parsing the
+ * provenance standard.
+ * jshint unused:false
+ * jshint freeze:false
+ * global w1
+ */
 "use strict";
 
 if (typeof String.prototype.startsWith !== 'function') {
@@ -248,13 +252,12 @@ PParser.prototype.parseFile = function(file, callback) {
 /**
  * Parse a string of the prov standard, breaking on new lines "\n". 
  * @param {string} result The prov file in string format.
- * @param {function} callback A function to callback after the visualiser has
- * been created. It will be parsed the PVisualiser object.
+ * @return {PVisualiser} The Pvisualiser object with added nodes/edges.
  */
 PParser.prototype.parseString = function(result, callback) {
   var lines = result.split('\n');
   for (var i = 0; i < lines.length; ++i) {
     this.lineSwitcher(i, lines[i]);
   }
-  callback(this.prov.getPVisualiser());
+  return this.prov.getPVisualiser();
 };
