@@ -59,6 +59,14 @@
           </ul>
         </li>
         <li><a onclick="pvis.resetView();">Center view</a></li>
+        <li><a href="#">Screenshot</a>
+          <ul class="sub">
+            <li><a onclick="window.open(cy.jpeg({full:true}), '_blank')">
+                Whole graph</a></li>
+            <li><a onclick="window.open(cy.jpeg({full:false}), '_blank')">
+                Current view</a></li>
+          </ul>
+        </li>
       </ul>
       <div class="sidebar-wrapper sidebar-wrapper-node-info">
         <h2>Node Information</h2>
