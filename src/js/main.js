@@ -22,6 +22,16 @@ function checkForFileReaderSupport() {
   }
 }
 
+function getParameterByName(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+  results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
 /**
  * Load a file from the file picker. Create a provenance parser and from that
  * create a provenance visualiser.
@@ -48,6 +58,22 @@ function loadFile(event) {
   reader.readAsText(f);
 }
 
+function loadWebFile(url) {
+  $("#cy").html("");
+  $("#file_info").html("");
+  var parser = new PParser();
+  var reader = new FileReader();
+  var p2 = null;
+  w1.setDiv("#warnings");
+
+  parser.parseFile(url, function(provObject) {
+    p2 = provObject;
+    p2.render('#cy', function() {
+      $("#file_info").append("<strong>Name:</strong> " + url);
+    });
+  });
+}
+
 /**
  * Set up fileselector so that the provenance file will be loaded and
  * rendered client side.
@@ -65,6 +91,12 @@ $( document ).ready(function() {
     };
 
     window.w1 = Warnings.getInstance();  
+    // check if file is supplied in url, if so load it.
+    var fileurl = getParameterByName('file');
+    if(fileurl !== null) {
+      console.log("loading file from url");
+      loadWebFile(fileurl);
+    }
   }
 
 });

@@ -230,14 +230,15 @@ PParser.prototype.lineSwitcher = function(lineNum, line) {
  */
 PParser.prototype.parseFile = function(file, callback) {
   var request = $.get (file);
+  var that = this;
 
   request.success(function(result) {
-    prov.raw = result; // add raw text to prov object
+    // this.prov.raw = result; // add raw text to prov object
     var lines = result.split('\n');
     for (var i = 0; i < lines.length; ++i) {
-      this.lineSwitcher(i, lines[i]);
+      that.lineSwitcher(i, lines[i]);
     }
-    callback(prov.getPVisualiser());
+    callback(that.prov.getPVisualiser());
   });
 
   request.fail(function(jqXHR, textStatus, errorThrown) {
