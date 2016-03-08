@@ -428,6 +428,19 @@ PVisualiser.prototype.printNodeInfo = function(text) {
 };
 
 /**
+ * Outputs the node object to the console where it can be explored.
+ * @param {string} id The id of the node to explore
+ */
+PVisualiser.prototype.printNodeInfoToConsole = function(id) {
+  var node = cy.getElementById(id);
+  if (node.length > 0) {
+    console.log(node[0]);
+  } else {
+    console.warn("No node with the id: " + id);
+  }
+};
+
+/**
  * Checks to see if a node exists in the dom, note this doesn't include nodes
  * currently inside groups.
  * @param {string} name ID of the node you want to check exists
