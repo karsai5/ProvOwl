@@ -679,9 +679,11 @@ PVisualiser.prototype.resetView = function() {
 
             if (evtTarget === cy) { // clicked on background
               that.clearSelectedNodes();
+              $('.node_info_wrapper').hide();
             } else if (evtTarget.group() === 'edges') { // clicked on edge
               console.log('clicked on edge');
             } else if (evtTarget.group() === 'nodes') { // clicked on node
+              $('.node_info_wrapper').show();
               that.clickNodeEvent(event);
             }
 
