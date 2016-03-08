@@ -1,6 +1,31 @@
 $sidebar-width: 220px;
 $orange: #D45D3F;
 
+@import "modules/navbar";
+
+body, html {
+  height: 100%;
+}
+
+.navbar-default {
+  margin-bottom: 0;
+  background: $orange;
+  border: none;
+  border-radius: 0;
+
+  .navbar-brand, .navbar-nav > li > a {
+    &:hover {
+      color: darken($orange, 30%);
+    }
+
+    color: #fff;
+  }
+
+  .navbar-nav > li > a {
+    cursor: pointer;
+  }
+}
+
 #sidebar {
   padding: 10px;
   color: #fff;
@@ -32,39 +57,42 @@ $orange: #D45D3F;
     margin-bottom: 1em;
   }
 
-  .footer {
-    background: darken($orange, 20%);
-    width: $sidebar-width - 6px;
-    position: fixed;
-    bottom: 0;
-    padding: 3px;
-    left: 0;
-  }
-
   #hiddenFileSelector {}
+}
+
+.footer {
+  background: darken($orange, 20%);
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  padding: 3px;
+  padding-left: 15px;
+  > a {
+    color: lighten($orange, 10%);
+  }
 }
 
 #cy {
   position: fixed;
-  left: $sidebar-width;
-  width: calc(100% - 220px);
+  width: 100%;
   height: 100%;
+  height: calc(100% - 50px);
 }
 
 .warnings-container {
-  position: fixed;
+  position: absolute;
   bottom: 0;
+  left: 0;
   right: 0;
   width: auto;
   height: auto;
-  width: calc(100% - 220px);
   pointer-events: none;
+  overflow: hidden;
 }
 
 #warnings {
-  width: calc(100% - 30px);
   overflow-y: scroll;
-  height: 130px;
+  height: 160px;
   background: #E2FFF3;
   padding: 15px;
   position: relative;
@@ -91,8 +119,23 @@ $orange: #D45D3F;
   margin-top: 10px;
 }
 
-#node_info {
+.node_info_wrapper {
+  width: 220px;
+  position: absolute;
+  top: 60px;
+  left: 10px;
+  background: #fff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.55);
+  border-radius: 2px;
   padding: 10px;
+  hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  #node_info {
+    max-height: 400px;
+    overflow-y: auto;
+  }
 }
 
 .sidebar-wrapper-node-info {

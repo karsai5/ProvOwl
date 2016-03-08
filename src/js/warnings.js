@@ -39,7 +39,7 @@
       this.hide = function() {
         if (shown) {
           shown = false;
-          div.animate({top: div.outerHeight() - 45}, 500);
+          div.animate({top: div.outerHeight() - 67}, 500);
           div.find('a').text('show');
         }
       };
