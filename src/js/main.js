@@ -53,6 +53,7 @@ function loadFile(event) {
     window.p2 = p2;
     p2.render('#cy', function() {
       $("#file_info").append("<strong>Name:</strong> " + fileName);
+      $("#provSelectButton").parent().remove();
     });
   };
   reader.readAsText(f);
@@ -70,6 +71,7 @@ function loadWebFile(url) {
     p2 = provObject;
     p2.render('#cy', function() {
       $("#file_info").append("<strong>Name:</strong> " + url);
+      $("#provSelectButton").parent().remove();
     });
   });
 }

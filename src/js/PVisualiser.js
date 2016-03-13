@@ -93,20 +93,20 @@ GroupManager.prototype.removeGroup = function(id) {
  * @return {Node} node - the searched for node or if it's not in the group
  * manager returns undefined.
  */
-GroupManager.prototype.find = function(id, node) {
-  // if no node set, get root
-  if (node === undefined) { node = this.root; } 
+    GroupManager.prototype.find = function(id, node) {
+      // if no node set, get root
+      if (node === undefined) { node = this.root; } 
 
-  // for each child
-  for (var i=0; i<node.children.length; i++) {
-    if (node.children[i].data === id) {
-      return node.children[i];
-    } else {
-      var result = this.find(id, node.children[i]);
-      if (result !== undefined) { return result; }
-    }
-  }
-};
+      // for each child
+      for (var i=0; i<node.children.length; i++) {
+        if (node.children[i].data === id) {
+          return node.children[i];
+        } else {
+          var result = this.find(id, node.children[i]);
+          if (result !== undefined) { return result; }
+        }
+      }
+    };
 
 /**
  * Serch up through parents to find topmost group
@@ -156,6 +156,38 @@ function informationString() {
   this.information = "";
 }
 
+informationString.prototype.render = function(nodes, options) {
+  // For single nodes
+  if (nodes.length === 1) {
+    var data = nodes.data();
+    for (var property in data) {
+      if (data.hasOwnProperty(property)){
+        this.add(property, data[property]);
+      }
+    }
+  } else { // Multiple selected nodes
+    this.information += "<b>Mulitple nodes selected:</b><br>";
+    for (var i = 0; i < nodes.length; i++) {
+      this.information += nodes[i].data().name + "<br>";
+    }
+  }
+
+  this.information += "<hr>";
+
+  if (nodes.length === 1) { // for single nodes
+    if (nodes.hasClass('group')) {
+      this.addUngroupLink(nodes);
+      this.information += "<br>";
+    }
+
+    this.addConsoleLogLink(nodes);
+    this.addRenameLink(nodes);
+  } else { // multiple selected nodes
+    this.addGroupLink();
+  }
+  return this.information;
+}
+
 informationString.prototype.add = function(c1, c2) {
   if (c2 === undefined) {
     this.information += c1 + "<br>";
@@ -168,9 +200,27 @@ informationString.prototype.newline = function() {
   this.information += "<br>";
 };
 
+informationString.prototype.addGroupLink = function() {
+  this.information += "<a href=\"#\" onclick=\"pvis.groupSelectedNodes();\">Group Nodes</a>";
+};
+
+informationString.prototype.addUngroupLink = function(node) {
+  this.information += "<a href=\"#\" onclick=\"pvis.unGroupNode('" + node.data().id + "');\">Ungroup</a>";
+};
+
 informationString.prototype.addUngroupButton = function(node) {
   this.information += "<button class=\"button\" onclick=\"pvis.unGroupNode('" + node.data().id + "');\">Ungroup</button>";
 };
+
+informationString.prototype.addConsoleLogLink = function(node) {
+  this.information += "<a href=\"#\" onclick=\"pvis.printNodeInfoToConsole('" + 
+    node.data().id + "');\">Console log</a><br>";
+}
+
+informationString.prototype.addRenameLink = function(node) {
+  this.information += "<a href=\"#\" onclick=\"pvis.renameNode('" + 
+    node.data().id + "');\">Rename node</a>";
+}
 
 informationString.prototype.print = function() {
   return this.information;
@@ -181,26 +231,26 @@ informationString.prototype.print = function() {
  * graph.
  * @constructor
  */
-function PVisualiser() {
-  console.log('Provenance visualiser initialised.');
-  this.nodes = [];
-  this.edges = [];
-  this.hangingEdges = [];
-  this.cy = null;
-  this.GroupManager = new GroupManager();
-}
+  function PVisualiser() {
+    console.log('Provenance visualiser initialised.');
+    this.nodes = [];
+    this.edges = [];
+    this.hangingEdges = [];
+    this.cy = null;
+    this.GroupManager = new GroupManager();
+  }
 
 /**
  * Print to user log using window.w1, if that's undefined use the console instead
  * @param {string} msg The message you want to have shown
  */
-PVisualiser.prototype.print = function(msg) {
-  if (typeof w1 === 'undefined') {
-    console.warn(msg);
-  } else {
-    w1.add(msg);
-  }
-};
+    PVisualiser.prototype.print = function(msg) {
+      if (typeof w1 === 'undefined') {
+        console.warn(msg);
+      } else {
+        w1.add(msg);
+      }
+    };
 
 /**
  * Using letters and numbers create a random id 5 characters long.
@@ -305,127 +355,141 @@ PVisualiser.prototype.unGroupNode = function(id) {
  * a compiste node with all the same edges. No arguments are required as it
  * groups any nodes with the 'selected' class.
  */
-PVisualiser.prototype.groupSelectedNodes = function() {
-  var that = this;
-  var groupElements = cy.nodes('.selected');
+  PVisualiser.prototype.groupSelectedNodes = function() {
+    var that = this;
+    var groupElements = cy.nodes('.selected');
 
-  // Get position of new node
-  var x = groupElements.position('x');
-  var y = groupElements.position('y');
+    // Get position of new node
+    var x = groupElements.position('x');
+    var y = groupElements.position('y');
 
-  // Animate nodes into group position
-  cy.nodes('.selected').each(function(i,ele) {
-    ele.data('originalX', ele.position('x'));
-    ele.data('originalY', ele.position('y'));
-    ele.animate({position: {x:x, y:y}, duration: 500});
-  });
-
-  // Wait for animation to complete
-  setTimeout(function() {
-    // create hash table of ids
-    var idHash = {};
-    groupElements.each(function(i, ele){
-      idHash[ele.id()] = true;
+    // Animate nodes into group position
+    cy.nodes('.selected').each(function(i,ele) {
+      ele.data('originalX', ele.position('x'));
+      ele.data('originalY', ele.position('y'));
+      ele.animate({position: {x:x, y:y}, duration: 500});
     });
 
-    // Make groupnode
-    var id = that.makeid();
-    var groupNode = cy.add({
-      group: "nodes",
-      data: { id: id, name: id, type: 'group'},
-      classes: 'group',
-      position: { x: x, y: y }
-    });
+    // Wait for animation to complete
+    setTimeout(function() {
+      // create hash table of ids
+      var idHash = {};
+      groupElements.each(function(i, ele){
+        idHash[ele.id()] = true;
+      });
 
-    // Save original nodes and edges
-    // and create duplicate edges connedted to groupnode
-    var originalNodes = [];
-    var originalEdges = [];
-    var neighbourhood = groupElements.union(groupElements.neighbourhood());
-    for (var i=0; i < neighbourhood.length; i++) { // loop through neighbourhood
-      var ele = neighbourhood[i];
-      if (ele.isNode() && idHash[ele.id()] === true) { // if node in group
-        ele.data('group', groupNode.id());
-        originalNodes.push(ele);
-        ele.remove();
-      } else if (ele.isEdge()) { // if edge
-        originalEdges.push(ele);
-        var source = "";
-        var target = "";
-        // set source and target correctly
-        if (idHash[ele.data('source')] === true && // if source is in group
-            idHash[ele.data('target')] === undefined) {
-          source = groupNode.id();
-          target = ele.data('target');
-        } else if (idHash[ele.data('target')] === true && // if target is in group
-            idHash[ele.data('source')] === undefined) {
-          source = ele.data('source');
-          target = groupNode.id();
-        }
+      // Make groupnode
+      var id = that.makeid();
+      var groupNode = cy.add({
+        group: "nodes",
+        data: { id: id, name: id, type: 'group'},
+        classes: 'group',
+        position: { x: x, y: y }
+      });
 
-        if (source !== "" && target !== "") { // check it's not an internal edge
-          // check edge doesn't already exist
-          var newid = source + '-' + target;
-          if (cy.getElementById(newid).length === 0) { 
-            cy.add({ // add edge to graph
-              group: "edges",
-              data: { 
-                id: newid, 
-                source: source,
-                target: target,
-                label: ele.data().label
-              }
-            });
+      // Save original nodes and edges
+      // and create duplicate edges connedted to groupnode
+      var originalNodes = [];
+      var originalEdges = [];
+      var neighbourhood = groupElements.union(groupElements.neighbourhood());
+      for (var i=0; i < neighbourhood.length; i++) { // loop through neighbourhood
+        var ele = neighbourhood[i];
+        if (ele.isNode() && idHash[ele.id()] === true) { // if node in group
+          ele.data('group', groupNode.id());
+          originalNodes.push(ele);
+          ele.remove();
+        } else if (ele.isEdge()) { // if edge
+          originalEdges.push(ele);
+          var source = "";
+          var target = "";
+          // set source and target correctly
+          if (idHash[ele.data('source')] === true && // if source is in group
+              idHash[ele.data('target')] === undefined) {
+            source = groupNode.id();
+            target = ele.data('target');
+          } else if (idHash[ele.data('target')] === true && // if target is in group
+              idHash[ele.data('source')] === undefined) {
+            source = ele.data('source');
+            target = groupNode.id();
+          }
+
+          if (source !== "" && target !== "") { // check it's not an internal edge
+            // check edge doesn't already exist
+            var newid = source + '-' + target;
+            if (cy.getElementById(newid).length === 0) { 
+              cy.add({ // add edge to graph
+                group: "edges",
+                data: { 
+                  id: newid, 
+                  source: source,
+                  target: target,
+                  label: ele.data().label
+                }
+              });
+            }
           }
         }
       }
-    }
 
-    // Add originals to group nodes
-    groupNode.data('originalNodes', originalNodes);
-    groupNode.data('originalEdges', originalEdges);
+      // Add originals to group nodes
+      groupNode.data('originalNodes', originalNodes);
+      groupNode.data('originalEdges', originalEdges);
 
-    // Add to GroupManager
-    that.GroupManager.addGroup(id, originalNodes);
+      // Add to GroupManager
+      that.GroupManager.addGroup(id, originalNodes);
 
-  }, 500);
-};
+    }, 500);
+  };
 
 /**
  * Bound to they Cytoscape.js object, this will fire whenever something in the
  * graph is clicked. It will check what type of object was clicked (node,
  * group, edge) and act appropriately.
  */
-PVisualiser.prototype.clickNodeEvent = function(evt) {
-  var node = evt.cyTarget;
-  var informationObject = new informationString();
-  this.selectedNode = node;
+    PVisualiser.prototype.clickNodeEvent = function(evt) {
+      var node = evt.cyTarget;
+      var informationObject = new informationString();
+      this.selectedNode = node;
 
-  // Highlight node and clear old selected node
-  // Unless ctrl is held
-  if (!evt.originalEvent.ctrlKey) {
-    this.clearSelectedNodes();
-  }
-  this.selectedNode.addClass('selected');
+      // Highlight node and clear old selected node
+      // Unless ctrl is held
+      if (!evt.originalEvent.ctrlKey) {
+        this.clearSelectedNodes();
+      }
+      this.selectedNode.addClass('selected');
 
-  // Create information string
-  var data = node.data();
-  for (var property in data) {
-    if (data.hasOwnProperty(property)){
-      informationObject.add(property, data[property]);
-    }
-  }
-  if (node.hasClass('group')) {
-    informationObject.addUngroupButton(node);
-  }
-
-  this.printNodeInfo(informationObject.print());
-};
+      this.printNodeInfo(informationObject.render(cy.$('.selected')));
+    };
 
 PVisualiser.prototype.printNodeInfo = function(text) {
   text = text.replace(/\n/g, '<br>');
   $("#node_info").html(text);
 };
+
+/**
+ * Outputs the node object to the console where it can be explored.
+ * @param {string} id The id of the node to explore
+ */
+PVisualiser.prototype.printNodeInfoToConsole = function(id) {
+  var node = cy.getElementById(id);
+  if (node.length > 0) {
+    console.log(node);
+  } else {
+    console.warn("No node with the id: " + id);
+  }
+};
+
+PVisualiser.prototype.renameNode = function(id, name) {
+  var node = cy.getElementById(id);
+  if (!name) {
+    name = prompt("Enter new node name");
+  }
+  if (node.length > 0) {
+    node.data('name', name);
+  } else {
+    console.warn("No node with the id: " + id);
+  }
+}
 
 /**
  * Checks to see if a node exists in the dom, note this doesn't include nodes
@@ -457,18 +521,18 @@ PVisualiser.prototype.nodeExists = function(name) {
  * @param {String} type the type of node, eg. action, person
  * @return {bool} True if the node was added, False if it was not.
  */
-PVisualiser.prototype.addNode = function(name, label, type) {
-  if (typeof name !== 'string' || typeof label !== 'string') {
-    this.logUnexpectedVariables(type);
-  } else if (this.nodeExists(name)) {
-    this.logDuplicate(type, name);
-  } else {
-    this.nodes.push({ data: { id: name, name: label, type: type}, 
-      classes: type});
-    return true;
-  }
-  return false;
-};
+      PVisualiser.prototype.addNode = function(name, label, type) {
+        if (typeof name !== 'string' || typeof label !== 'string') {
+          this.logUnexpectedVariables(type);
+        } else if (this.nodeExists(name)) {
+          this.logDuplicate(type, name);
+        } else {
+          this.nodes.push({ data: { id: name, name: label, type: type}, 
+            classes: type});
+          return true;
+        }
+        return false;
+      };
 
 /**
  * Add an edge to the graph.
@@ -587,49 +651,51 @@ PVisualiser.prototype.resetView = function() {
  * @param {function} callback A function you would like to run after the graph
  * has been rendered.
  */
-PVisualiser.prototype.render = function(inner, callback) {
-  if (typeof inner !== 'string') {
-    throw new Error("Can't render graph: Unexpected Variables");
-  }
-  this.inner = inner;
-  var that = this;
-  $.get('/static/css/cytoscape.css', function (data) {
-    $(that.inner).cytoscape({
-      layout: {
-        name: 'dagre',
-        padding: 150
-      },
-      style: data,
-      elements: {
-        nodes: that.nodes,
-        edges: that.edges
-      },
+  PVisualiser.prototype.render = function(inner, callback) {
+    if (typeof inner !== 'string') {
+      throw new Error("Can't render graph: Unexpected Variables");
+    }
+    this.inner = inner;
+    var that = this;
+    $.get('/static/css/cytoscape.css', function (data) {
+      $(that.inner).cytoscape({
+        layout: {
+          name: 'dagre',
+          padding: 150
+        },
+        style: data,
+        elements: {
+          nodes: that.nodes,
+          edges: that.edges
+        },
 
-      ready: function(){
-        window.cy = this;
-        window.pvis = that;
+        ready: function(){
+          window.cy = this;
+          window.pvis = that;
 
-        // add tap bindings
-        this.on('tap', function(event) {
-          var evtTarget = event.cyTarget; 
+          // add tap bindings
+          this.on('tap', function(event) {
+            var evtTarget = event.cyTarget; 
 
-          if (evtTarget === cy) { // clicked on background
-            that.clearSelectedNodes();
-          } else if (evtTarget.group() === 'edges') { // clicked on edge
-            console.log('clicked on edge');
-          } else if (evtTarget.group() === 'nodes') { // clicked on node
-            that.clickNodeEvent(event);
+            if (evtTarget === cy) { // clicked on background
+              that.clearSelectedNodes();
+              $('.node_info_wrapper').hide();
+            } else if (evtTarget.group() === 'edges') { // clicked on edge
+              console.log('clicked on edge');
+            } else if (evtTarget.group() === 'nodes') { // clicked on node
+              $('.node_info_wrapper').show();
+              that.clickNodeEvent(event);
+            }
+
+          });
+
+          if (typeof callback === 'function') { 
+            callback();
           }
-
-        });
-
-        if (typeof callback === 'function') { 
-          callback();
         }
-      }
+      });
     });
-  });
-};
+  };
 
 PVisualiser.prototype.nodeCount = function() {
   return this.nodes.length;
