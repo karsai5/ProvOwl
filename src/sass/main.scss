@@ -1,6 +1,7 @@
 $sidebar-width: 220px;
 $orange: #D45D3F;
 
+@import "../bower_components/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 @import "modules/navbar";
 
 body, html {

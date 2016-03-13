@@ -26,7 +26,8 @@
     "jquery-ui": "~1.11.4",
     "cytoscape-dagre": "~1.1.2",
     "skeleton": "~2.0.4",
-    "bootstrap": "^3.3.6"
+    "bootstrap": "^3.3.6",
+    "bootstrap-sass": "~3.3.6"
   },
   "devDependencies": {
     "qunit": "~1.19.0",
