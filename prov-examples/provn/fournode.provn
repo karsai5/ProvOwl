@@ -1,0 +1,18 @@
+document
+
+prefix ir <http://www.ir.ncl.ac.uk/>
+
+//
+// entities
+//
+
+// Twitter Feed
+entity(ir:A1)
+entity(ir:A2) 
+entity(ir:B1)
+entity(ir:B2)
+
+used(ir:A1,ir:B1,-)
+used(ir:A2,ir:B2,-)
+
+endDocument

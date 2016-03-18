@@ -1,0 +1,26 @@
+document
+
+prefix ir <http://www.ir.ncl.ac.uk/>
+
+//
+// entities
+//
+
+// Twitter Feed
+entity(ir:Report, [from="2012-09-27T09:00:00", to="2012-10-27T09:30:00", Status="Unclassified"])
+entity(ir:Generated-Results, [from="2012-12-28T09:00:00", to="2013-01-28T09:30:00", Status="Unclassified"]) 
+entity(ir:Tweets, [from="2013-02-29T09:00:00", to="2013-03-29T09:30:00", Status="Unclassified"])
+
+// X data
+entity(ir:X-tweets-1)
+entity(ir:X-tweets-2)
+entity(ir:X-tweets-3)
+
+wasGeneratedBy(ir:Tweets, ir:X-tweets-1,2013-06-18T11:10:00)
+wasGeneratedBy(ir:Tweets, ir:X-tweets-2,2013-06-18T11:10:00)
+wasGeneratedBy(ir:Tweets, ir:X-tweets-3,2013-06-18T11:10:00)
+
+used(ir:Report,ir:Tweets,-)
+used(ir:Report,ir:Generated-Results,-)
+
+endDocument
