@@ -36,6 +36,7 @@ function Commands() {
   this.alternate = 'alternateOf';
   this.group = 'group';
   this.member = 'memberOf';
+  this.acted = 'actedOnBehalfOf';
 }
 
 /**
@@ -58,7 +59,9 @@ function Provenance() {
   this.specialisations = [];
   this.groups = [];
   this.members = [];
+  this.acted = [];
   this.attributes = [];
+
   /**
    * Once all the relevant lines have been read from the prov file into a prov
    * object, this function will create a {@link PVisualiser} object with all the
@@ -133,6 +136,13 @@ function Provenance() {
       var e1 = PParser.getLineArguments(l)[0];
       var e2 = PParser.getLineArguments(l)[1];
       pvis.alternateOf(e1, e2);
+    });
+    //
+    // Create alternates
+    $.each(this.acted, function (i,l) {
+      var e1 = PParser.getLineArguments(l)[0];
+      var e2 = PParser.getLineArguments(l)[1];
+      pvis.actedOnBehalfOf(e1, e2);
     });
 
     // Create groups
@@ -210,8 +220,10 @@ PParser.prototype.lineSwitcher = function(lineNum, line) {
     prov.specialisations.push(line);
   } else if (line.startsWith(com.alternate)) {
     prov.alternates.push(line);
+  } else if (line.startsWith(com.acted)) {
+    prov.acted.push(line);
   } else if (line.startsWith(com.group)) {
-    prov.groups.push(line);
+    prov.groups.push(line); 
   } else if (line.startsWith(com.member)) {
     prov.members.push(line);
   } else {

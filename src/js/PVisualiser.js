@@ -625,6 +625,10 @@ PVisualiser.prototype.used = function(name1, name2) {
   return this.addEdge(name1, name2, 'used', 'used');
 };
 
+PVisualiser.prototype.actedOnBehalfOf = function(name1, name2) {
+  return this.addEdge(name1, name2, 'acted', 'actedOnBehalfOf');
+};
+
 PVisualiser.prototype.handleEvent = function(event) {
   console.log("event run");
 };
