@@ -65,6 +65,15 @@ edge {
   border-width: 1px;
 }
 
+.agent {
+  background-color: #fdb266;
+  color: #000;
+  border-color: #000;
+  border-width: 1px;
+  shape: polygon;
+  shape-polygon-points: -1 1 1 1 1 -0.5 0 -1 -1 -0.5;
+}
+
 .selected {
   border-color: red;
   border-width: 3px;
