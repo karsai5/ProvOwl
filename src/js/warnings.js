@@ -11,7 +11,7 @@
 
       this.setDiv = function(warningDiv) {
         div = $(warningDiv);
-        div.html('<p><strong>Warnings</strong> <a href="#" onclick="w1.toggle()">show</a></p>');
+        div.html('<p class="warnings-header">Warnings <a href="#" onclick="w1.toggle()">show</a></p>');
         div.css('position', 'relative');
         this.hide();
         div.show();
@@ -39,7 +39,7 @@
       this.hide = function() {
         if (shown) {
           shown = false;
-          div.animate({top: div.outerHeight() - 67}, 500);
+          div.animate({top: div.outerHeight() - 80}, 500);
           div.find('a').text('show');
         }
       };

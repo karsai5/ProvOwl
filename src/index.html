@@ -42,6 +42,36 @@
   </head>
   <body>
 
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">About ProvOwl</h4>
+          </div>
+          <div class="modal-body">
+            <p>
+            This is an interface for visualising provenance graphs written in the <a href="http://www.w3.org/TR/2013/NOTE-prov-primer-20130430/" target="_blank">PROV standard</a>. 
+            It is part of my honours project at the <a href="http://sydney.edu.au/" target="_blank">University of Sydney</a>
+            </p>
+            <p>You can find a series of example prov files to play with over <a href="/prov-examples/" target="_blank">here</a>.</p>
+            <p>This is part of my honours thesis and is very much a WORK IN PROGRESS. Please be kind and report any problems to lkar7536 [at] uni [dot] sydney [dot] edu [dot] au.</p>
+            <hr> 
+            Try loading some example files to get a feel for the interface:
+            <ul>
+              <li><a href="?file=prov-examples/provn/fournode.provn" >Small example</a></li>
+              <li><a href="?file=prov-examples/provn/IR-baseline.provn" >Baseline example</a></li>
+              <li><a href="?file=prov-examples/provn/IR-complete.provn" >Big example</a></li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <nav class="navbar navbar-default">
       <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -100,7 +130,8 @@
       <div id="warnings"></div>
     </div>
     <div class="footer">
-      <a href="/about.html">About</a>
+      <a href="#" data-toggle="modal" data-target="#myModal">About</a>
+      <span class="copyright">&copy; Linus Karsai 2016</span>
     </div>
     <!-- End Document -->
 

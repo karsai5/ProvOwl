@@ -66,10 +66,19 @@ body, html {
   width: 100%;
   position: absolute;
   bottom: 0;
-  padding: 3px;
+  padding: 7px 15px 5px 15px;
   padding-left: 15px;
-  > a {
+
+  > a, .copyright {
     color: lighten($orange, 10%);
+  }
+
+  > a {
+    text-decoration: underline;
+  }
+
+  > .copyright {
+    float: right;
   }
 }
 
@@ -103,6 +112,11 @@ body, html {
     margin-bottom: 3px;
   }
 
+  > .warnings-header {
+    font-size: 1.2em;
+    padding-bottom: 8px;
+  }
+
   display: none;
 }
 
@@ -130,10 +144,12 @@ body, html {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.55);
   border-radius: 2px;
   padding: 10px;
+
   hr {
     margin-top: 10px;
     margin-bottom: 10px;
   }
+
   #node_info {
     max-height: 400px;
     overflow-y: auto;
