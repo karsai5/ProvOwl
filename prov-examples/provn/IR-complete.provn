@@ -65,12 +65,12 @@ activity(ir:query-Y-Time-1, [Status="Unclassified"])
 activity(ir:query-Y-Time-2, [Status="Unclassified"])
 activity(ir:query-Y-Time-3, [Status="Unclassified"])
 
-wasAssociatedWith(ir:query-X-Time-1, twitterMonitor,-)
-wasAssociatedWith(ir:query-X-Time-2, twitterMonitor,-)
-wasAssociatedWith(ir:query-X-Time-3, twitterMonitor,-)
-wasAssociatedWith(ir:query-Y-Time-1, twitterMonitor,-)
-wasAssociatedWith(ir:query-Y-Time-2, twitterMonitor,-)
-wasAssociatedWith(ir:query-Y-Time-3, twitterMonitor,-)
+wasAssociatedWith(ir:query-X-Time-1, ir:twitterMonitor,-)
+wasAssociatedWith(ir:query-X-Time-2, ir:twitterMonitor,-)
+wasAssociatedWith(ir:query-X-Time-3, ir:twitterMonitor,-)
+wasAssociatedWith(ir:query-Y-Time-1, ir:twitterMonitor,-)
+wasAssociatedWith(ir:query-Y-Time-2, ir:twitterMonitor,-)
+wasAssociatedWith(ir:query-Y-Time-3, ir:twitterMonitor,-)
 
 
 // merging
