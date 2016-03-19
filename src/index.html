@@ -33,6 +33,7 @@
 
     <!-- Javascript -->
     <script src="/js/warnings.js" data-cover></script>
+    <script src="/js/VisHistory.js" data-cover></script>
     <script src="/js/PVisualiser.js" data-cover></script>
     <script src="/js/PParser.js" data-cover></script>
     <script src="/js/main.js" data-cover></script>
@@ -111,6 +112,8 @@
                     Current view</a></li>
               </ul>
             </li>
+            <li><a onclick="pvis.history.undo();">Undo</a></li>
+            <li><a onclick="pvis.history.redo();">Redo</a></li>
           </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
