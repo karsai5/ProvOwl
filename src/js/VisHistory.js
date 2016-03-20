@@ -17,6 +17,7 @@ function VisHistory() {
 };
 
 VisHistory.prototype.undo = function() {
+  console.log("Undo: " + this.currentStep.name);
   var oldCurrentStep = this.currentStep;
   this.currentStep.undo();
   if (this.currentStep.past !== null) {
@@ -26,6 +27,7 @@ VisHistory.prototype.undo = function() {
 
 VisHistory.prototype.redo = function() {
   if (this.currentStep.future !== null) {
+    console.log("Redo: " + this.currentStep.future.name);
     this.currentStep.future.redo();
     this.currentStep = this.currentStep.future;
   }

@@ -320,7 +320,7 @@ PVisualiser.prototype.restoreHangingEdges = function() {
  * relative to where the composite node has been moved. 
  * @param {string} id The id string of the group you want to uncluster
  */
-PVisualiser.prototype.unGroupNode = function(id) {
+PVisualiser.prototype.unGroupNode = function(id, noHistory) {
   var node = cy.getElementById(id);
   var that = this;
   var x = node.position('x');
@@ -374,6 +374,22 @@ PVisualiser.prototype.unGroupNode = function(id) {
   });
   this.GroupManager.removeGroup(node.id());
   node.remove();
+
+  // add to history
+  if (noHistory !== false) {
+    var child = originalNodes[0];
+    this.history.addStep(new Step('Ungroup node',
+      function() {
+        cy.$('node').removeClass('selected');
+        for (var i = 0; i < originalNodes.length; i++) {
+          originalNodes[i].addClass('selected');
+        }
+        that.groupSelectedNodes();
+      },
+      function() {
+        that.unGroupNode(that.GroupManager.getParent(child.data().id), false);
+      }));
+  }
 };
 
 /**
@@ -381,7 +397,7 @@ PVisualiser.prototype.unGroupNode = function(id) {
  * a compiste node with all the same edges. No arguments are required as it
  * groups any nodes with the 'selected' class.
  */
-PVisualiser.prototype.groupSelectedNodes = function() {
+PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
   var that = this;
   var groupElements = cy.nodes('.selected');
 
@@ -476,6 +492,21 @@ PVisualiser.prototype.groupSelectedNodes = function() {
 
     // Add to GroupManager
     that.GroupManager.addGroup(id, originalNodes);
+
+    // Add to history
+    if (noHistory !== null){
+    var child = originalNodes[0];
+    that.history.addStep(new Step('Group node',
+          function ungroupNode() {
+            that.unGroupNode(that.GroupManager.getParent(child.data().id), false);
+          }, function regroupNode() {
+            cy.$('node').removeClass('selected');
+            for (var i = 0; i < originalNodes.length; i++) {
+              originalNodes[i].addClass('selected');
+            }
+            that.groupSelectedNodes(false);
+          }));
+    }
 
   }, 500);
 };
@@ -738,7 +769,7 @@ PVisualiser.prototype.render = function(inner, callback) {
           // add to history 
           var position_old = clone(that.oldPosition);
           var position_new = clone(event.cyTarget.position());
-          that.history.addStep(new Step(
+          that.history.addStep(new Step('Move node',
             function undo() {
               event.cyTarget.animate({
                 position: position_old,
