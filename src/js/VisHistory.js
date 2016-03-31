@@ -48,12 +48,12 @@ VisHistory.prototype.help = function() {
 /**
  * A step represents a single action a user can undo/redo.
  */
-function Step(undo, redo, runStepNow) {
+function Step(name, undo, redo, runStepNow) {
   this.future = null;
   this.past = null;
   this.undo = undo;
   this.redo = redo;
-  this.name = null;
+  this.name = name;
 
   if (runStepNow === true) {
     this.redo();
