@@ -84,34 +84,3 @@ function Step(name, undo, redo, runStepNow) {
     this.redo();
   }
 }
-
-var v = new VisHistory();
-var s1 = new Step(
-  function() {
-    console.log("undoing step 1");
-  },
-  function() {
-    console.log("re-doing step 1");
-  },
-  false);
-s1.name = "step1";
-var s2 = new Step(
-  function() {
-    console.log("undoing step 2");
-  },
-  function() {
-    console.log("re-doing step 2");
-  },
-  false);
-s2.name = "step2";
-var s3 = new Step(
-  function() {
-    console.log("undoing step 3");
-  },
-  function() {
-    console.log("re-doing step 3");
-  },
-  false);
-s3.name = "step3";
-v.addStep(s1);
-v.addStep(s2);
