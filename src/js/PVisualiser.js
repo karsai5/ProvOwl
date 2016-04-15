@@ -769,6 +769,7 @@ PVisualiser.prototype.render = function(inner, callback) {
           // add to history 
           var position_old = clone(that.oldPosition);
           var position_new = clone(event.cyTarget.position());
+          if (position_old.x != position_new.x || position_old.y != position_new.y) {
           that.history.addStep(new Step('Move node',
             function undo() {
               event.cyTarget.animate({
@@ -782,6 +783,7 @@ PVisualiser.prototype.render = function(inner, callback) {
                 duration: 200
               });
             }));
+          }
         });
 
         // add tap bindings
