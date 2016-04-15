@@ -134,9 +134,8 @@ body, html {
   margin-top: 10px;
 }
 
-.node_info_wrapper {
+.floating_info {
   width: 220px;
-  display: none;
   position: absolute;
   top: 60px;
   left: 10px;
@@ -150,9 +149,21 @@ body, html {
     margin-bottom: 10px;
   }
 
-  #node_info {
+  .body {
     max-height: 400px;
     overflow-y: auto;
+  }
+
+  &.node_info_wrapper {
+    display: none;
+    top: 60px;
+    left: 10px;
+  }
+
+  &.history_wrapper {
+    display: block;
+    left: auto;
+    right: 10px;
   }
 }
 

@@ -23,6 +23,7 @@ VisHistory.prototype.undo = function() {
   if (this.currentStep.past !== null) {
     this.currentStep = this.currentStep.past;
   }
+  this.printHistory();
 }
 
 VisHistory.prototype.redo = function() {
@@ -31,19 +32,43 @@ VisHistory.prototype.redo = function() {
     this.currentStep.future.redo();
     this.currentStep = this.currentStep.future;
   }
+  this.printHistory();
 }
 
 VisHistory.prototype.addStep = function(step) {
   step.past = this.currentStep;
   this.currentStep.future = step;
   this.currentStep = step;
+  this.printHistory();
 }
 
 VisHistory.prototype.help = function() {
   console.log(
-    "This class is used to keep track of the history of users actions so that they can be undone and redone."
-  );
+      "This class is used to keep track of the history of users actions so that they can be undone and redone."
+      );
 };
+
+VisHistory.prototype.printHistory = function(div) {
+  var outputString = "<strong>" + this.currentStep.name + "</strong>";
+
+  // get future history
+  if (this.currentStep.future) {
+    var nextStep = this.currentStep.future;
+    do {
+      outputString = nextStep.name + "<br>" + outputString;
+    } while (nextStep = nextStep.future)
+  }
+
+  // get past history
+  if (this.currentStep.past) {
+    var pastStep = this.currentStep.past;
+    do {
+      outputString = outputString + "<br>"  + pastStep.name;
+    } while (pastStep = pastStep.past)
+  }
+
+  $("#history_info").html(outputString);
+}
 
 /**
  * A step represents a single action a user can undo/redo.
