@@ -70,6 +70,15 @@ VisHistory.prototype.printHistory = function(div) {
   $("#history_info").html(outputString);
 }
 
+VisHistory.prototype.togglePanel = function() {
+  var history_panel = $(".history_wrapper");
+  if (history_panel.css('display') === 'block') {
+    history_panel.css('display', 'none');
+  } else {
+    history_panel.css('display', 'block');
+  }
+}
+
 /**
  * A step represents a single action a user can undo/redo.
  */

@@ -162,7 +162,7 @@ body, html {
   }
 
   &.history_wrapper {
-    display: block;
+    display: none; // starts off hidden
     left: auto;
     right: 10px;
   }
