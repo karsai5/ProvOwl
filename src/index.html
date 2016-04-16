@@ -1,150 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>ProvOwl</title>
-    <meta name="description" content="Provenance visualiser">
-    <meta name="author" content="Linus Karsai">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Fonts -->
-    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+<head>
+  <meta charset="utf-8">
+  <title>ProvOwl</title>
+  <meta name="description" content="Provenance visualiser">
+  <meta name="author" content="Linus Karsai">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- build:css css/minified.css -->
-    <!-- CSS -->
-    <link rel="stylesheet" href="/bower_components/jquery-ui/themes/smoothness/jquery-ui.css">
-    <!-- <link rel="stylesheet" href="/css/menu-vertical.css"> <1!-- CSS for vertical menu --1> -->
-    <link rel="stylesheet" href="/css/main.css"> <!-- Page specific css -->
-    <!-- endbuild -->
+  <!-- Fonts -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/static/images/favicon.ico">
+  <!-- build:css css/minified.css -->
+  <!-- CSS -->
+  <link rel="stylesheet" href="/bower_components/jquery-ui/themes/smoothness/jquery-ui.css">
+  <!-- <link rel="stylesheet" href="/css/menu-vertical.css"> <1!-- CSS for vertical menu --1> -->
+  <link rel="stylesheet" href="/css/main.css">
+  <!-- Page specific css -->
+  <!-- endbuild -->
 
-    <!-- build:js js/minified.js -->
-    <!-- Javascript Packages -->
-    <script src="/bower_components/jquery/dist/jquery.js"></script>
-    <script src="/bower_components/jquery-ui/jquery-ui.js"></script>
-    <script src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="/bower_components/lodash/lodash.js"></script>
-    <script src="/bower_components/graphlib/dist/graphlib.core.js"></script>
-    <script src="/bower_components/dagre/dist/dagre.core.js"></script>
-    <script src="/bower_components/cytoscape/dist/cytoscape.js"></script>
-    <script src="/bower_components/cytoscape-dagre/cytoscape-dagre.js"> </script>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/static/images/favicon.ico">
 
-    <!-- Javascript -->
-    <script src="/js/warnings.js" data-cover></script>
-    <script src="/js/VisHistory.js" data-cover></script>
-    <script src="/js/PVisualiser.js" data-cover></script>
-    <script src="/js/PParser.js" data-cover></script>
-    <script src="/js/main.js" data-cover></script>
-    <!-- <script src="/js/menu-vertical.js" data-cover></script> -->
-    <!-- endbuild -->
+  <!-- build:js js/minified.js -->
+  <!-- Javascript Packages -->
+  <script src="/bower_components/jquery/dist/jquery.js"></script>
+  <script src="/bower_components/jquery-ui/jquery-ui.js"></script>
+  <script src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="/bower_components/lodash/lodash.js"></script>
+  <script src="/bower_components/graphlib/dist/graphlib.core.js"></script>
+  <script src="/bower_components/dagre/dist/dagre.core.js"></script>
+  <script src="/bower_components/cytoscape/dist/cytoscape.js"></script>
+  <script src="/bower_components/cytoscape-dagre/cytoscape-dagre.js">
+  </script>
 
-  </head>
-  <body>
+  <!-- Javascript -->
+  <script src="/js/warnings.js" data-cover></script>
+  <script src="/js/VisHistory.js" data-cover></script>
+  <script src="/js/PVisualiser.js" data-cover></script>
+  <script src="/js/PParser.js" data-cover></script>
+  <script src="/js/main.js" data-cover></script>
+  <!-- <script src="/js/menu-vertical.js" data-cover></script> -->
+  <!-- endbuild -->
 
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">About ProvOwl</h4>
-          </div>
-          <div class="modal-body">
-            <p>
-            This is an interface for visualising provenance graphs written in the <a href="http://www.w3.org/TR/2013/NOTE-prov-primer-20130430/" target="_blank">PROV standard</a>. 
-            It is part of my honours project at the <a href="http://sydney.edu.au/" target="_blank">University of Sydney</a>
-            </p>
-            <p>You can find a series of example prov files to play with over <a href="/prov-examples/" target="_blank">here</a>.</p>
-            <p>This is part of my honours thesis and is very much a WORK IN PROGRESS. Please be kind and report any problems to lkar7536 [at] uni [dot] sydney [dot] edu [dot] au.</p>
-            <hr> 
-            Try loading some example files to get a feel for the interface:
-            <ul>
-              <li><a href="?file=prov-examples/provn/fournode.provn" >Small example</a></li>
-              <li><a href="?file=prov-examples/provn/IR-baseline.provn" >Baseline example</a></li>
-              <li><a href="?file=prov-examples/provn/IR-complete.provn" >Big example</a></li>
-            </ul>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-          </div>
+</head>
+
+<body>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">About ProvOwl</h4>
         </div>
-      </div>
-    </div>
-
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">ProvOwl</a>
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <form class="navbar-form navbar-left">
-            <button id="provSelectButton" class="btn btn-default" onclick="selectFile(); return false;">Select Prov File</button>
-          </form>
-          <ul class="nav navbar-nav">
-            <li class="dropdown">
-              <a class="dropdown-toggle">Reset Layout <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a onclick="pvis.resetLayout('dagre');">Dagre</a></li>
-                <li><a onclick="pvis.resetLayout('random');">Random</a></li>
-                <li><a onclick="pvis.resetLayout('grid');">Grid</a></li>
-                <li><a onclick="pvis.resetLayout('circle');">Circle</a></li>
-                <li><a onclick="pvis.resetLayout('breadthfirst');">Breadth First</a></li>
-              </ul>
-            </li>
-            <li><a onclick="pvis.resetView();">Center view</a></li>
-            <li class="dropdown">
-              <a class="dropdown-toggle">Screenshot <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a onclick="window.open(cy.jpeg({full:true}), '_blank')">
-                    Whole graph</a></li>
-                <li><a onclick="window.open(cy.jpeg({full:false}), '_blank')">
-                    Current view</a></li>
-              </ul>
-            </li>
-            <li><a onclick="pvis.history.undo();">Undo</a></li>
-            <li><a onclick="pvis.history.redo();">Redo</a></li>
+        <div class="modal-body">
+          <p>
+            This is an interface for visualising provenance graphs written in the <a href="http://www.w3.org/TR/2013/NOTE-prov-primer-20130430/" target="_blank">PROV standard</a>. It is part of my honours project at the <a href="http://sydney.edu.au/" target="_blank">University of Sydney</a>
+          </p>
+          <p>You can find a series of example prov files to play with over <a href="/prov-examples/" target="_blank">here</a>.</p>
+          <p>This is part of my honours thesis and is very much a WORK IN PROGRESS. Please be kind and report any problems to lkar7536 [at] uni [dot] sydney [dot] edu [dot] au.</p>
+          <hr> Try loading some example files to get a feel for the interface:
+          <ul>
+            <li><a href="?file=prov-examples/provn/fournode.provn">Small example</a></li>
+            <li><a href="?file=prov-examples/provn/IR-baseline.provn">Baseline example</a></li>
+            <li><a href="?file=prov-examples/provn/IR-complete.provn">Big example</a></li>
           </ul>
-        </div><!-- /.navbar-collapse -->
-      </div><!-- /.container-fluid -->
-    </nav>
-
-    <!-- Page Layout -->
-    <div id="cy"></div>
-    <div class="floating_info node_info_wrapper">
-      <!-- <h2>Node Information</h2> -->
-      <p class="header">Node Information</p>
-      <hr />
-      <div id="node_info" class="body">
-        No node currently selected.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
-    <div class="floating_info history_wrapper">
-      <!-- <h2>Node Information</h2> -->
-      <p class="header">History Information</p>
-      <hr />
-      <div id="history_info" class="body">
-        No history...
-      </div>
-    </div>
-    <div class="warnings-container">
-      <div id="warnings"></div>
-    </div>
-    <div class="footer">
-      <a href="#" data-toggle="modal" data-target="#myModal">About</a>
-      <span class="copyright">&copy; Linus Karsai 2016</span>
-    </div>
-    <!-- End Document -->
+  </div>
 
-  </body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">ProvOwl</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <form class="navbar-form navbar-left">
+          <button id="provSelectButton" class="btn btn-default" onclick="selectFile(); return false;">Select Prov File</button>
+        </form>
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a class="dropdown-toggle">Reset Layout <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a onclick="pvis.resetLayout('dagre');">Dagre</a></li>
+              <li><a onclick="pvis.resetLayout('random');">Random</a></li>
+              <li><a onclick="pvis.resetLayout('grid');">Grid</a></li>
+              <li><a onclick="pvis.resetLayout('circle');">Circle</a></li>
+              <li><a onclick="pvis.resetLayout('breadthfirst');">Breadth First</a></li>
+            </ul>
+          </li>
+          <li><a onclick="pvis.resetView();">Center view</a></li>
+          <li class="dropdown">
+            <a class="dropdown-toggle">Screenshot <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a onclick="window.open(cy.jpeg({full:true}), '_blank')">
+                    Whole graph</a></li>
+              <li><a onclick="window.open(cy.jpeg({full:false}), '_blank')">
+                    Current view</a></li>
+            </ul>
+          </li>
+          <li>
+            <a onclick="pvis.history.undo();">
+              <i class="fa fa-undo" aria-hidden="true"></i> Undo
+            </a>
+          </li>
+          <li>
+            <a onclick="pvis.history.redo();">
+              <i class="fa fa-repeat" aria-hidden="true"></i> Redo
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+  </nav>
+
+  <!-- Page Layout -->
+  <div id="cy"></div>
+  <div class="floating_info node_info_wrapper">
+    <!-- <h2>Node Information</h2> -->
+    <p class="header">Node Information</p>
+    <hr />
+    <div id="node_info" class="body">
+      No node currently selected.
+    </div>
+  </div>
+  <div class="floating_info history_wrapper">
+    <!-- <h2>Node Information</h2> -->
+    <p class="header">History Information</p>
+    <hr />
+    <div id="history_info" class="body">
+      No history...
+    </div>
+  </div>
+  <div class="warnings-container">
+    <div id="warnings"></div>
+  </div>
+  <div class="footer">
+    <a href="#" data-toggle="modal" data-target="#myModal">About</a>
+    <span class="copyright">&copy; Linus Karsai 2016</span>
+  </div>
+  <!-- End Document -->
+
+</body>
+
 </html>
