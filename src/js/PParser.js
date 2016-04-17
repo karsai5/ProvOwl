@@ -146,17 +146,28 @@ function Provenance() {
     });
 
     // Create groups
+    var groupLines = {};
     $.each(this.groups, function (i,l) {
       var name = PParser.getLineArguments(l)[0];
       pvis.createGroup(name);
+      groupLines[name] = [];
     });
 
-    // Link members to groups
+    // Group members into object groupLines
     $.each(this.members, function (i,l) {
       var e1 = PParser.getLineArguments(l)[0];
       var e2 = PParser.getLineArguments(l)[1];
       console.log(e1 + " member of " + e2);
-      pvis.memberOf(e1,e2);
+      if (groupLines[e2] !== undefined) {
+        groupLines[e2].push(e1);
+      } else {
+        pvis.print("Group '" + e1 + "' doesn't exist.");
+      }
+    });
+
+    // Select nodes in groups and group
+    $.each(groupLines, function(i, nodes) {
+      pvis.groupNodes(nodes);
     });
 
     return pvis;
