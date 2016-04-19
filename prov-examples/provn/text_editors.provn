@@ -1,0 +1,30 @@
+document
+
+prefix ir <http://www.ir.ncl.ac.uk/>
+
+//
+// entities
+//
+
+// Twitter Feed
+entity(ir:Linus' Thesis)
+entity(ir:sublime text 3)
+entity(ir:sublime text 2) 
+entity(ir:text wrangler)
+entity(ir:notepad)
+entity(ir:vim)
+entity(ir:emacs)
+entity(ir:report-editing)
+
+agent(ir:Linus, [prov:type="jr-analyst", clearance="low"])
+wasAssociatedWith(ir:report-editing, ir:Linus,-)
+
+wasGeneratedBy(ir:Linus' Thesis,ir:report-editing,-)
+used(ir:report-editing, ir:sublime text 3)
+used(ir:report-editing, ir:sublime text 2)
+used(ir:report-editing, ir:notepad)
+used(ir:report-editing, ir:text wrangler)
+used(ir:report-editing, ir:vim)
+used(ir:report-editing, ir:emacs)
+
+endDocument
