@@ -27,7 +27,8 @@
     "cytoscape-dagre": "~1.1.2",
     "skeleton": "~2.0.4",
     "bootstrap": "^3.3.6",
-    "bootstrap-sass": "~3.3.6"
+    "bootstrap-sass": "~3.3.6",
+    "font-awesome": "~4.6.1"
   },
   "devDependencies": {
     "qunit": "~1.19.0",

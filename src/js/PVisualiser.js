@@ -6,6 +6,15 @@
  */
 "use strict";
 
+function clone(obj) {
+  if (null == obj || "object" != typeof obj) return obj;
+  var copy = obj.constructor();
+  for (var attr in obj) {
+    if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+  }
+  return copy;
+}
+
 /**
  * Simple node implemenation, has a parent, children and a boolean to check
  * whether it's root or not.
@@ -22,8 +31,8 @@ function Node(data, isGroup) {
    */
   this.removeChild = function(id) {
     var index = -1;
-    for (var i=0; i<this.children.length; i++) {
-      if (this.children[i].data === id){
+    for (var i = 0; i < this.children.length; i++) {
+      if (this.children[i].data === id) {
         index = i;
       }
     }
@@ -69,13 +78,13 @@ GroupManager.prototype.addGroup = function(id, nodes, parent) {
 GroupManager.prototype.removeGroup = function(id) {
   var groupNode = this.find(id);
   if (groupNode === undefined) {
-    console.warn("Failed to remove group from GroupManager: '" + id + 
+    console.warn("Failed to remove group from GroupManager: '" + id +
         "' doesn't seem to exits");
   } else {
     // remove all children, add groups to parent
-    for (var i=0; i < groupNode.children.length; i++) {
+    for (var i = 0; i < groupNode.children.length; i++) {
       var node = groupNode.children[i];
-      if (node.children.length > 0){ // is group
+      if (node.children.length > 0) { // is group
         node.parent = groupNode.parent;
       } else { // is node
         node.parent = null;
@@ -95,15 +104,19 @@ GroupManager.prototype.removeGroup = function(id) {
  */
     GroupManager.prototype.find = function(id, node) {
       // if no node set, get root
-      if (node === undefined) { node = this.root; } 
+      if (node === undefined) {
+        node = this.root;
+      }
 
       // for each child
-      for (var i=0; i<node.children.length; i++) {
+      for (var i = 0; i < node.children.length; i++) {
         if (node.children[i].data === id) {
           return node.children[i];
         } else {
           var result = this.find(id, node.children[i]);
-          if (result !== undefined) { return result; }
+          if (result !== undefined) {
+            return result;
+          }
         }
       }
     };
@@ -121,7 +134,7 @@ GroupManager.prototype.getParent = function(id) {
   var currentNode = this.findLeaf(id);
   if (currentNode !== undefined) {
     while (currentNode.parent.isRoot === false) {
-      currentNode = currentNode.parent; 
+      currentNode = currentNode.parent;
     }
     return currentNode.data;
   }
@@ -161,7 +174,7 @@ informationString.prototype.render = function(nodes, options) {
   if (nodes.length === 1) {
     var data = nodes.data();
     for (var property in data) {
-      if (data.hasOwnProperty(property)){
+      if (data.hasOwnProperty(property)) {
         this.add(property, data[property]);
       }
     }
@@ -201,24 +214,29 @@ informationString.prototype.newline = function() {
 };
 
 informationString.prototype.addGroupLink = function() {
-  this.information += "<a href=\"#\" onclick=\"pvis.groupSelectedNodes();\">Group Nodes</a>";
+  this.information +=
+    "<a href=\"#\" onclick=\"pvis.groupSelectedNodes();\">Group Nodes</a>";
 };
 
 informationString.prototype.addUngroupLink = function(node) {
-  this.information += "<a href=\"#\" onclick=\"pvis.unGroupNode('" + node.data().id + "');\">Ungroup</a>";
+  this.information += "<a href=\"#\" onclick=\"pvis.unGroupNode('" + node.data()
+    .id + "');\">Ungroup</a>";
 };
 
 informationString.prototype.addUngroupButton = function(node) {
-  this.information += "<button class=\"button\" onclick=\"pvis.unGroupNode('" + node.data().id + "');\">Ungroup</button>";
+  this.information +=
+    "<button class=\"button\" onclick=\"pvis.unGroupNode('" + node.data().id +
+    "');\">Ungroup</button>";
 };
 
 informationString.prototype.addConsoleLogLink = function(node) {
-  this.information += "<a href=\"#\" onclick=\"pvis.printNodeInfoToConsole('" + 
+  this.information +=
+    "<a href=\"#\" onclick=\"pvis.printNodeInfoToConsole('" +
     node.data().id + "');\">Console log</a><br>";
 }
 
 informationString.prototype.addRenameLink = function(node) {
-  this.information += "<a href=\"#\" onclick=\"pvis.renameNode('" + 
+  this.information += "<a href=\"#\" onclick=\"pvis.renameNode('" +
     node.data().id + "');\">Rename node</a>";
 }
 
@@ -231,49 +249,51 @@ informationString.prototype.print = function() {
  * graph.
  * @constructor
  */
-  function PVisualiser() {
-    console.log('Provenance visualiser initialised.');
-    this.nodes = [];
-    this.edges = [];
-    this.hangingEdges = [];
-    this.cy = null;
-    this.GroupManager = new GroupManager();
-  }
+function PVisualiser() {
+  console.log('Provenance visualiser initialised.');
+  this.nodes = [];
+  this.edges = [];
+  this.hangingEdges = [];
+  this.cy = null;
+  this.GroupManager = new GroupManager();
+  this.history = new VisHistory();
+}
 
 /**
  * Print to user log using window.w1, if that's undefined use the console instead
  * @param {string} msg The message you want to have shown
  */
-    PVisualiser.prototype.print = function(msg) {
-      if (typeof w1 === 'undefined') {
-        console.warn(msg);
-      } else {
-        w1.add(msg);
-      }
-    };
+PVisualiser.prototype.print = function(msg) {
+  if (typeof w1 === 'undefined') {
+    console.warn(msg);
+  } else {
+    w1.add(msg);
+  }
+};
 
 /**
  * Using letters and numbers create a random id 5 characters long.
  * @return {string} id Random id eg: 7Q2nm, lCQDg or I2v4E
  */
-PVisualiser.prototype.makeid = function() {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    PVisualiser.prototype.makeid = function() {
+      var text = "";
+      var possible =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  for( var i=0; i < 5; i++ ){
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
+      for (var i = 0; i < 5; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+      }
 
-  return text;
-};
+      return text;
+    };
 
 /**
  * Remove selected class from all nodes. This will remove the visual selected
  * indicator (red outline) as well.
  */
-PVisualiser.prototype.clearSelectedNodes = function() {
-  cy.$('node').removeClass('selected');
-};
+  PVisualiser.prototype.clearSelectedNodes = function() {
+    cy.$('node').removeClass('selected');
+  };
 
 /*
  * Hanging edges are edges that are connected to nodes that are currently not
@@ -283,7 +303,7 @@ PVisualiser.prototype.clearSelectedNodes = function() {
 PVisualiser.prototype.restoreHangingEdges = function() {
   var removeIds = [];
   var that = this;
-  $.each(this.hangingEdges, function(i,ele) {
+  $.each(this.hangingEdges, function(i, ele) {
     if (cy.getElementById(ele.data().source).length === 1 &&
         cy.getElementById(ele.data().target).length === 1) {
       ele.restore();
@@ -300,7 +320,7 @@ PVisualiser.prototype.restoreHangingEdges = function() {
  * relative to where the composite node has been moved. 
  * @param {string} id The id string of the group you want to uncluster
  */
-PVisualiser.prototype.unGroupNode = function(id) {
+PVisualiser.prototype.unGroupNode = function(id, noHistory) {
   var node = cy.getElementById(id);
   var that = this;
   var x = node.position('x');
@@ -315,8 +335,13 @@ PVisualiser.prototype.unGroupNode = function(id) {
     ele.position('x', x);
     ele.position('y', y);
     ele.restore();
-    ele.animate({position: {x: x-xDifference, y: y-yDifference}, 
-      duration: 500});
+    ele.animate({
+      position: {
+        x: x - xDifference,
+        y: y - yDifference
+      },
+      duration: 500
+    });
     // remove original fields to save space
     ele.removeData('originalX originalY group');
   });
@@ -325,16 +350,17 @@ PVisualiser.prototype.unGroupNode = function(id) {
 
   // Restore original Edges
   $.each(originalEdges, function(i, ele) {
-    if( cy.getElementById(ele.data().source).length === 1 &&
+    if (cy.getElementById(ele.data().source).length === 1 &&
         cy.getElementById(ele.data().target).length === 1) {
       ele.restore();
     } else {
       var source = that.GroupManager.getParent(ele.data().source);
       var target = that.GroupManager.getParent(ele.data().target);
-      if (source !== undefined && target !== undefined ) {
+      if (source !== undefined && target !== undefined) {
         cy.add({
-          group: "edges", data: { 
-            id: source + '-' + target, 
+          group: "edges",
+          data: {
+            id: source + '-' + target,
             target: target,
             source: source,
             label: ele.data().label
@@ -348,6 +374,22 @@ PVisualiser.prototype.unGroupNode = function(id) {
   });
   this.GroupManager.removeGroup(node.id());
   node.remove();
+
+  // add to history
+  if (noHistory !== false) {
+    var child = originalNodes[0];
+    this.history.addStep(new Step('Ungroup node',
+          function() {
+            cy.$('node').removeClass('selected');
+            for (var i = 0; i < originalNodes.length; i++) {
+              originalNodes[i].addClass('selected');
+            }
+            that.groupSelectedNodes();
+          },
+          function() {
+            that.unGroupNode(that.GroupManager.getParent(child.data().id), false);
+          }));
+  }
 };
 
 /**
@@ -355,7 +397,7 @@ PVisualiser.prototype.unGroupNode = function(id) {
  * a compiste node with all the same edges. No arguments are required as it
  * groups any nodes with the 'selected' class.
  */
-  PVisualiser.prototype.groupSelectedNodes = function() {
+  PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
     var that = this;
     var groupElements = cy.nodes('.selected');
 
@@ -364,17 +406,23 @@ PVisualiser.prototype.unGroupNode = function(id) {
     var y = groupElements.position('y');
 
     // Animate nodes into group position
-    cy.nodes('.selected').each(function(i,ele) {
+    cy.nodes('.selected').each(function(i, ele) {
       ele.data('originalX', ele.position('x'));
       ele.data('originalY', ele.position('y'));
-      ele.animate({position: {x:x, y:y}, duration: 500});
+      ele.animate({
+        position: {
+          x: x,
+          y: y
+        },
+        duration: 500
+      });
     });
 
     // Wait for animation to complete
     setTimeout(function() {
       // create hash table of ids
       var idHash = {};
-      groupElements.each(function(i, ele){
+      groupElements.each(function(i, ele) {
         idHash[ele.id()] = true;
       });
 
@@ -382,9 +430,16 @@ PVisualiser.prototype.unGroupNode = function(id) {
       var id = that.makeid();
       var groupNode = cy.add({
         group: "nodes",
-        data: { id: id, name: id, type: 'group'},
+        data: {
+          id: id,
+          name: id,
+          type: 'group'
+        },
         classes: 'group',
-        position: { x: x, y: y }
+        position: {
+          x: x,
+          y: y
+        }
       });
 
       // Save original nodes and edges
@@ -392,7 +447,7 @@ PVisualiser.prototype.unGroupNode = function(id) {
       var originalNodes = [];
       var originalEdges = [];
       var neighbourhood = groupElements.union(groupElements.neighbourhood());
-      for (var i=0; i < neighbourhood.length; i++) { // loop through neighbourhood
+      for (var i = 0; i < neighbourhood.length; i++) { // loop through neighbourhood
         var ele = neighbourhood[i];
         if (ele.isNode() && idHash[ele.id()] === true) { // if node in group
           ele.data('group', groupNode.id());
@@ -416,11 +471,11 @@ PVisualiser.prototype.unGroupNode = function(id) {
           if (source !== "" && target !== "") { // check it's not an internal edge
             // check edge doesn't already exist
             var newid = source + '-' + target;
-            if (cy.getElementById(newid).length === 0) { 
+            if (cy.getElementById(newid).length === 0) {
               cy.add({ // add edge to graph
                 group: "edges",
-                data: { 
-                  id: newid, 
+                data: {
+                  id: newid,
                   source: source,
                   target: target,
                   label: ele.data().label
@@ -438,6 +493,21 @@ PVisualiser.prototype.unGroupNode = function(id) {
       // Add to GroupManager
       that.GroupManager.addGroup(id, originalNodes);
 
+      // Add to history
+      if (noHistory !== null){
+        var child = originalNodes[0];
+        that.history.addStep(new Step('Group node',
+              function ungroupNode() {
+                that.unGroupNode(that.GroupManager.getParent(child.data().id), false);
+              }, function regroupNode() {
+                cy.$('node').removeClass('selected');
+                for (var i = 0; i < originalNodes.length; i++) {
+                  originalNodes[i].addClass('selected');
+                }
+                that.groupSelectedNodes(false);
+              }));
+      }
+
     }, 500);
   };
 
@@ -446,20 +516,20 @@ PVisualiser.prototype.unGroupNode = function(id) {
  * graph is clicked. It will check what type of object was clicked (node,
  * group, edge) and act appropriately.
  */
-    PVisualiser.prototype.clickNodeEvent = function(evt) {
-      var node = evt.cyTarget;
-      var informationObject = new informationString();
-      this.selectedNode = node;
+      PVisualiser.prototype.clickNodeEvent = function(evt) {
+        var node = evt.cyTarget;
+        var informationObject = new informationString();
+        this.selectedNode = node;
 
-      // Highlight node and clear old selected node
-      // Unless ctrl is held
-      if (!evt.originalEvent.ctrlKey) {
-        this.clearSelectedNodes();
-      }
-      this.selectedNode.addClass('selected');
+        // Highlight node and clear old selected node
+        // Unless ctrl is held
+        if (!evt.originalEvent.ctrlKey) {
+          this.clearSelectedNodes();
+        }
+        this.selectedNode.addClass('selected');
 
-      this.printNodeInfo(informationObject.render(cy.$('.selected')));
-    };
+        this.printNodeInfo(informationObject.render(cy.$('.selected')));
+      };
 
 PVisualiser.prototype.printNodeInfo = function(text) {
   text = text.replace(/\n/g, '<br>');
@@ -470,14 +540,14 @@ PVisualiser.prototype.printNodeInfo = function(text) {
  * Outputs the node object to the console where it can be explored.
  * @param {string} id The id of the node to explore
  */
-PVisualiser.prototype.printNodeInfoToConsole = function(id) {
-  var node = cy.getElementById(id);
-  if (node.length > 0) {
-    console.log(node);
-  } else {
-    console.warn("No node with the id: " + id);
-  }
-};
+          PVisualiser.prototype.printNodeInfoToConsole = function(id) {
+            var node = cy.getElementById(id);
+            if (node.length > 0) {
+              console.log(node);
+            } else {
+              console.warn("No node with the id: " + id);
+            }
+          };
 
 PVisualiser.prototype.renameNode = function(id, name) {
   var node = cy.getElementById(id);
@@ -497,22 +567,22 @@ PVisualiser.prototype.renameNode = function(id, name) {
  * @param {string} name ID of the node you want to check exists
  * @return {bool} found True if the node is in the dom
  */
-PVisualiser.prototype.nodeExists = function(name) {
-  // If cy exists use it's check function
-  if (cy.getElementById !== undefined) {
-    console.log(cy);
-    return cy.getElementById(name).length === 1;
-  }
-  // otherwise use the node list to check
-  var found = false;
-  $.each(this.nodes, function() {
-    if (name === this.data.id) {
-      found = true;
-      return;
-    }
-  });
-  return found;
-};
+        PVisualiser.prototype.nodeExists = function(name) {
+          // If cy exists use it's check function
+          if (cy.getElementById !== undefined) {
+            console.log(cy);
+            return cy.getElementById(name).length === 1;
+          }
+          // otherwise use the node list to check
+          var found = false;
+          $.each(this.nodes, function() {
+            if (name === this.data.id) {
+              found = true;
+              return;
+            }
+          });
+          return found;
+        };
 
 /**
  * Add a node to the graph.
@@ -521,18 +591,24 @@ PVisualiser.prototype.nodeExists = function(name) {
  * @param {String} type the type of node, eg. action, person
  * @return {bool} True if the node was added, False if it was not.
  */
-      PVisualiser.prototype.addNode = function(name, label, type) {
-        if (typeof name !== 'string' || typeof label !== 'string') {
-          this.logUnexpectedVariables(type);
-        } else if (this.nodeExists(name)) {
-          this.logDuplicate(type, name);
-        } else {
-          this.nodes.push({ data: { id: name, name: label, type: type}, 
-            classes: type});
-          return true;
-        }
-        return false;
-      };
+        PVisualiser.prototype.addNode = function(name, label, type) {
+          if (typeof name !== 'string' || typeof label !== 'string') {
+            this.logUnexpectedVariables(type);
+          } else if (this.nodeExists(name)) {
+            this.logDuplicate(type, name);
+          } else {
+            this.nodes.push({
+              data: {
+                id: name,
+                name: label,
+                type: type
+              },
+              classes: type
+            });
+            return true;
+          }
+          return false;
+        };
 
 /**
  * Add an edge to the graph.
@@ -541,20 +617,27 @@ PVisualiser.prototype.nodeExists = function(name) {
  * @param {String} type Desc of type eg. derived
  * @param {String} label label to be applied eg. wasDerivedFrom
  */
-PVisualiser.prototype.addEdge = function(name1, name2, type, label) {
-  if (typeof name1 !== 'string' || typeof name2 !== 'string') {
-    this.logUnexpectedVariables(type + ' edge');
-  } else if (!this.nodeExists(name1)) {
-    this.logMissingNode(type + ' edge', name1);
-  } else if (!this.nodeExists(name2)) {
-    this.logMissingNode(type + ' edge', name2);
-  } else {
-    this.edges.push({data: {id: name1+'-'+name2, source: name1, target: name2, 
-      label: label}, classes: type});
-    return true;
-  }
-  return false;
-};
+              PVisualiser.prototype.addEdge = function(name1, name2, type, label) {
+                if (typeof name1 !== 'string' || typeof name2 !== 'string') {
+                  this.logUnexpectedVariables(type + ' edge');
+                } else if (!this.nodeExists(name1)) {
+                  this.logMissingNode(type + ' edge', name1);
+                } else if (!this.nodeExists(name2)) {
+                  this.logMissingNode(type + ' edge', name2);
+                } else {
+                  this.edges.push({
+                    data: {
+                      id: name1 + '-' + name2,
+                      source: name1,
+                      target: name2,
+                      label: label
+                    },
+                    classes: type
+                  });
+                  return true;
+                }
+                return false;
+              };
 
 PVisualiser.prototype.createEntity = function(name, label) {
   return this.addNode(name, label, 'entity');
@@ -577,8 +660,8 @@ PVisualiser.prototype.memberOf = function(name, group) {
   var index = -1;
 
   // Add edges
-  $.each(this.edges, function(i,e) {
-    if (e.data.source === name){
+  $.each(this.edges, function(i, e) {
+    if (e.data.source === name) {
       that.addEdge(group, e.data.target, e.classes, e.data.label);
     } else if (e.data.target === name) {
       that.addEdge(e.data.source, group, e.classes, e.data.label);
@@ -586,7 +669,7 @@ PVisualiser.prototype.memberOf = function(name, group) {
   });
 
   // Delete original node
-  $.each(this.nodes, function(i,e) {
+  $.each(this.nodes, function(i, e) {
     if (e.data.id === name) {
       index = i;
     }
@@ -635,7 +718,7 @@ PVisualiser.prototype.handleEvent = function(event) {
 
 PVisualiser.prototype.resetLayout = function(name) {
   cy.$().layout({
-    name: name, 
+    name: name,
     animate: true,
     fit: false,
   });
@@ -655,51 +738,89 @@ PVisualiser.prototype.resetView = function() {
  * @param {function} callback A function you would like to run after the graph
  * has been rendered.
  */
-  PVisualiser.prototype.render = function(inner, callback) {
-    if (typeof inner !== 'string') {
-      throw new Error("Can't render graph: Unexpected Variables");
-    }
-    this.inner = inner;
-    var that = this;
-    $.get('/static/css/cytoscape.css', function (data) {
-      $(that.inner).cytoscape({
-        layout: {
-          name: 'dagre',
-          padding: 150
-        },
-        style: data,
-        elements: {
-          nodes: that.nodes,
-          edges: that.edges
-        },
+PVisualiser.prototype.render = function(inner, callback) {
+  if (typeof inner !== 'string') {
+    throw new Error("Can't render graph: Unexpected Variables");
+  }
+  this.inner = inner;
+  var that = this;
+  $.get('/static/css/cytoscape.css', function(data) {
+    $(that.inner).cytoscape({
+      layout: {
+        name: 'dagre',
+        padding: 150
+      },
+      style: data,
+      elements: {
+        nodes: that.nodes,
+        edges: that.edges
+      },
 
-        ready: function(){
-          window.cy = this;
-          window.pvis = that;
+      ready: function() {
+        window.cy = this;
+        window.pvis = that;
 
-          // add tap bindings
-          this.on('tap', function(event) {
-            var evtTarget = event.cyTarget; 
-
-            if (evtTarget === cy) { // clicked on background
-              that.clearSelectedNodes();
-              $('.node_info_wrapper').hide();
-            } else if (evtTarget.group() === 'edges') { // clicked on edge
-              console.log('clicked on edge');
-            } else if (evtTarget.group() === 'nodes') { // clicked on node
-              $('.node_info_wrapper').show();
-              that.clickNodeEvent(event);
-            }
-
-          });
-
-          if (typeof callback === 'function') { 
-            callback();
+        // add movement bindings
+        this.on('grab', function(event) {
+          that.oldPosition = clone(event.cyTarget.position());
+          var groupElements = cy.nodes('.selected');
+          that.selectedNodes = groupElements;
+        });
+        this.on('free', function(event) {
+          // add to history 
+          var position_old = clone(that.oldPosition);
+          var position_new = clone(event.cyTarget.position());
+          // grab selected nodes
+          var selectedNodes = that.selectedNodes.slice();
+          if (selectedNodes.length === 0) { // if none selected, use event node
+            selectedNodes = selectedNodes.add(event.cyTarget);
           }
+          if (position_old.x !== position_new.x || 
+              position_old.y !== position_new.y) {
+            that.history.addStep(new Step('Move node',
+                  function undo() {
+                    selectedNodes.each(function(i, ele) {
+                      var new_x = ele.position().x - position_new.x;
+                      var new_y = ele.position().y - position_new.y;
+                      ele.animate({
+                        position: {x: position_old.x + new_x, 
+                          y: position_old.y + new_y},
+                          duration: 200
+                      });
+                    });
+                  },
+                  function redo() {
+                    event.cyTarget.animate({
+                      position: position_new,
+                      duration: 200
+                    });
+                  }));
+          }
+        });
+
+        // add tap bindings
+        this.on('tap', function(event) {
+          var evtTarget = event.cyTarget;
+
+          if (evtTarget === cy) { // clicked on background
+            that.clearSelectedNodes();
+            $('.node_info_wrapper').hide();
+          } else if (evtTarget.group() === 'edges') { // clicked on edge
+            console.log('clicked on edge');
+          } else if (evtTarget.group() === 'nodes') { // clicked on node
+            $('.node_info_wrapper').show();
+            that.clickNodeEvent(event);
+          }
+
+        });
+
+        if (typeof callback === 'function') {
+          callback();
         }
-      });
+      }
     });
-  };
+  });
+};
 
 PVisualiser.prototype.nodeCount = function() {
   return this.nodes.length;
@@ -714,7 +835,8 @@ PVisualiser.prototype.logUnexpectedVariables = function(what) {
 };
 
 PVisualiser.prototype.logDuplicate = function(what, name) {
-  this.print("Can't create duplicate " + what + "\"" + name + "\" already exists");
+  this.print("Can't create duplicate " + what + "\"" + name +
+      "\" already exists");
 };
 
 PVisualiser.prototype.logMissingNode = function(what, name) {
