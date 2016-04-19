@@ -493,6 +493,9 @@ PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
         // Add to GroupManager
         that.GroupManager.addGroup(id, originalNodes);
 
+        // Select new groupnode
+        that.selectNode(groupNode.data().name);
+
         // Add to history
         if (noHistory !== null) {
             var child = originalNodes[0];
@@ -530,11 +533,11 @@ PVisualiser.prototype.selectNode = function(thing) {
         node = cy.getElementById(thing);
     }
     this.selectedNode = node;
-    console.log(node);
-    if (thing.originalEvent && !thing.originalEvent.ctrlKey) {
+    if (thing.originalEvent === undefined || !thing.originalEvent.ctrlKey) {
         this.clearSelectedNodes();
     }
     this.selectedNode.addClass('selected');
+    $('.node_info_wrapper').show();
     this.printNodeInfo(informationObject.render(cy.$('.selected')));
 };
 
@@ -817,7 +820,6 @@ PVisualiser.prototype.render = function(inner, callback) {
                     } else if (evtTarget.group() === 'edges') { // clicked on edge
                         console.log('clicked on edge');
                     } else if (evtTarget.group() === 'nodes') { // clicked on node
-                        $('.node_info_wrapper').show();
                         that.clickNodeEvent(event);
                     }
 
