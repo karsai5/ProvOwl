@@ -446,13 +446,17 @@ PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
         // and create duplicate edges connedted to groupnode
         var originalNodes = [];
         var originalEdges = [];
+		var nameCandidate = {distance: -1, name: ''};
         var neighbourhood = groupElements.union(groupElements.neighbourhood());
         for (var i = 0; i < neighbourhood.length; i++) { // loop through neighbourhood
             var ele = neighbourhood[i];
             if (ele.isNode() && idHash[ele.id()] === true) { // if node in group
                 ele.data('group', groupNode.id());
                 originalNodes.push(ele);
-                ele.remove();
+				if (ele.outgoers().length > nameCandidate.distance) {
+					nameCandidate = {distance: ele.outgoers().length, name: ele.id()};
+				}
+                ele.remove(); // delete node
             } else if (ele.isEdge()) { // if edge
                 originalEdges.push(ele);
                 var source = "";
@@ -485,6 +489,9 @@ PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
                 }
             }
         }
+
+		// Rename node with candidate name
+		groupNode.data('name', PParser.removePrefix(nameCandidate.name) + " group");
 
         // Add originals to group nodes
         groupNode.data('originalNodes', originalNodes);
