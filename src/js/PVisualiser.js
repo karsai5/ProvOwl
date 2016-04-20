@@ -446,16 +446,27 @@ PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
         // and create duplicate edges connedted to groupnode
         var originalNodes = [];
         var originalEdges = [];
+		var rootname = "node[id='" + cy.elements().roots()[0].id() + "']";
 		var nameCandidate = {distance: -1, name: ''};
         var neighbourhood = groupElements.union(groupElements.neighbourhood());
+		window.n = neighbourhood;
         for (var i = 0; i < neighbourhood.length; i++) { // loop through neighbourhood
             var ele = neighbourhood[i];
             if (ele.isNode() && idHash[ele.id()] === true) { // if node in group
                 ele.data('group', groupNode.id());
                 originalNodes.push(ele);
-				if (ele.outgoers().length > nameCandidate.distance) {
-					nameCandidate = {distance: ele.outgoers().length, name: ele.id()};
+
+				// Check if eligible to be cluster title via smallest distance
+				// from the root node.
+				var nodename = "node[id='" + ele.id() + "']";
+				var distanceFromRoot = cy.elements().aStar({
+					root: rootname, 
+					goal: nodename
+				}).distance;
+				if (nameCandidate.distance === -1 || distanceFromRoot < nameCandidate.distance) {
+					nameCandidate = {distance: distanceFromRoot, name: ele.id()};
 				}
+
                 ele.remove(); // delete node
             } else if (ele.isEdge()) { // if edge
                 originalEdges.push(ele);
