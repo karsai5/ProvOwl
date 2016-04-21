@@ -6,186 +6,170 @@ $orange: #D45D3F;
 @import "modules/navbar";
 
 body, html {
-  height: 100%;
+	height: 100%;
 }
 
 .navbar-default {
-  margin-bottom: 0;
-  background: $orange;
-  border: none;
-  border-radius: 0;
+	margin-bottom: 0;
+	background: $orange;
+	border: none;
+	border-radius: 0;
 
-  .navbar-brand, .navbar-nav > li > a {
-    &:hover {
-      color: darken($orange, 30%);
-    }
+	.navbar-brand, .navbar-nav > li > a {
+		&:hover {
+			color: darken($orange, 30%);
+		}
 
-    color: #fff;
-  }
+		color: #fff;
+	}
 
-  .navbar-nav > li > a {
-    cursor: pointer;
-  }
+	.navbar-nav > li > a {
+		cursor: pointer;
+	}
 }
 
 #sidebar {
-  padding: 10px;
-  color: #fff;
-  background: $orange;
-  width: $sidebar-width - 20px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  z-index: 10;
+	padding: 10px;
+	color: #fff;
+	background: $orange;
+	width: $sidebar-width - 20px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100%;
+	z-index: 10;
 
-  a {
-    color: #fff;
-  }
+	a {
+		color: #fff;
+	}
 
-  input {
-    color: #000;
-  }
+	input {
+		color: #000;
+	}
 
-  h2 {
-    font-size: 1.4em;
-    margin-bottom: 0.2em;
-    padding-left: 10px;
-    padding-top: 10px;
-  }
+	h2 {
+		font-size: 1.4em;
+		margin-bottom: 0.2em;
+		padding-left: 10px;
+		padding-top: 10px;
+	}
 
-  hr {
-    margin-top: 1em;
-    margin-bottom: 1em;
-  }
+	hr {
+		margin-top: 1em;
+		margin-bottom: 1em;
+	}
 
-  #hiddenFileSelector {}
+	#hiddenFileSelector {}
 }
 
 .footer {
-  background: darken($orange, 20%);
-  width: 100%;
-  position: absolute;
-  bottom: 0;
-  padding: 7px 15px 5px 15px;
-  padding-left: 15px;
+	background: darken($orange, 20%);
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+	padding: 7px 15px 5px 15px;
+	padding-left: 15px;
 
-  > a, .copyright {
-    color: lighten($orange, 10%);
-  }
+	> a, .copyright {
+		color: lighten($orange, 10%);
+	}
 
-  > a {
-    text-decoration: underline;
-  }
+	> a {
+		text-decoration: underline;
+	}
 
-  > .copyright {
-    float: right;
-  }
+	> .copyright {
+		float: right;
+	}
 }
 
 #cy {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  height: calc(100% - 50px);
-}
-
-.warnings-container {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: auto;
-  height: auto;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-#warnings {
-  overflow-y: scroll;
-  height: 160px;
-  background: #E2FFF3;
-  padding: 15px;
-  position: relative;
-  pointer-events: auto;
-
-  > p {
-    margin-bottom: 3px;
-  }
-
-  > .warnings-header {
-    font-size: 1.2em;
-    padding-bottom: 8px;
-  }
-
-  display: none;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	height: calc(100% - 50px);
 }
 
 .button {
-  background: #6E5D4D;
-  border: none;
-  color: #fff;
-  width: 100%;
+	background: #6E5D4D;
+	border: none;
+	color: #fff;
+	width: 100%;
 }
 
 .sidebar-wrapper {
-  width: $sidebar-width;
-  position: relative;
-  right: 10px;
-  margin-top: 10px;
+	width: $sidebar-width;
+	position: relative;
+	right: 10px;
+	margin-top: 10px;
 }
 
 .floating_info {
-  width: 220px;
-  position: absolute;
-  top: 60px;
-  left: 10px;
-  background: #fff;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.55);
-  border-radius: 2px;
-  padding: 10px;
+	width: 220px;
+	position: absolute;
+	top: 60px;
+	left: 10px;
+	background: #fff;
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.55);
+	border-radius: 2px;
+	padding: 10px;
 
-  hr {
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
+	hr {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
 
-  .body {
-    max-height: 400px;
-    overflow-y: auto;
-  }
+	.body {
+		max-height: 400px;
+		overflow-y: auto;
+	}
 
-  &.node_info_wrapper {
-    display: none;
-    top: 60px;
-    left: 10px;
-  }
+	&.node_info_wrapper {
+		display: none;
+		top: 60px;
+		left: 10px;
+	}
 
-  &.history_wrapper {
-    display: none; // starts off hidden
-    left: auto;
-    right: 10px;
-  }
+	&.history_wrapper {
+		display: none;
+
+		// starts off hidden
+		left: auto;
+		right: 10px;
+	}
+
+	&.warnings_wrapper {
+		display: none;
+		left: 10px;
+		top: auto;
+		bottom: 40px;
+		right: 10px;
+		overflow: hidden;
+		overflow-y: scroll;
+		height: 160px;
+		padding: 15px;
+		width: auto;
+	}
 }
 
 .sidebar-wrapper-node-info {
-  background: lighten($orange, 30%);
-  background: white;
-  color: #000;
+	background: lighten($orange, 30%);
+	background: white;
+	color: #000;
 }
 
 // Background page css
 #about {
-  background: $orange;
-  color: #fff;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 30px;
-  padding: 15px;
-  width: 80%;
-  border-radius: 5px;
+	background: $orange;
+	color: #fff;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 30px;
+	padding: 15px;
+	width: 80%;
+	border-radius: 5px;
 
-  a {
-    color: #fff;
-  }
+	a {
+		color: #fff;
+	}
 }

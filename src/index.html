@@ -128,6 +128,10 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
+                        <a onclick="w1.togglePanel();" title="Hide/show warnings panel.">
+                            <i class="fa fa-exclamation-circle" aria-hidden="true"></i></a>
+                    </li>
+                    <li>
                         <a onclick="pvis.history.togglePanel();" title="Hide/show history panel.">
                             <i class="fa fa-history" aria-hidden="true"></i></a>
                     </li>
@@ -156,8 +160,11 @@
             No history...
         </div>
     </div>
-    <div class="warnings-container">
-        <div id="warnings"></div>
+    <div class="floating_info warnings_wrapper">
+        <p class="header">Warnings</p>
+        <hr />
+        <div id="warnings" class="body"></div>
+    </div>
     </div>
     <div class="footer">
         <a href="#" data-toggle="modal" data-target="#myModal">About</a>
