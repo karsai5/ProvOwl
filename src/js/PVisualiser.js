@@ -770,23 +770,38 @@ PVisualiser.prototype.resetView = function() {
 	});
 };
 
+PVisualiser.prototype.renderJson = function(inner, json, callback) {
+	this.nodes = json.elements.nodes;
+	this.edges = json.elements.edges;
+	this.render({
+		inner: inner,
+		callback: callback,
+		layout: 'preset'
+	});
+};
+
 /**
  * Main render function, shows graph in the DOM.
- * @param {string} Inner Jquery selecter of DOM element you want to render the
+ * @param {object} dictionary
+ * inner: Inner Jquery selecter of DOM element you want to render the
  * graph in e.g. "#cy"
- * @param {function} callback A function you would like to run after the graph
+ * callback: A function you would like to run after the graph
  * has been rendered.
+ * layout: the layout type to use, eg. dagre or preset
  */
-PVisualiser.prototype.render = function(inner, callback) {
-	if (typeof inner !== 'string') {
+PVisualiser.prototype.render = function(params) {
+	if (typeof params.inner !== 'string') {
 		throw new Error("Can't render graph: Unexpected Variables");
 	}
-	this.inner = inner;
+	if (params.layout === undefined) {
+		params.layout = 'dagre';
+	}
+	this.inner = params.inner;
 	var that = this;
 	$.get('/static/css/cytoscape.css', function(data) {
-		$(that.inner).cytoscape({
+		$(params.inner).cytoscape({
 			layout: {
-				name: 'dagre',
+				name: params.layout,
 				padding: 150
 			},
 			style: data,
@@ -796,71 +811,75 @@ PVisualiser.prototype.render = function(inner, callback) {
 			},
 
 			ready: function() {
-				window.cy = this;
-				window.pvis = that;
-
-				// add movement bindings
-				this.on('grab', function(event) {
-					that.oldPosition = clone(event.cyTarget.position());
-					var groupElements = cy.nodes('.selected');
-					that.selectedNodes = groupElements;
-				});
-				this.on('free', function(event) {
-					// add to history 
-					var position_old = clone(that.oldPosition);
-					var position_new = clone(event.cyTarget.position());
-					// grab selected nodes
-					var selectedNodes = that.selectedNodes.slice();
-					if (selectedNodes.length === 0) { // if none selected, use event node
-						selectedNodes = selectedNodes.add(event.cyTarget);
-					}
-					if (position_old.x !== position_new.x ||
-						position_old.y !== position_new.y) {
-						that.history.addStep(new Step('Move node',
-							function undo() {
-								selectedNodes.each(function(i, ele) {
-									var new_x = ele.position().x - position_new.x;
-									var new_y = ele.position().y - position_new.y;
-									ele.animate({
-										position: {
-											x: position_old.x + new_x,
-											y: position_old.y + new_y
-										},
-										duration: 200
-									});
-								});
-							},
-							function redo() {
-								event.cyTarget.animate({
-									position: position_new,
-									duration: 200
-								});
-							}));
-					}
-				});
-
-				// add tap bindings
-				this.on('tap', function(event) {
-					var evtTarget = event.cyTarget;
-
-					if (evtTarget === cy) { // clicked on background
-						that.clearSelectedNodes();
-						$('.node_info_wrapper').hide();
-					} else if (evtTarget.group() === 'edges') { // clicked on edge
-						console.log('clicked on edge');
-					} else if (evtTarget.group() === 'nodes') { // clicked on node
-						that.clickNodeEvent(event);
-					}
-
-				});
-
-				if (typeof callback === 'function') {
-					callback();
-				}
+				addHooks.call(this, that, params.callback);
 			}
 		});
 	});
 };
+
+function addHooks(pvis, callback) {
+	window.cy = this;
+	window.pvis = pvis;
+
+	// add movement bindings
+	this.on('grab', function(event) {
+		pvis.oldPosition = clone(event.cyTarget.position());
+		var groupElements = cy.nodes('.selected');
+		pvis.selectedNodes = groupElements;
+	});
+	this.on('free', function(event) {
+		// add to history 
+		var position_old = clone(pvis.oldPosition);
+		var position_new = clone(event.cyTarget.position());
+		// grab selected nodes
+		var selectedNodes = pvis.selectedNodes.slice();
+		if (selectedNodes.length === 0) { // if none selected, use event node
+			selectedNodes = selectedNodes.add(event.cyTarget);
+		}
+		if (position_old.x !== position_new.x ||
+			position_old.y !== position_new.y) {
+			pvis.history.addStep(new Step('Move node',
+				function undo() {
+					selectedNodes.each(function(i, ele) {
+						var new_x = ele.position().x - position_new.x;
+						var new_y = ele.position().y - position_new.y;
+						ele.animate({
+							position: {
+								x: position_old.x + new_x,
+								y: position_old.y + new_y
+							},
+							duration: 200
+						});
+					});
+				},
+				function redo() {
+					event.cyTarget.animate({
+						position: position_new,
+						duration: 200
+					});
+				}));
+		}
+	});
+
+	// add tap bindings
+	this.on('tap', function(event) {
+		var evtTarget = event.cyTarget;
+
+		if (evtTarget === cy) { // clicked on background
+			pvis.clearSelectedNodes();
+			$('.node_info_wrapper').hide();
+		} else if (evtTarget.group() === 'edges') { // clicked on edge
+			console.log('clicked on edge');
+		} else if (evtTarget.group() === 'nodes') { // clicked on node
+			pvis.clickNodeEvent(event);
+		}
+
+	});
+
+	if (typeof callback === 'function') {
+		callback();
+	}
+}
 
 PVisualiser.prototype.nodeCount = function() {
 	return this.nodes.length;
