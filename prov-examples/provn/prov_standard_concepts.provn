@@ -1,0 +1,19 @@
+document
+
+prefix ir <http://www.ir.ncl.ac.uk/>
+
+//
+// entities
+//
+
+entity(ir:Entity)
+activity(ir:Activity)
+agent(ir:Agent)
+
+used(ir:Activity, ir:Entity)
+wasGeneratedBy(ir:Entity, ir:Activity)
+wasDerivedFrom(ir:Entity, ir:Entity)
+wasAttributedTo(ir:Entity, ir:Agent)
+wasAssociatedWith(ir:Activity, ir:Agent)
+
+endDocument
