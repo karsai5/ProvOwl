@@ -925,3 +925,33 @@ PVisualiser.prototype.logDuplicate = function(what, name) {
 PVisualiser.prototype.logMissingNode = function(what, name) {
 	this.print("Can't create " + what + "\"" + name + "\" doesn't exist");
 };
+
+PVisualiser.prototype.regexSelect = function(regex) {
+	var nodes = cy.$('node'); // get all nodes
+	var regex = RegExp(regex); // create regex object from string
+
+	for (var i = 0; i < nodes.length; ++i) {
+		var n = nodes[i];
+		var data = n.data();
+		for (var p in data) { // grab all the data
+			if (typeof(data[p]) === "string") {
+				// if string check if regex matches
+				if (regex.test(data[p])) {
+					n.addClass('selected');
+				}
+			} else if (p === 'properties') {
+				for (var prop in data[p]) {
+					console.log(prop);
+					if (regex.test(data[p][prop])) {
+						n.addClass('selected');
+					}
+				}
+			}
+		}
+	}
+};
+
+PVisualiser.prototype.regexGroup = function(regex) {
+	this.regexSelect(regex);
+	this.groupSelectedNodes();
+};
