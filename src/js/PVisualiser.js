@@ -182,7 +182,7 @@ informationString.prototype.render = function(nodes, options) {
 							this.add(p, data[property][p])
 						}
 					}
-				} else {
+				} else if (!RegExp('^original.*$').test(property)) {
 					this.add(property, data[property]);
 				}
 			}
@@ -211,9 +211,7 @@ informationString.prototype.render = function(nodes, options) {
 }
 
 informationString.prototype.add = function(c1, c2) {
-	if (c2 === undefined) {
-		this.information += c1 + "<br>";
-	} else {
+	if (c2 !== undefined) {
 		this.information += "<b>" + c1 + "</b> " + c2 + "<br>";
 	}
 };
