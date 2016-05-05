@@ -74,7 +74,9 @@ function Provenance() {
         // Create entities
         $.each(this.entities, function(i, l) {
             var name = PParser.getLineArguments(l)[0];
-            pvis.createEntity(name, PParser.removePrefix(name));
+			console.log(l);
+            pvis.createEntity(name, PParser.removePrefix(name), 
+					PParser.getLineArguments(l)[1]);
         });
 
         // Create agents
@@ -86,7 +88,8 @@ function Provenance() {
         // Create activities
         $.each(this.activities, function(i, l) {
             var name = PParser.getLineArguments(l)[0];
-            pvis.createActivity(name, PParser.removePrefix(name));
+            pvis.createActivity(name, PParser.removePrefix(name),
+					PParser.getLineArguments(l)[1]);
         });
 
         // Create uses
@@ -184,10 +187,31 @@ PParser.prototype.print = function(msg) {
 
 PParser.getLineArguments = function(line) {
     line = line.substring(line.indexOf('(') + 1, line.lastIndexOf(')')).split(',');
+	var result = [];
+	var propBeg = -1;
     for (var i = 0; i < line.length; ++i) {
-        line[i] = line[i].trim();
+		line[i] = line[i].trim();
+		if (line[i][0] === '[') {
+			line[i] = line[i].substring(1);
+			propBeg = i;
+		} else if (line[i][line[i].length - 1] === ']') {
+			if (propBeg !== -1) {
+				line[i] = line[i].substring(0, line[i].length -1);
+				var propObj = {};
+				var properties = line.slice(propBeg, i+1);
+				for (var x = 0; x < properties.length; ++x) {
+					var p = properties[x];
+					propObj[p.substring(0,p.indexOf('='))] = 
+						p.substring(p.indexOf('=')+1).replace(/['"]+/g, '');
+				}
+				result.push(propObj);	
+			}
+		}
+		if (propBeg === -1){
+			result.push(line[i]);
+		}
     }
-    return line;
+    return result;
 };
 
 PParser.removePrefix = function(line) {
