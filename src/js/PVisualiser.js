@@ -173,9 +173,18 @@ informationString.prototype.render = function(nodes, options) {
 	// For single nodes
 	if (nodes.length === 1) {
 		var data = nodes.data();
-		for (var property in data) {
+		for (var property in data) { // loop through data
 			if (data.hasOwnProperty(property)) {
-				this.add(property, data[property]);
+				if (property == 'properties' && data[property] !== undefined) { // loop through properties
+					this.information += "<hr>";
+					for (var p in data[property]) {
+						if (data[property].hasOwnProperty(p)) {
+							this.add(p, data[property][p])
+						}
+					}
+				} else {
+					this.add(property, data[property]);
+				}
 			}
 		}
 	} else { // Multiple selected nodes
