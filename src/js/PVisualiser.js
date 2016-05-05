@@ -628,21 +628,23 @@ PVisualiser.prototype.nodeExists = function(name) {
  * @param {String} name Unique ID for the node eg. itr:X-Tweets-3
  * @param {String} label Reading friendly version of node eg. X Tweets 3
  * @param {String} type the type of node, eg. action, person
+ * @param {Object} propreties of the node
  * @return {bool} True if the node was added, False if it was not.
  */
-PVisualiser.prototype.addNode = function(name, label, type) {
-	if (typeof name !== 'string' || typeof label !== 'string') {
-		this.logUnexpectedVariables(type);
-	} else if (this.nodeExists(name)) {
-		this.logDuplicate(type, name);
+PVisualiser.prototype.addNode = function(params) {
+	if (typeof params.name !== 'string' || typeof params.label !== 'string') {
+		this.logUnexpectedVariables(params.type);
+	} else if (this.nodeExists(params.name)) {
+		this.logDuplicate(params.type, params.name);
 	} else {
 		this.nodes.push({
 			data: {
-				id: name,
-				name: label,
-				type: type
+				id: params.name,
+				name: params.label,
+				type: params.type,
+				properties: params.properties
 			},
-			classes: type
+			classes: params.type
 		});
 		return true;
 	}
@@ -678,20 +680,36 @@ PVisualiser.prototype.addEdge = function(name1, name2, type, label) {
 	return false;
 };
 
-PVisualiser.prototype.createEntity = function(name, label) {
-	return this.addNode(name, label, 'entity');
+PVisualiser.prototype.createEntity = function(name, label, properties) {
+	return this.addNode({
+		name: name, 
+		label: label, 
+		type: 'entity',
+		properties: properties});
 };
 
-PVisualiser.prototype.createAgent = function(name, label) {
-	return this.addNode(name, label, 'agent');
+PVisualiser.prototype.createAgent = function(name, label, properties) {
+	return this.addNode({
+		name: name, 
+		label: label, 
+		type: 'agent',
+		properties: properties});
 };
 
-PVisualiser.prototype.createActivity = function(name, label) {
-	return this.addNode(name, label, 'activity');
+PVisualiser.prototype.createActivity = function(name, label, properties) {
+	return this.addNode({
+		name: name, 
+		label: label, 
+		type: 'activity',
+		properties: properties});
 };
 
-PVisualiser.prototype.createGroup = function(name) {
-	return this.addNode(name, name, 'group');
+PVisualiser.prototype.createGroup = function(name, properties) {
+	return this.addNode({
+		name: name, 
+		label: name, 
+		type: 'group',
+		properties: properties});
 };
 
 PVisualiser.prototype.memberOf = function(name, group) {
