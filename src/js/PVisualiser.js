@@ -691,34 +691,38 @@ PVisualiser.prototype.addEdge = function(name1, name2, type, label) {
 
 PVisualiser.prototype.createEntity = function(name, label, properties) {
 	return this.addNode({
-		name: name, 
-		label: label, 
+		name: name,
+		label: label,
 		type: 'entity',
-		properties: properties});
+		properties: properties
+	});
 };
 
 PVisualiser.prototype.createAgent = function(name, label, properties) {
 	return this.addNode({
-		name: name, 
-		label: label, 
+		name: name,
+		label: label,
 		type: 'agent',
-		properties: properties});
+		properties: properties
+	});
 };
 
 PVisualiser.prototype.createActivity = function(name, label, properties) {
 	return this.addNode({
-		name: name, 
-		label: label, 
+		name: name,
+		label: label,
 		type: 'activity',
-		properties: properties});
+		properties: properties
+	});
 };
 
 PVisualiser.prototype.createGroup = function(name, properties) {
 	return this.addNode({
-		name: name, 
-		label: name, 
+		name: name,
+		label: name,
 		type: 'group',
-		properties: properties});
+		properties: properties
+	});
 };
 
 PVisualiser.prototype.memberOf = function(name, group) {
