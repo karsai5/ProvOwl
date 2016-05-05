@@ -7,7 +7,7 @@
 "use strict";
 
 function clone(obj) {
-	if (null == obj || "object" != typeof obj) return obj;
+	if (null === obj || "object" !== typeof obj) return obj;
 	var copy = obj.constructor();
 	for (var attr in obj) {
 		if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
@@ -20,7 +20,7 @@ function clone(obj) {
  * whether it's root or not.
  * @constructor
  */
-function Node(data, isGroup) {
+function Node(data) {
 	this.data = data;
 	this.parent = null;
 	this.children = [];
@@ -58,7 +58,7 @@ function GroupManager() {
  * Adds a group to be monitored by the GroupManager
  * @param {string} id - The id of the group you want to add
  */
-GroupManager.prototype.addGroup = function(id, nodes, parent) {
+GroupManager.prototype.addGroup = function(id, nodes) {
 	var node = new Node(id);
 	node.parent = this.root;
 	this.root.children.push(node);
@@ -146,7 +146,6 @@ GroupManager.prototype.getParent = function(id) {
  * @param {string} id - Id of node you want the parent of
  */
 GroupManager.prototype.findLeaf = function(id, node) {
-	var that = this;
 	if (node === undefined) {
 		node = this.root;
 	}
@@ -169,17 +168,17 @@ function informationString() {
 	this.information = "";
 }
 
-informationString.prototype.render = function(nodes, options) {
+informationString.prototype.render = function(nodes) {
 	// For single nodes
 	if (nodes.length === 1) {
 		var data = nodes.data();
 		for (var property in data) { // loop through data
 			if (data.hasOwnProperty(property)) {
-				if (property == 'properties' && data[property] !== undefined) { // loop through properties
+				if (property === 'properties' && data[property] !== undefined) { // loop through properties
 					this.information += "<hr>";
 					for (var p in data[property]) {
 						if (data[property].hasOwnProperty(p)) {
-							this.add(p, data[property][p])
+							this.add(p, data[property][p]);
 						}
 					}
 				} else if (!RegExp('^original.*$').test(property)) {
@@ -208,7 +207,7 @@ informationString.prototype.render = function(nodes, options) {
 		this.addGroupLink();
 	}
 	return this.information;
-}
+};
 
 informationString.prototype.add = function(c1, c2) {
 	if (c2 !== undefined) {
@@ -240,12 +239,12 @@ informationString.prototype.addConsoleLogLink = function(node) {
 	this.information +=
 		"<a href=\"#\" onclick=\"pvis.printNodeInfoToConsole('" +
 		node.data().id + "');\">Console log</a><br>";
-}
+};
 
 informationString.prototype.addRenameLink = function(node) {
 	this.information += "<a href=\"#\" onclick=\"pvis.renameNode('" +
 		node.data().id + "');\">Rename node</a>";
-}
+};
 
 informationString.prototype.print = function() {
 	return this.information;
@@ -778,10 +777,6 @@ PVisualiser.prototype.used = function(name1, name2) {
 
 PVisualiser.prototype.actedOnBehalfOf = function(name1, name2) {
 	return this.addEdge(name1, name2, 'acted', 'actedOnBehalfOf');
-};
-
-PVisualiser.prototype.handleEvent = function(event) {
-	console.log("event run");
 };
 
 PVisualiser.prototype.resetLayout = function(name) {
