@@ -928,6 +928,7 @@ PVisualiser.prototype.logMissingNode = function(what, name) {
 
 PVisualiser.prototype.regexSelect = function(regex) {
 	var nodes = cy.$('node'); // get all nodes
+	nodes.removeClass('selected');
 	var regex = RegExp(regex); // create regex object from string
 
 	for (var i = 0; i < nodes.length; ++i) {

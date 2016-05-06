@@ -96,6 +96,23 @@ function loadJson(json) {
 	p2.renderJson('#cy', json);
 }
 
+function connectFilterPanel() {
+	var regexInput = $("#regex-input");
+	var groupButton = $("#regex-group");
+
+	regexInput.on('input', function() {
+		if (regexInput.val() === "") {
+			cy.$('node').removeClass('selected'); // get all nodes
+		} else {
+			pvis.regexSelect(regexInput.val());
+		}
+	});
+
+	groupButton.on('click', function() {
+		pvis.regexGroup(regexInput.val());
+	});
+}
+
 /**
  * Set up fileselector so that the provenance file will be loaded and
  * rendered client side.
@@ -118,6 +135,7 @@ $(document).ready(function() {
 		if (fileurl !== null) {
 			console.log("loading file from url");
 			loadWebFile(fileurl);
+			connectFilterPanel();
 		}
 	}
 

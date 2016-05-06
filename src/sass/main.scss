@@ -124,6 +124,11 @@ body, html {
 		overflow-y: auto;
 	}
 
+	&.regex_wrapper {
+		right: 10px;
+		left: auto;
+	}
+
 	&.node_info_wrapper {
 		display: none;
 		top: 60px;
