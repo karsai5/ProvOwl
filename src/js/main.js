@@ -115,6 +115,10 @@ function connectFilterPanel() {
 	});
 }
 
+function infoPannels() {
+	$(".floating_info").draggable();
+}
+
 /**
  * Set up fileselector so that the provenance file will be loaded and
  * rendered client side.
