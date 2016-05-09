@@ -116,7 +116,18 @@ function connectFilterPanel() {
 }
 
 function infoPannels() {
-	$(".floating_info").draggable();
+	var floating_panels = $(".floating_info");
+
+	// make draggable
+	floating_panels.draggable({ 
+		containment: 'document',
+		handle: '.header'
+	});
+	
+	// close on cross click
+	floating_panels.find('.close').on('click', function() {
+		$(this).parents('.floating_info').hide();
+	});
 }
 
 /**

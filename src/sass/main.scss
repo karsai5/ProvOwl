@@ -124,6 +124,12 @@ body, html {
 		overflow-y: auto;
 	}
 
+	.header {
+		cursor: move;
+		margin: -10px;
+		padding: 10px; //makes grabbing easier
+	}
+
 	&.regex_wrapper {
 		display: none;
 		right: 10px;
