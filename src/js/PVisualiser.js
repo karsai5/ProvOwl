@@ -475,10 +475,14 @@ PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
 				var nodename = "node[id='" + ele.id() + "']";
 				var distanceFromRoot = 0;
 				if (nodename !== rootname) { // if not root node
+					try{
 					distanceFromRoot = cy.elements().aStar({
 						root: rootname,
 						goal: nodename
 					}).distance;
+					} catch (err){ 
+						// catch weird error caused by aStar method
+					}
 				}
 				if (nameCandidate.distance === -1 ||
 					distanceFromRoot < nameCandidate.distance) {
