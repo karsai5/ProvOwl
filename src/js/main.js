@@ -109,7 +109,9 @@ function connectFilterPanel() {
 	});
 
 	groupButton.on('click', function() {
-		pvis.regexGroup(regexInput.val());
+		if (regexInput.val() !== "") {
+			pvis.regexGroup(regexInput.val());
+		}
 	});
 }
 
@@ -135,7 +137,8 @@ $(document).ready(function() {
 		if (fileurl !== null) {
 			console.log("loading file from url");
 			loadWebFile(fileurl);
-			connectFilterPanel();
+			connectFilterPanel(); // code for simle filter
+			infoPannels(); // floating panels settings
 		}
 	}
 

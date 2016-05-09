@@ -407,6 +407,11 @@ PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
 	var that = this;
 	var groupElements = cy.nodes('.selected');
 
+	// If 1 or zero elements are selected, don't try to group them
+	if (groupElements.length < 2) {
+		return;
+	}
+
 	// Get position of new node
 	var x = groupElements.position('x');
 	var y = groupElements.position('y');
@@ -529,7 +534,7 @@ PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
 		that.GroupManager.addGroup(id, originalNodes);
 
 		// Select new groupnode
-		that.selectNode(groupNode.data().name);
+		that.selectNode(groupNode.data().id);
 
 		// Add to history
 		if (noHistory !== null) {
@@ -929,25 +934,37 @@ PVisualiser.prototype.logMissingNode = function(what, name) {
 PVisualiser.prototype.regexSelect = function(regex) {
 	var nodes = cy.$('node'); // get all nodes
 	nodes.removeClass('selected');
-	var regex = RegExp(regex); // create regex object from string
+	var regexObject = null;
+	try {
+		regexObject = RegExp(regex); // create regex object from string
+	} catch (err) {
+		$('.node_info_wrapper').hide();
+		return;
+	}
 
 	for (var i = 0; i < nodes.length; ++i) {
 		var n = nodes[i];
 		var data = n.data();
 		for (var p in data) { // grab all the data
-			if (typeof(data[p]) === "string") {
+			if (typeof(data[p]) === "string") { // loop through attributes
 				// if string check if regex matches
-				if (regex.test(data[p])) {
+				if (regexObject.test(data[p])) {
 					n.addClass('selected');
 				}
-			} else if (p === 'properties') {
+			} else if (p === 'properties') { // loop through properties 
 				for (var prop in data[p]) {
-					console.log(prop);
-					if (regex.test(data[p][prop])) {
+					if (regexObject.test(data[p][prop])) {
 						n.addClass('selected');
 					}
 				}
 			}
+		}
+		if (cy.$(".selected").length > 0) {
+			$('.node_info_wrapper').show();
+			var informationObject = new informationString();
+			this.printNodeInfo(informationObject.render(cy.$('.selected')));
+		} else {
+			$('.node_info_wrapper').hide();
 		}
 	}
 };
