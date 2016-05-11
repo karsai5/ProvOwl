@@ -261,6 +261,10 @@ function PVisualiser() {
 	this.edges = [];
 	this.hangingEdges = [];
 	this.cy = null;
+	this.lastClick = {
+		element: null,
+		time: 0
+	};
 	this.GroupManager = new GroupManager();
 	this.history = new VisHistory();
 }
@@ -475,12 +479,12 @@ PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
 				var nodename = "node[id='" + ele.id() + "']";
 				var distanceFromRoot = 0;
 				if (nodename !== rootname) { // if not root node
-					try{
-					distanceFromRoot = cy.elements().aStar({
-						root: rootname,
-						goal: nodename
-					}).distance;
-					} catch (err){ 
+					try {
+						distanceFromRoot = cy.elements().aStar({
+							root: rootname,
+							goal: nodename
+						}).distance;
+					} catch (err) {
 						// catch weird error caused by aStar method
 					}
 				}
@@ -566,6 +570,17 @@ PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
  */
 PVisualiser.prototype.clickNodeEvent = function(evt) {
 	this.selectNode(evt);
+	// check if double click
+	if (new Date().getTime() - this.lastClick.time < 500 &&
+		this.lastClick.element === evt.cyTarget) {
+		// if element is a group, ungroup it
+		if (evt.cyTarget.data().type === 'group') {
+			this.unGroupNode(evt.cyTarget.id());
+		}
+	} else {
+		this.lastClick.time = new Date().getTime();
+		this.lastClick.element = evt.cyTarget;
+	}
 };
 
 PVisualiser.prototype.selectNode = function(thing) {
