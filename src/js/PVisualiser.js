@@ -6,6 +6,17 @@
  */
 "use strict";
 
+String.prototype.hashCode = function() {
+	var hash = 0;
+	if (this.length == 0) return hash;
+	for (var i = 0; i < this.length; i++) {
+		var char = this.charCodeAt(i);
+		hash = ((hash << 5) - hash) + char;
+		hash = hash & hash; // Convert to 32bit integer
+	}
+	return hash;
+}
+
 function clone(obj) {
 	if (null === obj || "object" !== typeof obj) return obj;
 	var copy = obj.constructor();
@@ -442,7 +453,7 @@ PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
 		});
 
 		// Make groupnode
-		var id = that.makeid();
+		var id = Object.keys(idHash).sort().join().hashCode();
 		var groupNode = cy.add({
 			group: "nodes",
 			data: {
