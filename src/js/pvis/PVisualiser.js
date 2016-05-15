@@ -115,7 +115,6 @@ PVisualiser.prototype.unGroupNode = function(id, noHistory) {
 	var originalEdges = node.data().originalEdges;
 
 	// Restore original Nodes in positions relative to original
-	console.log(id);
 	$.each(originalNodes, function(i, ele) {
 		var xDifference = ele.position('x') - ele.data('originalX');
 		var yDifference = ele.position('y') - ele.data('originalY');
@@ -163,7 +162,8 @@ PVisualiser.prototype.unGroupNode = function(id, noHistory) {
 	node.remove();
 
 	// add to history
-	if (noHistory !== false) {
+	if (noHistory !== true) {
+			console.log('adding history to ungroup');
 		var child = originalNodes[0];
 		this.history.addStep(new Step('Ungroup node',
 			function() {
@@ -171,10 +171,10 @@ PVisualiser.prototype.unGroupNode = function(id, noHistory) {
 				for (var i = 0; i < originalNodes.length; i++) {
 					originalNodes[i].addClass('selected');
 				}
-				that.groupSelectedNodes();
+				that.groupSelectedNodes(true);
 			},
 			function() {
-				that.unGroupNode(that.GroupManager.getParent(child.data().id), false);
+				that.unGroupNode(that.GroupManager.getParent(child.data().id), true);
 			}));
 	}
 };
@@ -322,18 +322,20 @@ PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
 		that.selectNode(groupNode.data().id);
 
 		// Add to history
-		if (noHistory !== null) {
-			var child = originalNodes[0];
+		if (noHistory !== true) {
+			console.log('adding history to group');
+			var nodesToGroup = originalNodes.slice(0);
 			that.history.addStep(new Step('Group node: ' + groupNode.data().name,
 				function ungroupNode() {
-					that.unGroupNode(that.GroupManager.getParent(child.data().id), false);
+					that.unGroupNode(groupNode.id(), true);
 				},
 				function regroupNode() {
 					cy.$('node').removeClass('selected');
-					for (var i = 0; i < originalNodes.length; i++) {
-						originalNodes[i].addClass('selected');
+					console.log(nodesToGroup);
+					for (var i = 0; i < nodesToGroup.length; i++) {
+						nodesToGroup[i].addClass('selected');
 					}
-					that.groupSelectedNodes(false);
+					that.groupSelectedNodes(true);
 				}));
 		}
 
