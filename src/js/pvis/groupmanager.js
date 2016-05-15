@@ -10,19 +10,44 @@ function GroupManager() {
 	this.root.isRoot = true;
 }
 
+GroupManager.prototype.toString = function(node = this.root, depth = 0) {
+	console.log(Array(depth).join('*') + node.data);
+	for (var i = 0; i < node.children.length; i++) {
+		this.toString(node.children[i], depth + 1);
+	}
+};
+
 /**
  * Adds a group to be monitored by the GroupManager
  * @param {string} id - The id of the group you want to add
  */
 GroupManager.prototype.addGroup = function(id, nodes) {
-	var node = new Node(id);
+	var node = new Node(id); // create new groupnode
+	var groupNodeList = [];
 	node.parent = this.root;
-	this.root.children.push(node);
-	$.each(nodes, function(i, n) {
-		var child = new Node(n.id());
-		child.parent = node;
-		node.children.push(child);
-	});
+	this.root.children.push(node); // add to root
+	for (var i = 0; i < nodes.length; i++) {
+		// If a group, move node around
+		if (nodes[i].data().type === 'group') {
+			var found = this.find(nodes[i].id());
+			groupNodeList.push(nodes[i].id()); // add to gropunodelist 
+			found.parent = node;
+			node.children.push(found);
+		} else { 
+			var child = new Node(nodes[i].id());
+			child.parent = node;
+			node.children.push(child);
+		}
+	}
+
+	// remove groupnodes from parents children
+	for (var i = 0; i < groupNodeList.length; i++) {
+		var found = this.find(groupNodeList[i]);
+		var index = this.root.children.indexOf(found);
+		if (index > -1) {
+			this.root.children.splice(index, 1);
+		}
+	}
 };
 
 /**
@@ -42,6 +67,7 @@ GroupManager.prototype.removeGroup = function(id) {
 			var node = groupNode.children[i];
 			if (node.children.length > 0) { // is group
 				node.parent = groupNode.parent;
+				groupNode.parent.children.push(node);
 			} else { // is node
 				node.parent = null;
 			}
@@ -58,12 +84,7 @@ GroupManager.prototype.removeGroup = function(id) {
  * @return {Node} node - the searched for node or if it's not in the group
  * manager returns undefined.
  */
-GroupManager.prototype.find = function(id, node) {
-	// if no node set, get root
-	if (node === undefined) {
-		node = this.root;
-	}
-
+GroupManager.prototype.find = function(id, node = this.root) {
 	// for each child
 	for (var i = 0; i < node.children.length; i++) {
 		if (node.children[i].data === id) {
@@ -118,5 +139,3 @@ GroupManager.prototype.findLeaf = function(id, node) {
 		}
 	}
 };
-
-

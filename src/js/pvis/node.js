@@ -23,5 +23,9 @@ function Node(data) {
 			this.children.splice(index, 1);
 		}
 	};
+
+	this.toString = function() {
+		return 'Node: ' + data;
+	};
 }
 
