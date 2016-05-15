@@ -163,7 +163,7 @@ PVisualiser.prototype.unGroupNode = function(id, noHistory) {
 
 	// add to history
 	if (noHistory !== true) {
-			console.log('adding history to ungroup');
+		console.log('adding history to ungroup');
 		var child = originalNodes[0];
 		this.history.addStep(new Step('Ungroup node',
 			function() {
@@ -179,17 +179,108 @@ PVisualiser.prototype.unGroupNode = function(id, noHistory) {
 	}
 };
 
+PVisualiser.prototype.groupNodes = function(params) {
+	var groupNodes = {}; // dictionary of nodes to be grouped
+	// name of rootnode used in astar algorithm
+	var rootname = "node[id='" + cy.elements().roots()[0].id() + "']";
+	// node used for name and location
+	var parentNode = {
+		node: undefined,
+		distanceFromRoot: -1
+	};
+
+	// Check nodes exist
+	if (params.nodes === undefined) {
+		console.error("Can't group without nodes");
+		return;
+	} else if (params.nodes.length < 2) {
+		console.error("Can't make group with less that two nodes.");
+		return;
+	}
+
+	// Set default values
+	if (params.speed === undefined) {
+		params.speed = 500
+	}
+	if (params.saveHistory === undefined) {
+		params.saveHistory = 500
+	}
+
+	// Loop through node IDs
+	for (var i = 0; i < params.nodes.length; i++) {
+		var name = params.nodes[i];
+		var node = cy.getElementById(name);
+		if (node.length > 0) {
+			// get distance from root
+			var nodename = "node[id='" + name + "']";
+			var distanceFromRoot = -1;
+			distanceFromRoot = cy.elements().aStar({
+				root: rootname,
+				goal: nodename
+			}).distance;
+
+			// add to groupnodes
+			groupNodes[name] = {
+				node: node,
+				distanceFromRoot: distanceFromRoot
+			};
+
+			// set parentnode to node with shortest distance from root
+			if (parentNode.distanceFromRoot === -1) { // if no parentnode set yet
+				parentNode = groupNodes[name];
+			} else if (groupNodes[name].distanceFromRoot < parentNode.distanceFromRoot) {
+				parentNode = groupNodes[name];
+			}
+		} else {
+			console.warn('Couldn\'t find node: ' + name);
+		}
+	}
+
+	// Animate nodes into group position
+	for (var name in groupNodes) {
+		var node = groupNodes[name].node;
+		// save original node positions
+		node.data('originalX', node.position('x'));
+		node.data('originalY', node.position('y'));
+		// animate movement
+		node.animate({
+			position: {
+				x: parentNode.node.position('x'),
+				y: parentNode.node.position('y')
+			},
+			duration: params.speed
+		});
+	}
+
+	// Make cluster node
+	var id = Object.keys(idHash).sort().join().hashCode(); // use hash of grouped ids
+	var clusterNode = cy.add({
+		group: "nodes",
+		data: {
+			id: id,
+			name: parentNode.node.data().name + ' group',
+			type: 'group'
+		},
+		classes: 'group',
+		position: {
+			x: parentNode.node.position('x'),
+			y: parentNode.node.position('y')
+		}
+	});
+};
+
 /**
  * Remove the selected nodes from the graph and replace them instead with
  * a compiste node with all the same edges. No arguments are required as it
  * groups any nodes with the 'selected' class.
  */
-PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
+PVisualiser.prototype.groupSelectedNodes = function(params) {
 	var that = this;
 	var groupElements = cy.nodes('.selected');
 
 	// If 1 or zero elements are selected, don't try to group them
 	if (groupElements.length < 2) {
+		console.warn("Trying to create a group with less than two nodes");
 		return;
 	}
 
