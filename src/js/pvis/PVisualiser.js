@@ -331,9 +331,8 @@ PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
 				},
 				function regroupNode() {
 					cy.$('node').removeClass('selected');
-					console.log(nodesToGroup);
 					for (var i = 0; i < nodesToGroup.length; i++) {
-						nodesToGroup[i].addClass('selected');
+						cy.getElementById(nodesToGroup[i].id()).addClass('selected');
 					}
 					that.groupSelectedNodes(true);
 				}));
