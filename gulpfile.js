@@ -35,9 +35,10 @@ gulp.task('styles', function() {
     .pipe(livereload());
 });
 
-gulp.task('javascript', function() {
-  return livereload()
-    .pipe(notify({message: 'Javascript file changed'}));
+gulp.task('scripts', function() {
+	return gulp.src('./src/js/pvis/*.js')
+	.pipe(concat('PVisualiser.js'))
+	.pipe(gulp.dest('./src/js/'));
 });
 
 gulp.task('reload', function() {
@@ -76,5 +77,5 @@ gulp.task('watch', function() {
   livereload.listen();
   gulp.watch('src/sass/*.scss', ['styles']);
   gulp.watch('**/*.html',['reload']);
-  // gulp.watch('*.js', ['javascript']);
+  gulp.watch('**/*.js', ['scripts']);
 });
