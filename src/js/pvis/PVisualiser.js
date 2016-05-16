@@ -200,10 +200,10 @@ PVisualiser.prototype.groupNodes = function(params) {
 
 	// Set default values
 	if (params.speed === undefined) {
-		params.speed = 500
+		params.speed = 500;
 	}
 	if (params.saveHistory === undefined) {
-		params.saveHistory = 500
+		params.saveHistory = true;
 	}
 
 	// Loop through node IDs
@@ -252,76 +252,20 @@ PVisualiser.prototype.groupNodes = function(params) {
 		});
 	}
 
-	// Make cluster node
-	var id = Object.keys(idHash).sort().join().hashCode(); // use hash of grouped ids
-	var clusterNode = cy.add({
-		group: "nodes",
-		data: {
-			id: id,
-			name: parentNode.node.data().name + ' group',
-			type: 'group'
-		},
-		classes: 'group',
-		position: {
-			x: parentNode.node.position('x'),
-			y: parentNode.node.position('y')
-		}
-	});
-};
-
-/**
- * Remove the selected nodes from the graph and replace them instead with
- * a compiste node with all the same edges. No arguments are required as it
- * groups any nodes with the 'selected' class.
- */
-PVisualiser.prototype.groupSelectedNodes = function(params) {
-	var that = this;
-	var groupElements = cy.nodes('.selected');
-
-	// If 1 or zero elements are selected, don't try to group them
-	if (groupElements.length < 2) {
-		console.warn("Trying to create a group with less than two nodes");
-		return;
-	}
-
-	// Get position of new node
-	var x = groupElements.position('x');
-	var y = groupElements.position('y');
-
-	// Animate nodes into group position
-	cy.nodes('.selected').each(function(i, ele) {
-		ele.data('originalX', ele.position('x'));
-		ele.data('originalY', ele.position('y'));
-		ele.animate({
-			position: {
-				x: x,
-				y: y
-			},
-			duration: 500
-		});
-	});
-
-	// Wait for animation to complete
 	setTimeout(function() {
-		// create hash table of ids
-		var idHash = {};
-		groupElements.each(function(i, ele) {
-			idHash[ele.id()] = true;
-		});
-
-		// Make groupnode
-		var id = Object.keys(idHash).sort().join().hashCode();
-		var groupNode = cy.add({
+		// Make cluster node
+		var id = Object.keys(groupNodes).sort().join().hashCode(); // use hash of grouped ids
+		var clusterNode = cy.add({
 			group: "nodes",
 			data: {
 				id: id,
-				name: id,
+				name: parentNode.node.data().name + ' group',
 				type: 'group'
 			},
 			classes: 'group',
 			position: {
-				x: x,
-				y: y
+				x: parentNode.node.position('x'),
+				y: parentNode.node.position('y')
 			}
 		});
 
@@ -329,55 +273,30 @@ PVisualiser.prototype.groupSelectedNodes = function(params) {
 		// and create duplicate edges connedted to groupnode
 		var originalNodes = [];
 		var originalEdges = [];
-		var rootname = "node[id='" + cy.elements().roots()[0].id() + "']";
-		var nameCandidate = {
-			distance: -1,
-			name: ''
-		};
-		var neighbourhood = groupElements.union(groupElements.neighbourhood());
-		window.n = neighbourhood;
-		for (var i = 0; i < neighbourhood.length; i++) { // loop through neighbourhood
-			var ele = neighbourhood[i];
-			if (ele.isNode() && idHash[ele.id()] === true) { // if node in group
-				ele.data('group', groupNode.id());
+		for (var name in groupNodes) { // loop through neighbourhood
+			var ele = groupNodes[name].node;
+			var edges = cy.elements('edge[source="' + ele.id() + '"]').union(
+				cy.elements('edge[target="' + ele.id() + '"]'));
+
+			if (ele.isNode()) { // if node in group
 				originalNodes.push(ele);
-
-				// Check if eligible to be cluster title via smallest distance
-				// from the root node.
-				var nodename = "node[id='" + ele.id() + "']";
-				var distanceFromRoot = 0;
-				if (nodename !== rootname) { // if not root node
-					try {
-						distanceFromRoot = cy.elements().aStar({
-							root: rootname,
-							goal: nodename
-						}).distance;
-					} catch (err) {
-						// catch weird error caused by aStar method
-					}
-				}
-				if (nameCandidate.distance === -1 ||
-					distanceFromRoot < nameCandidate.distance) {
-					nameCandidate = {
-						distance: distanceFromRoot,
-						name: ele.id()
-					};
-				}
-
 				ele.remove(); // delete node
-			} else if (ele.isEdge()) { // if edge
-				originalEdges.push(ele);
+			}
+
+			for (var i = 0; i < edges.length; i++) {
+				var edge = edges[i];
+				originalEdges.push(edge);
 				var source = "";
 				var target = "";
 				// set source and target correctly
-				if (idHash[ele.data('source')] === true && // if source is in group
-					idHash[ele.data('target')] === undefined) {
-					source = groupNode.id();
-					target = ele.data('target');
-				} else if (idHash[ele.data('target')] === true && // if target is in group
-					idHash[ele.data('source')] === undefined) {
-					source = ele.data('source');
-					target = groupNode.id();
+				if (groupNodes[edge.data('source')] !== undefined && // if source is in group
+					groupNodes[edge.data('target')] === undefined) {
+					source = clusterNode.id();
+					target = edge.data('target');
+				} else if (groupNodes[edge.data('target')] !== undefined && // if target is in group
+					groupNodes[edge.data('source')] === undefined) {
+					source = edge.data('source');
+					target = clusterNode.id();
 				}
 
 				if (source !== "" && target !== "") { // check it's not an internal edge
@@ -390,7 +309,7 @@ PVisualiser.prototype.groupSelectedNodes = function(params) {
 								id: newid,
 								source: source,
 								target: target,
-								label: ele.data().label
+								label: edge.data().label
 							}
 						});
 					}
@@ -398,38 +317,46 @@ PVisualiser.prototype.groupSelectedNodes = function(params) {
 			}
 		}
 
-		// Rename node with candidate name
-		groupNode.data('name', PParser.removePrefix(nameCandidate.name) +
-			" group");
-
 		// Add originals to group nodes
-		groupNode.data('originalNodes', originalNodes);
-		groupNode.data('originalEdges', originalEdges);
+		clusterNode.data('originalNodes', originalNodes);
+		clusterNode.data('originalEdges', originalEdges);
 
 		// Add to GroupManager
-		that.GroupManager.addGroup(id, originalNodes);
+		this.GroupManager.addGroup(clusterNode.id(), originalNodes);
 
 		// Select new groupnode
-		that.selectNode(groupNode.data().id);
+		this.selectNode(clusterNode.id());
 
 		// Add to history
-		if (noHistory !== true) {
-			console.log('adding history to group');
-			var nodesToGroup = originalNodes.slice(0);
-			that.history.addStep(new Step('Group node: ' + groupNode.data().name,
+		if (params.saveHistory === true) {
+			this.history.addStep(new Step('Group node: ' + clusterNode.data().name,
 				function ungroupNode() {
-					that.unGroupNode(groupNode.id(), true);
-				},
+					this.unGroupNode(clusterNode.id(), true);
+				}.bind(this),
 				function regroupNode() {
 					cy.$('node').removeClass('selected');
-					for (var i = 0; i < nodesToGroup.length; i++) {
-						cy.getElementById(nodesToGroup[i].id()).addClass('selected');
-					}
-					that.groupSelectedNodes(true);
-				}));
+					this.groupNodes({
+						nodes: Object.keys(groupNodes),
+						saveHistory: false
+					});
+				}.bind(this)));
 		}
+	}.bind(this), params.speed);
 
-	}, 500);
+};
+
+/**
+ * Remove the selected nodes from the graph and replace them instead with
+ * a compiste node with all the same edges. No arguments are required as it
+ * groups any nodes with the 'selected' class.
+ */
+PVisualiser.prototype.groupSelectedNodes = function(params) {
+	var idArray = [];
+	var nodes = cy.elements('node.selected');
+	for (var i = 0; i < nodes.length; i++) {
+		idArray.push(nodes[i].id());
+	}
+	this.groupNodes({nodes: idArray});
 };
 
 /**
