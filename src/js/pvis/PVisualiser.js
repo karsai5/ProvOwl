@@ -8,14 +8,14 @@
 
 String.prototype.hashCode = function() {
 	var hash = 0;
-	if (this.length == 0) return hash;
+	if (this.length === 0) return hash;
 	for (var i = 0; i < this.length; i++) {
 		var char = this.charCodeAt(i);
 		hash = ((hash << 5) - hash) + char;
 		hash = hash & hash; // Convert to 32bit integer
 	}
 	return hash.toString();
-}
+};
 
 function clone(obj) {
 	if (null === obj || "object" !== typeof obj) return obj;
@@ -106,13 +106,23 @@ PVisualiser.prototype.restoreHangingEdges = function() {
  * relative to where the composite node has been moved. 
  * @param {string} id The id string of the group you want to uncluster
  */
-PVisualiser.prototype.unGroupNode = function(id, noHistory) {
+PVisualiser.prototype.unGroupNode = function(id, params) {
 	var node = cy.getElementById(id);
-	var that = this;
-	var x = node.position('x');
+	var x = node.position('x'); //position of node
 	var y = node.position('y');
 	var originalNodes = node.data().originalNodes;
 	var originalEdges = node.data().originalEdges;
+
+	// Set default values
+	if (params === undefined) {
+		params = {};
+	}
+	if (params.speed === undefined) {
+		params.speed = 500;
+	}
+	if (params.saveHistory === undefined) {
+		params.saveHistory = true;
+	}
 
 	// Restore original Nodes in positions relative to original
 	$.each(originalNodes, function(i, ele) {
@@ -126,7 +136,7 @@ PVisualiser.prototype.unGroupNode = function(id, noHistory) {
 				x: x - xDifference,
 				y: y - yDifference
 			},
-			duration: 500
+			duration: params.speed
 		});
 		// remove original fields to save space
 		ele.removeData('originalX originalY group');
@@ -140,8 +150,8 @@ PVisualiser.prototype.unGroupNode = function(id, noHistory) {
 			cy.getElementById(ele.data().target).length === 1) {
 			ele.restore();
 		} else {
-			var source = that.GroupManager.getParent(ele.data().source);
-			var target = that.GroupManager.getParent(ele.data().target);
+			var source = this.GroupManager.getParent(ele.data().source);
+			var target = this.GroupManager.getParent(ele.data().target);
 			if (source !== undefined && target !== undefined) {
 				cy.add({
 					group: "edges",
@@ -154,28 +164,33 @@ PVisualiser.prototype.unGroupNode = function(id, noHistory) {
 				});
 			}
 
-			that.hangingEdges.push(ele);
+			this.hangingEdges.push(ele);
 		}
 
-	});
+	}.bind(this));
+
 	this.GroupManager.removeGroup(node.id());
 	node.remove();
 
 	// add to history
-	if (noHistory !== true) {
+	if (params.saveHistory === true) {
 		console.log('adding history to ungroup');
 		var child = originalNodes[0];
-		this.history.addStep(new Step('Ungroup node',
-			function() {
+		this.history.addStep(new Step({
+			name: 'Ungroup node',
+			undo: function() {
 				cy.$('node').removeClass('selected');
 				for (var i = 0; i < originalNodes.length; i++) {
 					originalNodes[i].addClass('selected');
 				}
-				that.groupSelectedNodes(true);
-			},
-			function() {
-				that.unGroupNode(that.GroupManager.getParent(child.data().id), true);
-			}));
+				this.groupSelectedNodes(true);
+			}.bind(this),
+			redo: function() {
+				this.unGroupNode(this.GroupManager.getParent(child.data().id), {
+					saveHistory: false
+				});
+			}.bind(this)
+		}));
 	}
 };
 
@@ -329,17 +344,25 @@ PVisualiser.prototype.groupNodes = function(params) {
 
 		// Add to history
 		if (params.saveHistory === true) {
-			this.history.addStep(new Step('Group node: ' + clusterNode.data().name,
-				function ungroupNode() {
-					this.unGroupNode(clusterNode.id(), true);
+			this.history.addStep(new Step({
+				name: 'Group node: ' + clusterNode.data().name,
+				undo: function ungroupNode() {
+					this.unGroupNode(clusterNode.id(), {
+						saveHistory: false
+					});
 				}.bind(this),
-				function regroupNode() {
+				redo: function regroupNode() {
 					cy.$('node').removeClass('selected');
 					this.groupNodes({
 						nodes: Object.keys(groupNodes),
 						saveHistory: false
 					});
-				}.bind(this)));
+				}.bind(this),
+				consoleCommand: "pvis.groupNodes({" +
+					"nodes: ['" + Object.keys(groupNodes).join("','") + "']," + 
+					"speed: 0" +
+					"});"
+			}));
 		}
 	}.bind(this), params.speed);
 
@@ -356,7 +379,9 @@ PVisualiser.prototype.groupSelectedNodes = function(params) {
 	for (var i = 0; i < nodes.length; i++) {
 		idArray.push(nodes[i].id());
 	}
-	this.groupNodes({nodes: idArray});
+	this.groupNodes({
+		nodes: idArray
+	});
 };
 
 /**
@@ -682,8 +707,9 @@ function addHooks(pvis, callback) {
 		}
 		if (position_old.x !== position_new.x ||
 			position_old.y !== position_new.y) {
-			pvis.history.addStep(new Step('Move node',
-				function undo() {
+			pvis.history.addStep(new Step({
+				name: 'Move node',
+				undo: function undo() {
 					selectedNodes.each(function(i, ele) {
 						var new_x = ele.position().x - position_new.x;
 						var new_y = ele.position().y - position_new.y;
@@ -696,12 +722,13 @@ function addHooks(pvis, callback) {
 						});
 					});
 				},
-				function redo() {
+				redo: function redo() {
 					event.cyTarget.animate({
 						position: position_new,
 						duration: 200
 					});
-				}));
+				}
+			}));
 		}
 	});
 
