@@ -80,11 +80,26 @@ VisHistory.prototype.togglePanel = function() {
 };
 
 VisHistory.prototype.getConsoleCommands = function() {
-	var node = this.begninning;
+	var node = this.begninning.future;
 	var output = "";
-	while (node !== undefined) {
+	if (typeof node.consoleCommand === 'string') {
 		output += node.consoleCommand + '\n';
+	} else if (typeof node.consoleCommand === 'function') {
+		output += node.consoleCommand() + '\n';
+	}
+
+	var count = 0;
+	while (node.future !== undefined) {
 		node = node.future;
+		if (typeof node.consoleCommand === 'string') {
+			output += '.then(function(){\n' + node.consoleCommand + '\n';
+		} else if (typeof node.consoleCommand === 'function') {
+			output += '.then(function(){\n' + node.consoleCommand() + '\n';
+		}
+		count += 1;
+	}
+	for (var i = 0; i < count; i++) {
+		output += "})";
 	}
 	console.log(output);
 };
@@ -98,7 +113,8 @@ function Step(params) {
 	this.undo = params.undo;
 	this.redo = params.redo;
 	this.name = params.name;
-	this.consoleCommand = "console.log('no script provided');";
+	this.consoleCommand =
+		"new Promise(function(resolve, reject){console.log('no script provided'); resolve();})";
 	if (params.consoleCommand !== undefined) {
 		this.consoleCommand = params.consoleCommand;
 	}
