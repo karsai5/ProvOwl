@@ -108,6 +108,12 @@ function connectFilterPanel() {
 		}
 	});
 
+	regexInput.keydown(function(e) {
+		if (e.keyCode == 13) {
+			pvis.regexGroup(regexInput.val());
+		}
+	});
+
 	groupButton.on('click', function() {
 		if (regexInput.val() !== "") {
 			pvis.regexGroup(regexInput.val());
