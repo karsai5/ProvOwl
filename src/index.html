@@ -42,7 +42,6 @@
     <script src="/js/main.js" data-cover></script>
     <!-- <script src="/js/menu-vertical.js" data-cover></script> -->
     <!-- endbuild -->
-
 </head>
 
 <body>
@@ -115,13 +114,8 @@
                     Current view</a></li>
                         </ul>
                     </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle">Select <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a onclick="$('#simple_filter').toggle();">Simple Filter</a></li>
-                            <!-- <li><a>Advance Filter</a></li> -->
-                        </ul>
-                    </li>
+                    <li><a onclick="$('#simple_filter').toggle();"><i class="fa fa-search" aria-hidden="true"></i> Simple Filter</a></li>
+                    <!-- <li><a>Advance Filter</a></li> -->
                     <li>
                         <a onclick="pvis.history.undo();">
                             <i class="fa fa-undo" aria-hidden="true"></i> Undo
@@ -154,28 +148,28 @@
     <div class="floating_info node_info_wrapper">
         <!-- <h2>Node Information</h2> -->
         <p class="header">Node Information
-			<a class="close"> <i class="fa fa-times" aria-hidden="true"></i></a>
-		</p>
+            <a class="close"> <i class="fa fa-times" aria-hidden="true"></i></a>
+        </p>
         <hr />
         <div id="node_info" class="body">
             No node currently selected.
         </div>
     </div>
     <div class="floating_info regex_wrapper" id="simple_filter">
-		<p class="header">Simple Filter 
-			<a class="close"> <i class="fa fa-times" aria-hidden="true"></i></a>
-		</p>
+        <p class="header">Simple Filter
+            <a class="close"> <i class="fa fa-times" aria-hidden="true"></i></a>
+        </p>
         <hr />
         <div class="form-group">
-			<p class="help-block">Use the field below to select nodes that contain matching properties.</p>
+            <p class="help-block">Use the field below to select nodes that contain matching properties.</p>
             <input class="form-control" type="text" id="regex-input" placeholder="Filter Text" />
         </div>
         <button type="submit" class="btn btn-default" id="regex-group">Group Selected Nodes</button>
     </div>
     <div class="floating_info history_wrapper">
         <p class="header">History Information
-			<a class="close"> <i class="fa fa-times" aria-hidden="true"></i></a>
-		</p>
+            <a class="close"> <i class="fa fa-times" aria-hidden="true"></i></a>
+        </p>
         <hr />
         <div id="history_info" class="body">
             No history...
@@ -183,8 +177,8 @@
     </div>
     <div class="floating_info warnings_wrapper">
         <p class="header">Warnings
-			<a class="close"> <i class="fa fa-times" aria-hidden="true"></i></a>
-		</p>
+            <a class="close"> <i class="fa fa-times" aria-hidden="true"></i></a>
+        </p>
         <hr />
         <div id="warnings" class="body"></div>
     </div>
@@ -194,6 +188,22 @@
         <span class="copyright">&copy; Linus Karsai 2016</span>
     </div>
     <!-- End Document -->
+    <script>
+        (function(i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function() {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-77929111-1', 'auto');
+        ga('send', 'pageview');
+    </script>
 
 </body>
 

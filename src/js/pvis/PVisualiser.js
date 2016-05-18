@@ -8,14 +8,14 @@
 
 String.prototype.hashCode = function() {
 	var hash = 0;
-	if (this.length == 0) return hash;
+	if (this.length === 0) return hash;
 	for (var i = 0; i < this.length; i++) {
 		var char = this.charCodeAt(i);
 		hash = ((hash << 5) - hash) + char;
 		hash = hash & hash; // Convert to 32bit integer
 	}
 	return hash.toString();
-}
+};
 
 function clone(obj) {
 	if (null === obj || "object" !== typeof obj) return obj;
@@ -106,13 +106,23 @@ PVisualiser.prototype.restoreHangingEdges = function() {
  * relative to where the composite node has been moved. 
  * @param {string} id The id string of the group you want to uncluster
  */
-PVisualiser.prototype.unGroupNode = function(id, noHistory) {
+PVisualiser.prototype.unGroupNode = function(id, params) {
 	var node = cy.getElementById(id);
-	var that = this;
-	var x = node.position('x');
+	var x = node.position('x'); //position of node
 	var y = node.position('y');
 	var originalNodes = node.data().originalNodes;
 	var originalEdges = node.data().originalEdges;
+
+	// Set default values
+	if (params === undefined) {
+		params = {};
+	}
+	if (params.speed === undefined) {
+		params.speed = 500;
+	}
+	if (params.saveHistory === undefined) {
+		params.saveHistory = true;
+	}
 
 	// Restore original Nodes in positions relative to original
 	$.each(originalNodes, function(i, ele) {
@@ -126,7 +136,7 @@ PVisualiser.prototype.unGroupNode = function(id, noHistory) {
 				x: x - xDifference,
 				y: y - yDifference
 			},
-			duration: 500
+			duration: params.speed
 		});
 		// remove original fields to save space
 		ele.removeData('originalX originalY group');
@@ -140,8 +150,8 @@ PVisualiser.prototype.unGroupNode = function(id, noHistory) {
 			cy.getElementById(ele.data().target).length === 1) {
 			ele.restore();
 		} else {
-			var source = that.GroupManager.getParent(ele.data().source);
-			var target = that.GroupManager.getParent(ele.data().target);
+			var source = this.GroupManager.getParent(ele.data().source);
+			var target = this.GroupManager.getParent(ele.data().target);
 			if (source !== undefined && target !== undefined) {
 				cy.add({
 					group: "edges",
@@ -154,29 +164,214 @@ PVisualiser.prototype.unGroupNode = function(id, noHistory) {
 				});
 			}
 
-			that.hangingEdges.push(ele);
+			this.hangingEdges.push(ele);
 		}
 
-	});
+	}.bind(this));
+
 	this.GroupManager.removeGroup(node.id());
 	node.remove();
 
 	// add to history
-	if (noHistory !== true) {
-			console.log('adding history to ungroup');
+	if (params.saveHistory === true) {
+		console.log('adding history to ungroup');
 		var child = originalNodes[0];
-		this.history.addStep(new Step('Ungroup node',
-			function() {
+		this.history.addStep(new Step({
+			name: 'Ungroup node',
+			undo: function() {
 				cy.$('node').removeClass('selected');
 				for (var i = 0; i < originalNodes.length; i++) {
 					originalNodes[i].addClass('selected');
 				}
-				that.groupSelectedNodes(true);
-			},
-			function() {
-				that.unGroupNode(that.GroupManager.getParent(child.data().id), true);
-			}));
+				this.groupSelectedNodes(true);
+			}.bind(this),
+			redo: function() {
+				this.unGroupNode(this.GroupManager.getParent(child.data().id), {
+					saveHistory: false
+				});
+			}.bind(this)
+		}));
 	}
+};
+
+PVisualiser.prototype.groupNodes = function(params) {
+	return new Promise(function(resolve, reject) {
+
+		var groupNodes = {}; // dictionary of nodes to be grouped
+		// name of rootnode used in astar algorithm
+		var rootname = "node[id='" + cy.elements().roots()[0].id() + "']";
+		// node used for name and location
+		var parentNode = {
+			node: undefined,
+			distanceFromRoot: -1
+		};
+
+		// Check nodes exist
+		if (params.nodes === undefined) {
+			var errortext = "Can't group without nodes";
+			console.error(errortext);
+			reject(Error(errortext));
+		} else if (params.nodes.length < 2) {
+			var errortext = "Can't make group with less that two nodes";
+			console.error(errortext);
+			reject(Error(errortext));
+		}
+
+		// Set default values
+		if (params.speed === undefined) {
+			params.speed = 500;
+		}
+		if (params.saveHistory === undefined) {
+			params.saveHistory = true;
+		}
+
+		// Loop through node IDs
+		for (var i = 0; i < params.nodes.length; i++) {
+			var name = params.nodes[i];
+			var node = cy.getElementById(name);
+			if (node.length > 0) {
+				// get distance from root
+				var nodename = "node[id='" + name + "']";
+				var distanceFromRoot = -1;
+				distanceFromRoot = cy.elements().aStar({
+					root: rootname,
+					goal: nodename
+				}).distance;
+
+				// add to groupnodes
+				groupNodes[name] = {
+					node: node,
+					distanceFromRoot: distanceFromRoot
+				};
+
+				// set parentnode to node with shortest distance from root
+				if (parentNode.distanceFromRoot === -1) { // if no parentnode set yet
+					parentNode = groupNodes[name];
+				} else if (groupNodes[name].distanceFromRoot < parentNode.distanceFromRoot) {
+					parentNode = groupNodes[name];
+				}
+			} else {
+				console.warn('Couldn\'t find node: ' + name);
+			}
+		}
+
+		// Animate nodes into group position
+		for (var name in groupNodes) {
+			var node = groupNodes[name].node;
+			// save original node positions
+			node.data('originalX', node.position('x'));
+			node.data('originalY', node.position('y'));
+			// animate movement
+			node.animate({
+				position: {
+					x: parentNode.node.position('x'),
+					y: parentNode.node.position('y')
+				},
+				duration: params.speed
+			});
+		}
+
+		setTimeout(function() {
+			// Make cluster node
+			var id = Object.keys(groupNodes).sort().join().hashCode(); // use hash of grouped ids
+			var clusterNode = cy.add({
+				group: "nodes",
+				data: {
+					id: id,
+					name: parentNode.node.data().name + ' group',
+					type: 'group'
+				},
+				classes: 'group',
+				position: {
+					x: parentNode.node.position('x'),
+					y: parentNode.node.position('y')
+				}
+			});
+
+			// Save original nodes and edges
+			// and create duplicate edges connedted to groupnode
+			var originalNodes = [];
+			var originalEdges = [];
+			for (var name in groupNodes) { // loop through neighbourhood
+				var ele = groupNodes[name].node;
+				var edges = cy.elements('edge[source="' + ele.id() + '"]').union(
+					cy.elements('edge[target="' + ele.id() + '"]'));
+
+				if (ele.isNode()) { // if node in group
+					originalNodes.push(ele);
+					ele.remove(); // delete node
+				}
+
+				for (var i = 0; i < edges.length; i++) {
+					var edge = edges[i];
+					originalEdges.push(edge);
+					var source = "";
+					var target = "";
+					// set source and target correctly
+					if (groupNodes[edge.data('source')] !== undefined && // if source is in group
+						groupNodes[edge.data('target')] === undefined) {
+						source = clusterNode.id();
+						target = edge.data('target');
+					} else if (groupNodes[edge.data('target')] !== undefined && // if target is in group
+						groupNodes[edge.data('source')] === undefined) {
+						source = edge.data('source');
+						target = clusterNode.id();
+					}
+
+					if (source !== "" && target !== "") { // check it's not an internal edge
+						// check edge doesn't already exist
+						var newid = source + '-' + target;
+						if (cy.getElementById(newid).length === 0) {
+							cy.add({ // add edge to graph
+								group: "edges",
+								data: {
+									id: newid,
+									source: source,
+									target: target,
+									label: edge.data().label
+								}
+							});
+						}
+					}
+				}
+			}
+
+			// Add originals to group nodes
+			clusterNode.data('originalNodes', originalNodes);
+			clusterNode.data('originalEdges', originalEdges);
+
+			// Add to GroupManager
+			this.GroupManager.addGroup(clusterNode.id(), originalNodes);
+
+			// Select new groupnode
+			this.selectNode(clusterNode.id());
+
+			// Add to history
+			if (params.saveHistory === true) {
+				this.history.addStep(new Step({
+					name: 'Group node: ' + clusterNode.data().name,
+					undo: function ungroupNode() {
+						this.unGroupNode(clusterNode.id(), {
+							saveHistory: false
+						});
+					}.bind(this),
+					redo: function regroupNode() {
+						cy.$('node').removeClass('selected');
+						this.groupNodes({
+							nodes: Object.keys(groupNodes),
+							saveHistory: false
+						});
+					}.bind(this),
+					consoleCommand: "pvis.groupNodes({" +
+						"nodes: ['" + Object.keys(groupNodes).join("','") + "']," +
+						"speed: 0" +
+						"})"
+				}));
+			}
+
+			resolve(clusterNode);
+		}.bind(this), params.speed);
+	}.bind(this));
 };
 
 /**
@@ -184,161 +379,14 @@ PVisualiser.prototype.unGroupNode = function(id, noHistory) {
  * a compiste node with all the same edges. No arguments are required as it
  * groups any nodes with the 'selected' class.
  */
-PVisualiser.prototype.groupSelectedNodes = function(noHistory) {
-	var that = this;
-	var groupElements = cy.nodes('.selected');
-
-	// If 1 or zero elements are selected, don't try to group them
-	if (groupElements.length < 2) {
-		return;
-	}
-
-	// Get position of new node
-	var x = groupElements.position('x');
-	var y = groupElements.position('y');
-
-	// Animate nodes into group position
-	cy.nodes('.selected').each(function(i, ele) {
-		ele.data('originalX', ele.position('x'));
-		ele.data('originalY', ele.position('y'));
-		ele.animate({
-			position: {
-				x: x,
-				y: y
-			},
-			duration: 500
-		});
+PVisualiser.prototype.groupSelectedNodes = function(params) {
+	var idArray = $.map(cy.elements('node.selected'), function(value) {
+		return value.id();
 	});
 
-	// Wait for animation to complete
-	setTimeout(function() {
-		// create hash table of ids
-		var idHash = {};
-		groupElements.each(function(i, ele) {
-			idHash[ele.id()] = true;
-		});
-
-		// Make groupnode
-		var id = Object.keys(idHash).sort().join().hashCode();
-		var groupNode = cy.add({
-			group: "nodes",
-			data: {
-				id: id,
-				name: id,
-				type: 'group'
-			},
-			classes: 'group',
-			position: {
-				x: x,
-				y: y
-			}
-		});
-
-		// Save original nodes and edges
-		// and create duplicate edges connedted to groupnode
-		var originalNodes = [];
-		var originalEdges = [];
-		var rootname = "node[id='" + cy.elements().roots()[0].id() + "']";
-		var nameCandidate = {
-			distance: -1,
-			name: ''
-		};
-		var neighbourhood = groupElements.union(groupElements.neighbourhood());
-		window.n = neighbourhood;
-		for (var i = 0; i < neighbourhood.length; i++) { // loop through neighbourhood
-			var ele = neighbourhood[i];
-			if (ele.isNode() && idHash[ele.id()] === true) { // if node in group
-				ele.data('group', groupNode.id());
-				originalNodes.push(ele);
-
-				// Check if eligible to be cluster title via smallest distance
-				// from the root node.
-				var nodename = "node[id='" + ele.id() + "']";
-				var distanceFromRoot = 0;
-				if (nodename !== rootname) { // if not root node
-					try {
-						distanceFromRoot = cy.elements().aStar({
-							root: rootname,
-							goal: nodename
-						}).distance;
-					} catch (err) {
-						// catch weird error caused by aStar method
-					}
-				}
-				if (nameCandidate.distance === -1 ||
-					distanceFromRoot < nameCandidate.distance) {
-					nameCandidate = {
-						distance: distanceFromRoot,
-						name: ele.id()
-					};
-				}
-
-				ele.remove(); // delete node
-			} else if (ele.isEdge()) { // if edge
-				originalEdges.push(ele);
-				var source = "";
-				var target = "";
-				// set source and target correctly
-				if (idHash[ele.data('source')] === true && // if source is in group
-					idHash[ele.data('target')] === undefined) {
-					source = groupNode.id();
-					target = ele.data('target');
-				} else if (idHash[ele.data('target')] === true && // if target is in group
-					idHash[ele.data('source')] === undefined) {
-					source = ele.data('source');
-					target = groupNode.id();
-				}
-
-				if (source !== "" && target !== "") { // check it's not an internal edge
-					// check edge doesn't already exist
-					var newid = source + '-' + target;
-					if (cy.getElementById(newid).length === 0) {
-						cy.add({ // add edge to graph
-							group: "edges",
-							data: {
-								id: newid,
-								source: source,
-								target: target,
-								label: ele.data().label
-							}
-						});
-					}
-				}
-			}
-		}
-
-		// Rename node with candidate name
-		groupNode.data('name', PParser.removePrefix(nameCandidate.name) +
-			" group");
-
-		// Add originals to group nodes
-		groupNode.data('originalNodes', originalNodes);
-		groupNode.data('originalEdges', originalEdges);
-
-		// Add to GroupManager
-		that.GroupManager.addGroup(id, originalNodes);
-
-		// Select new groupnode
-		that.selectNode(groupNode.data().id);
-
-		// Add to history
-		if (noHistory !== true) {
-			console.log('adding history to group');
-			var nodesToGroup = originalNodes.slice(0);
-			that.history.addStep(new Step('Group node: ' + groupNode.data().name,
-				function ungroupNode() {
-					that.unGroupNode(groupNode.id(), true);
-				},
-				function regroupNode() {
-					cy.$('node').removeClass('selected');
-					for (var i = 0; i < nodesToGroup.length; i++) {
-						cy.getElementById(nodesToGroup[i].id()).addClass('selected');
-					}
-					that.groupSelectedNodes(true);
-				}));
-		}
-
-	}, 500);
+	this.groupNodes({
+		nodes: idArray
+	});
 };
 
 /**
@@ -376,6 +424,62 @@ PVisualiser.prototype.selectNode = function(thing) {
 	this.selectedNode.addClass('selected');
 	$('.node_info_wrapper').show();
 	this.printNodeInfo(informationObject.render(cy.$('.selected')));
+};
+
+// params{
+//	  node: id of nodes to move,
+//	  toX: {int} location to move to x
+//	  toY: {int} location to move to y
+//	  speed: {int} animation speed
+PVisualiser.prototype.moveNode = function(params) {
+	return new Promise(function(resolve, reject) {
+		if (params === undefined || params.node === undefined) {
+			console.error("Missing paramaters, couldn't move node");
+			reject();
+		}
+		// set defaults
+		if (params.speed === undefined) {
+			params.speed = 200;
+		}
+
+		var node = cy.getElementById(params.node);
+		node.animate({
+			position: {
+				x: params.toX,
+				y: params.toY
+			},
+			duration: params.speed
+		});
+
+		// resolve after animation
+		setTimeout(function() {
+			resolve();
+		}, params.speed);
+	});
+};
+
+// nodes = [{id: node id, toX: x value, toY: y value}, ...]
+PVisualiser.prototype.moveNodes = function(nodes) {
+	return new Promise(function(resolve, reject) {
+		var promises = []; // all the promises
+
+		if (nodes === undefined) {
+			console.error("Missing paramaters, couldn't move nodes");
+			reject();
+		}
+
+		for (var i = 0; i < nodes.length; i++) {
+			var node = nodes[i];
+			promises.push(this.moveNode({
+				node: node.id,
+				toX: node.toX,
+				toY: node.toY,
+				speed: node.speed
+			}));
+		}
+
+		Promise.all(promises).then(resolve);
+	}.bind(this));
 };
 
 PVisualiser.prototype.printNodeInfo = function(text) {
@@ -653,6 +757,7 @@ function addHooks(pvis, callback) {
 		var groupElements = cy.nodes('.selected');
 		pvis.selectedNodes = groupElements;
 	});
+
 	this.on('free', function(event) {
 		// add to history 
 		var position_old = clone(pvis.oldPosition);
@@ -664,26 +769,56 @@ function addHooks(pvis, callback) {
 		}
 		if (position_old.x !== position_new.x ||
 			position_old.y !== position_new.y) {
-			pvis.history.addStep(new Step('Move node',
-				function undo() {
+			pvis.history.addStep(new Step({
+				name: 'Move node',
+				undo: function undo() {
+					var nodesToMove = [];
 					selectedNodes.each(function(i, ele) {
 						var new_x = ele.position().x - position_new.x;
 						var new_y = ele.position().y - position_new.y;
-						ele.animate({
-							position: {
-								x: position_old.x + new_x,
-								y: position_old.y + new_y
-							},
-							duration: 200
+						nodesToMove.push({
+							id: ele.id(),
+							toX: position_old.x + new_x,
+							toY: position_old.y + new_y
+						});
+					});
+					pvis.moveNodes(nodesToMove);
+				},
+				redo: function redo() {
+					selectedNodes.each(function(i, ele) {
+						var new_x = ele.position().x - position_old.x;
+						var new_y = ele.position().y - position_old.y;
+						pvis.moveNode({
+							node: ele.id(),
+							toX: position_new.x + new_x,
+							toY: position_new.y + new_y
 						});
 					});
 				},
-				function redo() {
-					event.cyTarget.animate({
-						position: position_new,
-						duration: 200
+				consoleCommand: function() {
+					var nodesToMove = [];
+					selectedNodes.each(function(i, ele) {
+						var new_x = ele.position().x - position_old.x;
+						var new_y = ele.position().y - position_old.y;
+						nodesToMove.push({
+							id: ele.id(),
+							toX: position_new.x + new_x,
+							toY: position_new.y + new_y
+						});
 					});
-				}));
+					var command = "pvis.moveNodes([";
+					command += $.map(nodesToMove, function(v) {
+					var string = "";
+						string += "{id: \"" + v.id + "\", ";
+						string += "toX:" + v.toX + ", ";
+						string += "toY: " + v.toY + ",";
+						string += "speed: 0}";
+						return string;
+					}).toString();
+					command += "])";
+					return command;
+				}
+			}));
 		}
 	});
 
