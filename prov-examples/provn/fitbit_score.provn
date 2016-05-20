@@ -1,0 +1,49 @@
+document
+
+//
+// entities
+//
+agent(ir:Alice)
+
+entity(ir:Fitbit_score)
+entity(ir:weight_improvement)
+entity(ir:aggregated_weight_data)
+entity(ir:weight_goal)
+entity(ir:raw_scale_data)
+entity(ir:raw_manual_data)
+entity(ir:step_achievement)
+entity(ir:aggregated_step_data)
+entity(ir:step_goal)
+entity(ir:fitbit_raw_data)
+
+activity(ir:score_generator)
+activity(ir:weight_analyser)
+activity(ir:weight_aggregator)
+activity(ir:step_analyser)
+activity(ir:step_aggregator)
+
+wasGeneratedBy(ir:Fitbit_score, ir:score_generator)
+used(ir:score_generator, ir:weight_improvement)
+wasGeneratedBy(ir:weight_improvement, ir:weight_analyser)
+used(ir:weight_analyser, ir:aggregated_weight_data)
+used(ir:weight_analyser, ir:weight_goal)
+wasGeneratedBy(ir:aggregated_weight_data, ir:weight_aggregator)
+used(ir:weight_aggregator, ir:raw_scale_data)
+used(ir:weight_aggregator, ir:raw_manual_data)
+
+used(ir:score_generator, ir:step_achievement)
+wasGeneratedBy(ir:step_achievement, ir:step_analyser)
+used(ir:step_analyser, ir:aggregated_step_data)
+used(ir:step_analyser, ir:step_goal)
+wasGeneratedBy(ir:aggregated_step_data, ir:step_aggregator)
+used(ir:step_aggregator, ir:fitbit_raw_data)
+
+wasAttributedTo(ir:weight_goal, ir:Alice)
+wasAttributedTo(ir:raw_manual_data, ir:Alice)
+wasAttributedTo(ir:step_goal, ir:Alice)
+wasAttributedTo(ir:raw_scale_data, ir:Alice)
+wasAttributedTo(ir:fitbit_raw_data, ir:Alice)
+
+// wasAttributedTo(ir:Report, ir:Bob)
+
+endDocument
