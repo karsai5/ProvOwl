@@ -101,7 +101,15 @@ VisHistory.prototype.getConsoleCommands = function() {
 	for (var i = 0; i < count; i++) {
 		output += "})";
 	}
-	console.log(output);
+	return output;
+};
+
+VisHistory.prototype.downloadHistory = function() {
+	var steps = this.getConsoleCommands();
+	var historyWindow = window.open("data:text/html," + encodeURIComponent(steps),
+		"_blank");
+	console.log(steps);
+	historyWindow.focus();
 };
 
 /**
