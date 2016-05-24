@@ -557,7 +557,7 @@ PVisualiser.prototype.nodeExists = function(name) {
  * @param {String} name Unique ID for the node eg. itr:X-Tweets-3
  * @param {String} label Reading friendly version of node eg. X Tweets 3
  * @param {String} type the type of node, eg. action, person
- * @param {Object} propreties of the node
+ * @param {Object} properties of the node
  * @return {bool} True if the node was added, False if it was not.
  */
 PVisualiser.prototype.addNode = function(params) {
