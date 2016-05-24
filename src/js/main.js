@@ -179,7 +179,7 @@ $(document).ready(function() {
 				$.getScript(commandurl);
 				// reset layout
 				setTimeout(function() {
-					pvis.resetLayout('dagre');
+					// pvis.resetLayout('dagre');
 				}, 1000);
 			});
 		}
