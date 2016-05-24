@@ -125,11 +125,16 @@ function infoPannels() {
 	var floating_panels = $(".floating_info");
 
 	// make draggable
-	floating_panels.draggable({ 
+	floating_panels.draggable({
 		containment: 'document',
 		handle: '.header'
 	});
-	
+
+	// make resizeable
+	floating_panels.resizable({
+		handles: "se"
+	});
+
 	// close on cross click
 	floating_panels.find('.close').on('click', function() {
 		$(this).parents('.floating_info').hide();

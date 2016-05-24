@@ -3,31 +3,29 @@ function informationString() {
 }
 
 informationString.prototype.render = function(nodes) {
-	// For single nodes
+	// For single nodes, print properties
 	if (nodes.length === 1) {
+		this.information +=
+			"<table class=\"table table-condensed table-bordered\">";
 		var data = nodes.data();
-		for (var property in data) { // loop through data
-			if (data.hasOwnProperty(property)) {
-				if (property === 'properties' && data[property] !== undefined) { // loop through properties
-					this.information += "<hr>";
-					for (var p in data[property]) {
-						if (data[property].hasOwnProperty(p)) {
-							this.add(p, data[property][p]);
-						}
-					}
-				} else if (!RegExp('^original.*$').test(property)) {
-					this.add(property, data[property]);
+		this.add("name", data.name);
+		if (data.properties !== undefined) { // loop through properties
+			for (var p in data.properties) {
+				if (data.properties.hasOwnProperty(p)) {
+					this.add(p, data.properties[p]);
 				}
 			}
 		}
+		this.information += "</table>";
 	} else { // Multiple selected nodes
+		this.information += "<hr>";
 		this.information += "<b>Mulitple nodes selected:</b><br>";
 		for (var i = 0; i < nodes.length; i++) {
 			this.information += nodes[i].data().name + "<br>";
 		}
+		this.information += "<hr>";
 	}
 
-	this.information += "<hr>";
 
 	if (nodes.length === 1) { // for single nodes
 		if (nodes.hasClass('group')) {
@@ -44,7 +42,11 @@ informationString.prototype.render = function(nodes) {
 
 informationString.prototype.add = function(c1, c2) {
 	if (c2 !== undefined) {
-		this.information += "<b>" + c1 + "</b> " + c2 + "<br>";
+		c1 = c1.charAt(0).toUpperCase() + c1.slice(1); // make header uppercase
+		this.information += "<tr>";
+		this.information += "<th>" + c1 + "</th>";
+		this.information += "<td>" + c2 + "</td>";
+		this.information += "</tr>";
 	}
 };
 
@@ -82,4 +84,3 @@ informationString.prototype.addRenameLink = function(node) {
 informationString.prototype.print = function() {
 	return this.information;
 };
-

@@ -106,6 +106,7 @@ body, html {
 
 .floating_info {
 	width: 220px;
+	min-width: 220px;
 	position: absolute;
 	top: 60px;
 	left: 10px;
@@ -113,6 +114,8 @@ body, html {
 	box-shadow: 0 0 3px rgba(0, 0, 0, 0.55);
 	border-radius: 2px;
 	padding: 10px;
+	overflow-y: auto !important;
+	overflow-x: hidden;
 
 	hr {
 		margin-top: 10px;
@@ -127,7 +130,14 @@ body, html {
 	.header {
 		cursor: move;
 		margin: -10px;
-		padding: 10px; //makes grabbing easier
+		padding: 10px;
+
+		//makes grabbing easier
+
+		.close {
+			position: absolute;
+			right: 10px;
+		}
 	}
 
 	&.regex_wrapper {
@@ -140,6 +150,11 @@ body, html {
 		display: none;
 		top: 60px;
 		left: 10px;
+
+		table {
+			margin-top: 10px;
+			margin-bottom: 10px;
+		}
 	}
 
 	&.history_wrapper {
