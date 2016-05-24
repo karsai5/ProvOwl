@@ -195,7 +195,8 @@ PParser.getLineArguments = function(line) {
 		if (line[i][0] === '[') {
 			line[i] = line[i].substring(1);
 			propBeg = i;
-		} else if (line[i][line[i].length - 1] === ']') {
+		}
+		if (line[i][line[i].length - 1] === ']') {
 			if (propBeg !== -1) {
 				line[i] = line[i].substring(0, line[i].length -1);
 				var propObj = {};
