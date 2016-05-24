@@ -65,21 +65,24 @@ function loadFile(event) {
 }
 
 function loadWebFile(url) {
-	$("#cy").html("");
-	$("#file_info").html("");
-	var parser = new PParser();
-	var reader = new FileReader();
-	var p2 = null;
-	w1.setDiv("#warnings");
+	return new Promise(function(resolve, reject) {
+		$("#cy").html("");
+		$("#file_info").html("");
+		var parser = new PParser();
+		var reader = new FileReader();
+		var p2 = null;
+		w1.setDiv("#warnings");
 
-	parser.parseFile(url, function(provObject) {
-		p2 = provObject;
-		p2.render({
-			inner: '#cy',
-			callback: function() {
-				$("#file_info").append("<strong>Name:</strong> " + url);
-				$("#provSelectButton").parent().remove();
-			}
+		parser.parseFile(url, function(provObject) {
+			p2 = provObject;
+			p2.render({
+				inner: '#cy',
+				callback: function() {
+					$("#file_info").append("<strong>Name:</strong> " + url);
+					$("#provSelectButton").parent().remove();
+					resolve();
+				}
+			});
 		});
 	});
 }
@@ -160,11 +163,25 @@ $(document).ready(function() {
 		window.w1 = Warnings.getInstance();
 		// check if file is supplied in url, if so load it.
 		var fileurl = getParameterByName('file');
+		var filePromise = new Promise(function(resolve) {
+			resolve();
+		});
 		if (fileurl !== null) {
-			console.log("loading file from url");
-			loadWebFile(fileurl);
-			connectFilterPanel(); // code for simle filter
+			filePromise = loadWebFile(fileurl);
+			connectFilterPanel(); // code for simple filter
 			infoPannels(); // floating panels settings
+		}
+		// load commands if they're in url
+		var commandurl = getParameterByName('commands');
+		if (commandurl !== null) {
+			filePromise.then(function() {
+				console.log('Loading commands.');
+				$.getScript(commandurl);
+				// reset layout
+				setTimeout(function() {
+					pvis.resetLayout('dagre');
+				}, 1000);
+			});
 		}
 	}
 
