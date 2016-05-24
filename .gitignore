@@ -5,6 +5,7 @@
 bower_components
 .sass-cache
 src/css/
+src/prov-examples
 src/js/PVisualiser.js
 videos/
 public_html/
