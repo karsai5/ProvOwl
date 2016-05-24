@@ -3,7 +3,7 @@ document
 //
 // entities
 //
-agent(ir:Alice)
+agent(ir:Alice, [fullname = "Alice Adams"])
 
 entity(ir:Fitbit_score)
 entity(ir:weight_improvement)
