@@ -79,11 +79,13 @@ function Provenance() {
 					PParser.getLineArguments(l)[1]);
         });
 
-        // Create agents
-        $.each(this.agents, function(i, l) {
-            var name = PParser.getLineArguments(l)[0];
-            pvis.createAgent(name, PParser.removePrefix(name));
-        });
+		// Create agents
+		$.each(this.agents, function(i, l) {
+			var nodeAttributes = PParser.getLineArguments(l);
+			var name = nodeAttributes[0];
+			pvis.createAgent(name, PParser.removePrefix(name),
+					nodeAttributes[1]);
+		});
 
         // Create activities
         $.each(this.activities, function(i, l) {
@@ -154,13 +156,12 @@ function Provenance() {
             pvis.createGroup(name);
         });
 
-        // Link members to groups
-        $.each(this.members, function(i, l) {
-            var e1 = PParser.getLineArguments(l)[0];
-            var e2 = PParser.getLineArguments(l)[1];
-            console.log(e1 + " member of " + e2);
-            pvis.memberOf(e1, e2);
-        });
+		// Link members to groups
+		$.each(this.members, function(i, l) {
+			var e1 = PParser.getLineArguments(l)[0];
+			var e2 = PParser.getLineArguments(l)[1];
+			pvis.memberOf(e1, e2);
+		});
 
         return pvis;
     };
