@@ -501,16 +501,33 @@ PVisualiser.prototype.printNodeInfoToConsole = function(id) {
 };
 
 PVisualiser.prototype.renameNode = function(id, name) {
-	var node = cy.getElementById(id);
-	if (!name) {
-		name = prompt("Enter new node name");
-	}
-	if (node.length > 0) {
-		node.data('name', name);
-	} else {
-		console.warn("No node with the id: " + id);
-	}
-}
+	return new Promise(function(resolve, reject) {
+		var node = cy.getElementById(id);
+		if (!name) {
+			name = prompt("Enter new node name");
+		}
+		var newName = name.slice(0);
+		var oldName = node.data().name.slice(0);
+		if (node.length > 0) {
+			node.data('name', newName);
+		} else {
+			console.error("No node with the id: " + id);
+			reject();
+		}
+		pvis.history.addStep(new Step({
+			name: 'Rename node',
+			undo: function undo() {
+				node.data('name', oldName);
+			},
+			redo: function redo() {
+				node.data('name', newName);
+			},
+			consoleCommand: "pvis.renameNode(\"" + id + "\", \"" + newName +
+				"\")"
+		}));
+		resolve(); // all done!
+	});
+};
 
 /**
  * Checks to see if a node exists in the dom, note this doesn't include nodes
@@ -808,7 +825,7 @@ function addHooks(pvis, callback) {
 					});
 					var command = "pvis.moveNodes([";
 					command += $.map(nodesToMove, function(v) {
-					var string = "";
+						var string = "";
 						string += "{id: \"" + v.id + "\", ";
 						string += "toX:" + v.toX + ", ";
 						string += "toY: " + v.toY + ",";
