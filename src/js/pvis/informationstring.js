@@ -35,7 +35,6 @@ informationString.prototype.render = function(nodes) {
 			this.information += "<br>";
 		}
 
-		this.addConsoleLogLink(nodes);
 		this.addRenameLink(nodes);
 	} else { // multiple selected nodes
 		this.addGroupLink();
