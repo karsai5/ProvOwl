@@ -106,7 +106,7 @@ VisHistory.prototype.getConsoleCommands = function() {
 
 VisHistory.prototype.downloadHistory = function() {
 	var steps = this.getConsoleCommands();
-	var historyWindow = window.open("data:text/html," + encodeURIComponent(steps),
+	var historyWindow = window.open("data:text/text," + encodeURIComponent(steps),
 		"_blank");
 	console.log(steps);
 	historyWindow.focus();
