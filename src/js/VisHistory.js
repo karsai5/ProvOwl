@@ -18,6 +18,10 @@ function VisHistory() {
 }
 
 VisHistory.prototype.undo = function() {
+	pvis.clicks.add(new Click({
+		desc: "Undo: " + this.currentStep.name,
+		elementId: this.currentStep
+	}));
 	console.log("Undo: " + this.currentStep.name);
 	this.currentStep.undo();
 	if (this.currentStep.past !== undefined) {
@@ -28,6 +32,10 @@ VisHistory.prototype.undo = function() {
 
 VisHistory.prototype.redo = function() {
 	if (this.currentStep.future !== undefined) {
+		pvis.clicks.add(new Click({
+			desc: "Redo: " + this.currentStep.name,
+			elementId: this.currentStep
+		}));
 		console.log("Redo: " + this.currentStep.future.name);
 		this.currentStep.future.redo();
 		this.currentStep = this.currentStep.future;

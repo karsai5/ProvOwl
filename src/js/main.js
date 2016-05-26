@@ -113,12 +113,21 @@ function connectFilterPanel() {
 
 	regexInput.keydown(function(e) {
 		if (e.keyCode == 13) {
+			pvis.clicks.add(new Click({
+				desc: "Grouped with simple filter",
+				event: event,
+				elementId: regexInput.val()
+			}));
 			pvis.regexGroup(regexInput.val());
 		}
 	});
 
 	groupButton.on('click', function() {
 		if (regexInput.val() !== "") {
+			pvis.clicks.add(new Click({
+				desc: "Grouped with simple filter",
+				elementId: regexInput.val()
+			}));
 			pvis.regexGroup(regexInput.val());
 		}
 	});
@@ -137,6 +146,14 @@ function infoPannels() {
 	floating_panels.find('.close').on('click', function() {
 		$(this).parents('.floating_info').hide();
 	});
+}
+
+
+function addExtraClickBindings() {
+	$(".floating_info a").bind('click', function() {
+		console.log('floating panel link clicked');
+		return true;
+	}, false);
 }
 
 /**
@@ -165,6 +182,7 @@ $(document).ready(function() {
 			filePromise = loadWebFile(fileurl);
 			connectFilterPanel(); // code for simple filter
 			infoPannels(); // floating panels settings
+			addExtraClickBindings(); // click tracker
 		}
 		// load commands if they're in url
 		var commandurl = getParameterByName('commands');

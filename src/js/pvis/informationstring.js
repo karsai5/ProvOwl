@@ -55,12 +55,12 @@ informationString.prototype.newline = function() {
 
 informationString.prototype.addGroupLink = function() {
 	this.information +=
-		"<a href=\"#\" onclick=\"pvis.groupSelectedNodes();\">Group Nodes</a>";
+		"<a href=\"#\" onclick=\"pvis.groupSelectedNodes({manual: true});\">Group Nodes</a>";
 };
 
 informationString.prototype.addUngroupLink = function(node) {
 	this.information += "<a href=\"#\" onclick=\"pvis.unGroupNode('" + node.data()
-		.id + "');\">Ungroup</a>";
+		.id + "', {manual: true});\">Ungroup</a>";
 };
 
 informationString.prototype.addUngroupButton = function(node) {
