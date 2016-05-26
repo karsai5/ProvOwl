@@ -43,6 +43,7 @@ function PVisualiser() {
 	};
 	this.GroupManager = new GroupManager();
 	this.history = new VisHistory();
+	this.clicks = new ClickTracker();
 }
 
 /**
@@ -122,6 +123,12 @@ PVisualiser.prototype.unGroupNode = function(id, params) {
 	}
 	if (params.saveHistory === undefined) {
 		params.saveHistory = true;
+	}
+	if (params !== undefined && params.manual !== undefined && params.manual === true) {
+		pvis.clicks.add(new Click({
+			desc: "Ungrouped Node",
+			elementId: id
+		}));
 	}
 
 	// Restore original Nodes in positions relative to original
@@ -384,6 +391,14 @@ PVisualiser.prototype.groupSelectedNodes = function(params) {
 		return value.id();
 	});
 
+	if (params !== undefined && params.manual !== undefined && params.manual === true) {
+		pvis.clicks.add(new Click({
+			desc: "Grouped Nodes",
+			event: event,
+			elementId: idArray.toString()
+		}));
+	}
+
 	this.groupNodes({
 		nodes: idArray
 	});
@@ -395,15 +410,24 @@ PVisualiser.prototype.groupSelectedNodes = function(params) {
  * group, edge) and act appropriately.
  */
 PVisualiser.prototype.clickNodeEvent = function(evt) {
+<<<<<<< HEAD
 	this.selectNode(evt);
 	// if double click and group, ungroup node
+=======
+	// check if double click
+>>>>>>> development
 	if (new Date().getTime() - this.lastClick.time < 500 &&
 		this.lastClick.element === evt.cyTarget) {
 		// if element is a group, ungroup it
 		if (evt.cyTarget.data().type === 'group') {
 			this.unGroupNode(evt.cyTarget.id());
 		}
+		pvis.clicks.add(new Click({
+			desc: "Clicked node: double click",
+			event: evt
+		}));
 	} else {
+		this.selectNode(evt);
 		this.lastClick.time = new Date().getTime();
 		this.lastClick.element = evt.cyTarget;
 	}
@@ -505,6 +529,11 @@ PVisualiser.prototype.renameNode = function(id, name) {
 		var node = cy.getElementById(id);
 		if (!name) {
 			name = prompt("Enter new node name");
+			pvis.clicks.add(new Click({
+				desc: "Renamed node",
+				event: event,
+				elementId: id
+			}));
 		}
 		var newName = name.slice(0);
 		var oldName = node.data().name.slice(0);
@@ -846,9 +875,23 @@ function addHooks(pvis, callback) {
 		if (evtTarget === cy) { // clicked on background
 			pvis.clearSelectedNodes();
 			$('.node_info_wrapper').hide();
+			// add to click tracker
+			pvis.clicks.add(new Click({
+				desc: "Clicked background",
+				event: event
+			}));
 		} else if (evtTarget.group() === 'edges') { // clicked on edge
+			// add to click tracker
+			pvis.clicks.add(new Click({
+				desc: "Clicked node edge",
+				event: event
+			}));
 			console.log('clicked on edge');
 		} else if (evtTarget.group() === 'nodes') { // clicked on node
+			pvis.clicks.add(new Click({
+				desc: "Clicked node",
+				event: event
+			}));
 			pvis.clickNodeEvent(event);
 		}
 

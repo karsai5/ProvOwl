@@ -18,6 +18,10 @@ function VisHistory() {
 }
 
 VisHistory.prototype.undo = function() {
+	pvis.clicks.add(new Click({
+		desc: "Undo: " + this.currentStep.name,
+		elementId: this.currentStep
+	}));
 	console.log("Undo: " + this.currentStep.name);
 	this.currentStep.undo();
 	if (this.currentStep.past !== undefined) {
@@ -28,6 +32,10 @@ VisHistory.prototype.undo = function() {
 
 VisHistory.prototype.redo = function() {
 	if (this.currentStep.future !== undefined) {
+		pvis.clicks.add(new Click({
+			desc: "Redo: " + this.currentStep.name,
+			elementId: this.currentStep
+		}));
 		console.log("Redo: " + this.currentStep.future.name);
 		this.currentStep.future.redo();
 		this.currentStep = this.currentStep.future;
@@ -106,7 +114,7 @@ VisHistory.prototype.getConsoleCommands = function() {
 
 VisHistory.prototype.downloadHistory = function() {
 	var steps = this.getConsoleCommands();
-	var historyWindow = window.open("data:text/html," + encodeURIComponent(steps),
+	var historyWindow = window.open("data:text/text," + encodeURIComponent(steps),
 		"_blank");
 	console.log(steps);
 	historyWindow.focus();
