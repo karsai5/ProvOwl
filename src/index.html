@@ -115,7 +115,7 @@
                     Current view</a></li>
                         </ul>
                     </li>
-                    <li><a onclick="$('#simple_filter').toggle();"><i class="fa fa-search" aria-hidden="true"></i> Simple Filter</a></li>
+					<li><a onclick="$('#simple_filter').toggle();"><i class="fa fa-search" aria-hidden="true"></i> Search</a></li>
                     <!-- <li><a>Advance Filter</a></li> -->
                     <li>
                         <a onclick="pvis.history.undo();">
@@ -157,15 +157,15 @@
         </div>
     </div>
     <div class="floating_info regex_wrapper" id="simple_filter">
-        <p class="header">Simple Filter
+		<p class="header">Search
             <a class="close"> <i class="fa fa-times" aria-hidden="true"></i></a>
         </p>
         <hr />
         <div class="form-group">
             <p class="help-block">Use the field below to select nodes that contain matching properties.</p>
-            <input class="form-control" type="text" id="regex-input" placeholder="Filter Text" />
+            <input class="form-control" type="text" id="regex-input" placeholder="Search text" />
         </div>
-        <button type="submit" class="btn btn-default" id="regex-group">Group Selected Nodes</button>
+        <button type="submit" class="btn btn-default" id="regex-group">Group Nodes</button>
     </div>
     <div class="floating_info history_wrapper">
         <p class="header">History Information
