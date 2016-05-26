@@ -12,12 +12,17 @@ ClickTracker.prototype.add = function(click) {
 
 ClickTracker.prototype.downloadCSV = function() {
 	var csvContent = "data:text/tsv;charset=utf-8,";
-	this.getClicks().forEach(function(c,i) {
+	this.getClicks().forEach(function(c, i) {
 		var dataString = c.join("\t");
 		csvContent += dataString + "\n";
 	});
-	var encodedURI = encodeURI(csvContent);
-	window.open(encodedURI);
+
+	var downloadLink = document.createElement("a");
+	downloadLink.href = csvContent;
+	downloadLink.download = "clickdata.tsv";
+	document.body.appendChild(downloadLink);
+	downloadLink.click();
+	document.body.removeChild(downloadLink);
 };
 
 ClickTracker.prototype.getClicks = function() {

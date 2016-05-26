@@ -410,12 +410,8 @@ PVisualiser.prototype.groupSelectedNodes = function(params) {
  * group, edge) and act appropriately.
  */
 PVisualiser.prototype.clickNodeEvent = function(evt) {
-<<<<<<< HEAD
-	this.selectNode(evt);
 	// if double click and group, ungroup node
-=======
 	// check if double click
->>>>>>> development
 	if (new Date().getTime() - this.lastClick.time < 500 &&
 		this.lastClick.element === evt.cyTarget) {
 		// if element is a group, ungroup it
