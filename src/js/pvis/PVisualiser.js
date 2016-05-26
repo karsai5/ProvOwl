@@ -799,9 +799,17 @@ function addHooks(pvis, callback) {
 		pvis.oldPosition = clone(event.cyTarget.position());
 		var groupElements = cy.nodes('.selected');
 		pvis.selectedNodes = groupElements;
+		pvis.clicks.add(new Click({
+			desc: "Grabbed node",
+			event: event
+		}));
 	});
 
 	this.on('free', function(event) {
+		pvis.clicks.add(new Click({
+			desc: "Freed node",
+			event: event
+		}));
 		// add to history 
 		var position_old = clone(pvis.oldPosition);
 		var position_new = clone(event.cyTarget.position());
