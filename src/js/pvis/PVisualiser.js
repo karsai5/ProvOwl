@@ -124,7 +124,8 @@ PVisualiser.prototype.unGroupNode = function(id, params) {
 	if (params.saveHistory === undefined) {
 		params.saveHistory = true;
 	}
-	if (params !== undefined && params.manual !== undefined && params.manual === true) {
+	if (params !== undefined && params.manual !== undefined && params.manual ===
+		true) {
 		pvis.clicks.add(new Click({
 			desc: "Ungrouped Node",
 			elementId: id
@@ -391,7 +392,8 @@ PVisualiser.prototype.groupSelectedNodes = function(params) {
 		return value.id();
 	});
 
-	if (params !== undefined && params.manual !== undefined && params.manual === true) {
+	if (params !== undefined && params.manual !== undefined && params.manual ===
+		true) {
 		pvis.clicks.add(new Click({
 			desc: "Grouped Nodes",
 			event: event,
@@ -798,6 +800,10 @@ function addHooks(pvis, callback) {
 		pvis.oldPosition = clone(event.cyTarget.position());
 		var groupElements = cy.nodes('.selected');
 		pvis.selectedNodes = groupElements;
+		pvis.clicks.add(new Click({
+			desc: "Moved node",
+			event: event
+		}));
 	});
 
 	this.on('free', function(event) {
