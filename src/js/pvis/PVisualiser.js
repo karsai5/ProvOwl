@@ -124,8 +124,7 @@ PVisualiser.prototype.unGroupNode = function(id, params) {
 	if (params.saveHistory === undefined) {
 		params.saveHistory = true;
 	}
-	if (params !== undefined && params.manual !== undefined && params.manual ===
-		true) {
+	if (params !== undefined && params.manual !== undefined && params.manual === true) {
 		pvis.clicks.add(new Click({
 			desc: "Ungrouped Node",
 			elementId: id
@@ -392,8 +391,7 @@ PVisualiser.prototype.groupSelectedNodes = function(params) {
 		return value.id();
 	});
 
-	if (params !== undefined && params.manual !== undefined && params.manual ===
-		true) {
+	if (params !== undefined && params.manual !== undefined && params.manual === true) {
 		pvis.clicks.add(new Click({
 			desc: "Grouped Nodes",
 			event: event,
