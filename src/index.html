@@ -113,9 +113,11 @@
                     Whole graph</a></li>
                             <li><a onclick="window.open(cy.jpeg({full:false}), '_blank')">
                     Current view</a></li>
+                            <li class="dropdown-header">Download clickfile</li>
+                            <li><a onclick="pvis.clicks.downloadCSV();">Tab seperated</a></li>
                         </ul>
                     </li>
-					<li><a onclick="$('#simple_filter').toggle();"><i class="fa fa-search" aria-hidden="true"></i> Search</a></li>
+                    <li><a onclick="$('#simple_filter').toggle();"><i class="fa fa-search" aria-hidden="true"></i> Search</a></li>
                     <!-- <li><a>Advance Filter</a></li> -->
                     <li>
                         <a onclick="pvis.history.undo();">
@@ -157,7 +159,7 @@
         </div>
     </div>
     <div class="floating_info regex_wrapper" id="simple_filter">
-		<p class="header">Search
+        <p class="header">Search
             <a class="close"> <i class="fa fa-times" aria-hidden="true"></i></a>
         </p>
         <hr />
@@ -170,7 +172,7 @@
     <div class="floating_info history_wrapper">
         <p class="header">History Information
             <a class="close"> <i class="fa fa-times" aria-hidden="true"></i></a>
-			<a onclick="pvis.history.downloadHistory();">Download</a>
+            <a onclick="pvis.history.downloadHistory();">Download</a>
         </p>
         <hr />
         <div id="history_info" class="body">
