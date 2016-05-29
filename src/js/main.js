@@ -56,7 +56,6 @@ function loadFile(event) {
 		p2.render({
 			inner: '#cy',
 			callback: function() {
-				$("#file_info").append("<strong>Name:</strong> " + url);
 				$("#provSelectButton").parent().remove();
 			}
 		});
@@ -175,14 +174,14 @@ $(document).ready(function() {
 		window.w1 = Warnings.getInstance();
 		// check if file is supplied in url, if so load it.
 		var fileurl = getParameterByName('file');
+		connectFilterPanel(); // code for simple filter
+		infoPannels(); // floating panels settings
+		addExtraClickBindings(); // click tracker
 		var filePromise = new Promise(function(resolve) {
 			resolve();
 		});
 		if (fileurl !== null) {
 			filePromise = loadWebFile(fileurl);
-			connectFilterPanel(); // code for simple filter
-			infoPannels(); // floating panels settings
-			addExtraClickBindings(); // click tracker
 		}
 		// load commands if they're in url
 		var commandurl = getParameterByName('commands');
