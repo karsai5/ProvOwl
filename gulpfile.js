@@ -55,7 +55,7 @@ gulp.task('minify_assets', function() {
   gulp.src('src/*.html')
     .pipe(useref())
     .pipe(gulpif('*.js', replace('/src/static/', '/static/')))
-    .pipe(gulpif('*.js', uglify()))
+    // .pipe(gulpif('*.js', uglify()))
     .pipe(gulp.dest('public_html'));
 });
 
